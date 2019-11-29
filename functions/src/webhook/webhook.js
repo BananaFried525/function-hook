@@ -1,4 +1,4 @@
-exports.webhook = (req, res) => {
+module.exports = (req, res) => {
   ret = {
     statusCode: 200,
     statusMsg: "work",
