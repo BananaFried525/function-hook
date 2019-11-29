@@ -1,24 +1,19 @@
 const express = require("express");
 const cors = require("cors");
+
 const middleware = require('@line/bot-sdk').middleware;
 const JSONParseError = require('@line/bot-sdk').JSONParseError;
 const SignatureValidationFailed = require('@line/bot-sdk').SignatureValidationFailed;
-
 const configLine = require('./config/config.json')['line'];
 
+const webHook = require('../src/webhook/webhook');
+
 const app = express();
-const config = {
-  channelAccessToken: configLine.channelAccessToken,
-  channelSecret: configLine.channelSecret
-}
 
 app.use(cors({ origin: true }));
-app.use(middleware(config))
+app.use(middleware(configLine));
 
-app.post('/webhook', (req, res) => {
-  console.log(req.body);
-  res.json(req.body.events) // req.body will be webhook event object
-})
+app.post('/webhook', webHook);
 
 app.use((err, req, res, next) => {
   if (err instanceof SignatureValidationFailed) {
