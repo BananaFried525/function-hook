@@ -1,4 +1,4 @@
 module.exports = function(event) {
-  var xx = event;
-  return xx;
+  var message = event;
+  return message;
 }
