@@ -1,8 +1,3 @@
-module.exports = (req, res) => {
-  ret = {
-    statusCode: 200,
-    statusMsg: "work",
-    message: process.env
-  };
-  res.status(200).json(ret);
-}
+const middleware = require('@line/bot-sdk').middleware;
+const JSONParseError = require('@line/bot-sdk').JSONParseError;
+const SignatureValidationFailed = require('@line/bot-sdk').SignatureValidationFailed;
