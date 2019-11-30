@@ -6,5 +6,13 @@
   "google": {
     "key_place": "AIzaSyCyROgrZyH2M7h5ywPA6V_dLu9Pn_lM_SI",
     "key_directions": "AIzaSyBupx4Cgao5X6Emkm_gx52xnyLYwEgYDgc"
+  },
+  "firestore": {
+    "apiKey": "AIzaSyAAm6Jci_ckEgvGkb98Q15R1h8RtIsjt_8",
+    "authDomain": "linebot-01-auoaao.firebaseapp.com",
+    "databaseURL": "https://linebot-01-auoaao.firebaseio.com/",
+    "projectId": "linebot-01-auoaao",
+    "storageBucket": "linebot-01-auoaao.appspot.com",
+    "messagingSenderId": "391523060557"
   }
 }
