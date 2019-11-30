@@ -8,12 +8,12 @@
     ],
     "rewrites": [
       {
-        "source": "/webhook",
-        "function": "linebot"
-      },
-      {
         "source": "/helloworld",
         "function": "helloWorld"
+      },
+      {
+        "source": "**",
+        "function": "linebot"
       }
     ]
   },

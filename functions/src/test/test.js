@@ -1,4 +1,5 @@
 /* eslint-disable promise/always-return */
+
 const db = require('../service/firestore');
 
 module.exports = (req, res) => {
