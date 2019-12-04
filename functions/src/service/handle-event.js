@@ -1,6 +1,6 @@
 module.exports.handleEvent = function (event) {
-  var message = event;
-  var replyToken = event;
+  var message = event.message;
+  var replyToken = event.replyToken;
   var result;
 
   switch (message.type) {
@@ -18,6 +18,10 @@ module.exports.handleEvent = function (event) {
 
 function replyText(message) {
   var reply = "";
-  reply = message.text;
+  reply = {
+    type:'text',
+    text:message.text
+  };
+
   return reply;
 }
