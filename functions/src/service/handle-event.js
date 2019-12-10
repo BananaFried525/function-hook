@@ -1,6 +1,6 @@
 module.exports.handleEvent = function (event) {
-  var message = event;
-  var replyToken = event;
+  var message = event.message;
+  var replyToken = event.replyToken;
   var result;
 
   switch (message.type) {
@@ -8,6 +8,9 @@ module.exports.handleEvent = function (event) {
       console.info('text message detected');
       break;
     case 'location':
+      break;
+    case 'postback': result = postbackHandle(message);
+      console.info('');
       break;
     default:
       break;
@@ -18,6 +21,20 @@ module.exports.handleEvent = function (event) {
 
 function replyText(message) {
   var reply = "";
-  reply = message.text;
+  reply = {
+    type:'text',
+    text:message.text
+  };
+
+  return reply;
+}
+
+function postbackHandle(message){
+
+  reply = {
+    type:'text',
+    text:message.text
+  };
+
   return reply;
 }

@@ -1,32 +1,17 @@
-const http = require('http');
+const restPromise = require('request-promise');
 const configGoogle = require('../config/config.json')['google'];
 
 
-const api = {
-  direction: "https://google.com/",
-
-}
-
 exports.findDirection = function () {
-  var data ="";
-  const option = {
-    hostname: "",
-    port: "",
-    method: ""
+  var option ={
+
   }
-
-  const req = http.request(option, res => {
-    res.setEncoding('utf8');
-    res.on('data', chunck => {
-
+  restPromise(option)
+    .then((res)=>{
+      return 
     })
-    res.on('end', () => {
-
+    .catch(err=>{
+      console.error(err);
+      return
     })
-  });
-  req.on('error', e => {
-    console.error(e);
-    return
-  })
-  return data
 }

@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 const line = require("@line/bot-sdk");
 const configLine = require("../config/config.json")["line"];
 const handle = require('../service/handle-event');
@@ -8,15 +9,18 @@ module.exports = (req, res) => {
 
   var message = req.body.events[0];
   var result = [];
+  console.info(result);
+
   result = handle.handleEvent(message);
 
-  client.replyMessage(result[0], result[1])
-    .then(() => {
-      console.info("OK");
-      res.status(200).send("OK");
-    })
+  console.info("result => ",result[1]);
+  client.replyMessage(result[0], result[1]).then(()=>{
+    console.info("OK");
+    res.status(200).send("OK");
+  })
     .catch(err => {
       console.error(err);
       res.status(500).send("Failed");
     });
+
 };
