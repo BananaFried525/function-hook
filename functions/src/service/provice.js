@@ -2,13 +2,13 @@
 const db = require("../service/firestore");
 /*********************************** import schema validator ***********************************/
 const lov = require("../schema/lov.schema")["lovSchema"];
-
+/*********************************** API getproviceOptions  ***********************************/
 module.exports.getproviceOptions = (req, res) => {
-  const fledid = req.body.fledId;
+  const fledid = 'lov';
   const operator = req.body.operator;
   const value = req.body.value;
   try {
-    db.collection("Test01")
+    db.collection("lov")
       .get(fledid, operator, value)
       .then(snapshot => {
         const arr = [];
@@ -36,11 +36,11 @@ module.exports.getproviceOptions = (req, res) => {
     });
   }
 };
-
+/*********************************** API Deleteprovice  ***********************************/
 module.exports.deleteprovice = (req, res) => {
   const docId = req.body.docId;
   try {
-    db.collection("Test01")
+    db.collection("lov")
       .doc(docId)
       .delete()
       .then(result => {
@@ -63,10 +63,10 @@ module.exports.deleteprovice = (req, res) => {
     });
   }
 };
-
+/*********************************** API get  ***********************************/
 module.exports.getallprovice = (req, res) => {
   try {
-    db.collection("Lov")
+    db.collection("lov")
       .get()
       .then(snapshot => {
         const arraytemp = [];
@@ -87,6 +87,7 @@ module.exports.getallprovice = (req, res) => {
     res.status(500).json({ status: 500, message: error.message });
   }
 };
+/*********************************** API createProvice  ***********************************/
 module.exports.createprovice = (req, res) => {
   dataObject = req.body;
   reflovSchema = new lov(dataObject);
