@@ -4,25 +4,27 @@ const db = require("../service/firestore");
 const lov = require("../schema/lov.schema")["lovSchema"];
 /*********************************** API getproviceOptions  ***********************************/
 module.exports.getproviceOptions = (req, res) => {
-  const fledid = 'lov';
+  const fieldid = "lov";
   const operator = req.body.operator;
   const value = req.body.value;
+
   try {
+    // eslint-disable-next-line promise/catch-or-return
     db.collection("lov")
-      .get(fledid, operator, value)
+      .get(fieldid, operator, value)
       .then(snapshot => {
         const arr = [];
         snapshot.forEach(element => {
           arr.push(element);
         });
         console.log(arr);
+        /* eslint-disable promise/always-return */
         if (_.isArray(arr) && arr.length > 0) {
           res.status(200).json({
             status: true,
             result: arr
           });
         } else {
-          //not data in collection  =>
           res.status(401).json({
             status: false,
             message: "data not found"
@@ -38,6 +40,7 @@ module.exports.getproviceOptions = (req, res) => {
 };
 /*********************************** API Deleteprovice  ***********************************/
 module.exports.deleteprovice = (req, res) => {
+  /* eslint-disable promise/always-return */
   const docId = req.body.docId;
   try {
     db.collection("lov")
@@ -65,6 +68,7 @@ module.exports.deleteprovice = (req, res) => {
 };
 /*********************************** API get  ***********************************/
 module.exports.getallprovice = (req, res) => {
+  /* eslint-disable promise/always-return */
   try {
     db.collection("lov")
       .get()
@@ -89,6 +93,7 @@ module.exports.getallprovice = (req, res) => {
 };
 /*********************************** API createProvice  ***********************************/
 module.exports.createprovice = (req, res) => {
+  /* eslint-disable promise/always-return */
   dataObject = req.body;
   reflovSchema = new lov(dataObject);
   if (!reflovSchema.isErrors()) {

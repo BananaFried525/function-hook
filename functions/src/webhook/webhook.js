@@ -9,9 +9,8 @@ module.exports = (req, res) => {
   console.log(JSON.stringify(req.body.events[0]));
   if (req.body.events[0].replyToken === "00000000000000000000000000000000") {
     console.debug("Test pass");
-    return res.status(200).send(send("Code:200,Message:Test"));
+    return res.status(200).send("Code:200,Message:Test");
   }
-
   var message = req.body.events[0];
   handle.handleEvent(message).then(result => {
     console.info("result => ", result[1]);
