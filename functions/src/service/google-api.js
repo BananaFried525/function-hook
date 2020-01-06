@@ -21,13 +21,13 @@ module.exports.nearBySearch = function(user_locate, type) {
     };
     restPromise(option)
       .then(res => {
-        console.info(res);
+        // console.info(res);
         rt.status = true;
         rt.data = res;
         resolve(rt);
       })
       .catch(err => {
-        console.error(err);
+        // console.error(err);
         rt.status = false;
         rt.massage = err;
         reject(rt);

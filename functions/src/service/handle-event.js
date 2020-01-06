@@ -10,6 +10,7 @@ module.exports.handleEvent = function(event) {
   
     if (event.type === "postback") {
       result = postbackHandle(event);
+      resolve([replyToken, result]);
     } else {
       switch (message.type) {
         case "text":
@@ -21,24 +22,21 @@ module.exports.handleEvent = function(event) {
           googleApi
             .nearBySearch(user_locate)
             .then(res => {
-              result = { type: "text", text: JSON.stringify(res.data) };
+              console.log(JSON.parse(res.data).results);
+              result = { type: "text", text: JSON.stringify(JSON.parse(res.data).results[0]) };
+              resolve([replyToken, result]);
             })
             .catch(err => {
               result = { type: "text", text: JSON.stringify(err.message) };
+              resolve([replyToken, result]);
             }); // มัน return ก่อน+++
-  
-          // if(res.status){
-          //   result = { type: 'text', text: JSON.stringify(res.data) };
-          // }else{
-          //   result = { type: 'text', text: JSON.stringify(res.message) };
-          // }
           break;
         default:
           result = { type: "text", text: "ไม่สามารถค้นหาคำสั่งนี้พบ" };
+          resolve([replyToken, result]);
           break;
       }
     }
-    resolve([replyToken, result]);
   });
 };
 
