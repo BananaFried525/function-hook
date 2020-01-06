@@ -1,43 +1,45 @@
-/* eslint-disable promise/always-return */
 const db = require("./firestore");
 const transition = require("../schema/transition.schema");
 const googleApi = require("./google-api");
 
-module.exports.handleEvent = function (event) {
-  var message = event.message;
-  var replyToken = event.replyToken;
-  var result;
-
-  if (event.type === "postback") {
-    result = postbackHandle(event);
-  } else {
-    switch (message.type) {
-      case "text":
-        result = replyText(message);
-        console.info("text message detected");
-        break;
-      case 'location':
-        var user_locate = message.latitude+','+message.longitude;
-        googleApi.nearBySearch(user_locate)
-          .then((res)=>{
-            result = { type: 'text', text: JSON.stringify(res.data)};
-          }).catch((err)=>{
-            result = { type: 'text', text: JSON.stringify(err.message)};
-          }); // มัน return ก่อน+++
-
-        // if(res.status){
-        //   result = { type: 'text', text: JSON.stringify(res.data) };
-        // }else{
-        //   result = { type: 'text', text: JSON.stringify(res.message) };
-        // }
-        break;
-      default:
-        result = { type: 'text', text: 'ไม่สามารถค้นหาคำสั่งนี้พบ' }
-        break;
+module.exports.handleEvent = function(event) {
+  return new Promise((resolve, reject) => {
+    var message = event.message;
+    var replyToken = event.replyToken;
+    var result;
+  
+    if (event.type === "postback") {
+      result = postbackHandle(event);
+    } else {
+      switch (message.type) {
+        case "text":
+          result = replyText(message);
+          console.info("text message detected");
+          break;
+        case "location":
+          var user_locate = message.latitude + "," + message.longitude;
+          googleApi
+            .nearBySearch(user_locate)
+            .then(res => {
+              result = { type: "text", text: JSON.stringify(res.data) };
+            })
+            .catch(err => {
+              result = { type: "text", text: JSON.stringify(err.message) };
+            }); // มัน return ก่อน+++
+  
+          // if(res.status){
+          //   result = { type: 'text', text: JSON.stringify(res.data) };
+          // }else{
+          //   result = { type: 'text', text: JSON.stringify(res.message) };
+          // }
+          break;
+        default:
+          result = { type: "text", text: "ไม่สามารถค้นหาคำสั่งนี้พบ" };
+          break;
+      }
     }
-  }
-
-  return [replyToken, result];
+    resolve([replyToken, result]);
+  });
 };
 
 function replyText(message) {
@@ -72,9 +74,9 @@ function postbackHandle(event) {
   }
   switch (fnType) {
     case "bus_direction":
-
       var trans = db.collection("transitions").doc();
-      var userTrans = trans.set({ data })
+      var userTrans = trans
+        .set({ data })
         .then(() => {
           console.info("Put to firestore");
         })
@@ -99,7 +101,7 @@ function postbackHandle(event) {
         }
       };
       break;
-    case 'richmenu_hotel':
+    case "richmenu_hotel":
       reply = {
         type: "text",
         text: "กรุณาเลือกสถานที่ปัจจุบัน",
