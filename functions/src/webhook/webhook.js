@@ -20,8 +20,6 @@ module.exports = (req, res) => {
   userService
     .findUser(event.source.userId)
     .then(user=>{
-      let log = user? 'found':'not found';
-      console.log(log);
       if(!user){
         userService.createUser(event.source);
       }

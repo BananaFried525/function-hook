@@ -5,18 +5,17 @@ const db = require("./firestore");
 
 module.exports.createUser = function(user) {
   return new Promise((resolve, reject) => {
-
     let newUser = {
-      userId:user.userId,
-      action:'non',
-      userPriority:1,
-      lastedUse:new Date()
+      userId: user.userId,
+      action: "non",
+      userPriority: 1,
+      lastedUse: new Date()
     };
 
     let User = db.collection("user").doc(newUser.userId);
     User.set(newUser)
       .then(res => {
-        resolve('Complate');
+        resolve("Complate");
       })
       .catch(err => {
         reject(err);
@@ -31,25 +30,30 @@ module.exports.findUser = function(userId) {
       .get()
       .then(docs => {
         if (!docs.exists) {
-          console.log('No such document!');
+          console.log("No such document!");
           resolve(false);
         } else {
-          console.log('Document data:', docs.data());
+          console.log("Document data:", docs.data());
           resolve(true);
         }
       })
       .catch(err => {
-        console.log('Error getting document', err);
+        console.log("Error getting document", err);
         reject(err);
       });
   });
 };
 
-module.exports.updateUser = function(userId) {
-  return new Promise((resolve, reject)=>{
+module.exports.updateUser = function(element) {
+  return new Promise((resolve, reject) => {
     db.collection("user")
-      .doc(userId)
-      .update();
-      // ยังไม่เสร็จจร้าาาาาาา
-  })
+      .doc(element.userId)
+      .update(element)
+      .then(docs => {
+        resolve(docs);
+      }).catch(err=>{
+        reject(err);
+      });
+    // ยังไม่เสร็จจร้าาาาาาา
+  });
 };
