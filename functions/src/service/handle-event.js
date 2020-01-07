@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 const db = require("./firestore");
 const transition = require("../schema/transition.schema");
 const googleApi = require("./google-api");
@@ -19,17 +20,24 @@ module.exports.handleEvent = function(event) {
           break;
         case "location":
           var user_locate = message.latitude + "," + message.longitude;
+          /************************************************************** */
           googleApi
             .nearBySearch(user_locate)
             .then(res => {
-              console.log(JSON.parse(res.data).results);
-              result = { type: "text", text: JSON.stringify(JSON.parse(res.data).results[0]) };
+              if(res.length>0){
+                result = { type: "text", text: 'ไม่พบสิ่งที่ค้นหา' };
+              }else{
+                console.log(res)
+                console.log(typeof res)
+                result = { type: "text", text: JSON.stringify(res.data[0]) };
+              }
               resolve([replyToken, result]);
             })
             .catch(err => {
               result = { type: "text", text: JSON.stringify(err.message) };
               resolve([replyToken, result]);
-            }); // มัน return ก่อน+++
+            });
+            /************************************************************** */
           break;
         default:
           result = { type: "text", text: "ไม่สามารถค้นหาคำสั่งนี้พบ" };
@@ -72,16 +80,16 @@ function postbackHandle(event) {
   }
   switch (fnType) {
     case "bus_direction":
-      var trans = db.collection("transitions").doc();
-      var userTrans = trans
-        .set({ data })
-        .then(() => {
-          console.info("Put to firestore");
-        })
-        .catch(err => {
-          console.err(err);
-          return;
-        });
+      // var trans = db.collection("transitions").doc();
+      // var userTrans = trans
+      //   .set({ data })
+      //   .then(() => {
+      //     console.info("Put to firestore");
+      //   })
+      //   .catch(err => {
+      //     console.err(err);
+      //     return;
+      //   });
 
       reply = {
         type: "text",

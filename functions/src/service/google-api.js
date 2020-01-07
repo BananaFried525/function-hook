@@ -1,13 +1,17 @@
+/* eslint-disable promise/always-return */
 const restPromise = require("request-promise");
 const configGoogle = require("../config/config.json")["google"];
 const _ = require("underscore");
+
 module.exports.findLocation = function() {
   // https://maps.googleapis.com/maps/api/directions/json?departure_time=now&mode=transit&origin=มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ แขวง วงศ์สว่าง เขตบางซื่อ กรุงเทพมหานคร 10800&destination=อนุสาวรีย์ชัยสมรภูมิ ถนน พหลโยธิน แขวง ถนนพญาไท เขตราชเทวี กรุงเทพมหานคร 10400&key=AIzaSyAAm6Jci_ckEgvGkb98Q15R1h8RtIsjt_8
 };
-/* eslint-disable promise/always-return */
+
+
 module.exports.nearBySearch = function(user_locate, type) {
   return new Promise((resolve, reject) => {
     var rt = {};
+    /** URL และ query ที่ต้องการ */
     var option = {
       uri: "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
       qs: {
@@ -19,21 +23,21 @@ module.exports.nearBySearch = function(user_locate, type) {
         type: type
       }
     };
+
+    console.info('Request:',option);
     restPromise(option)
       .then(res => {
-        // console.info(res);
-        rt.status = true;
-        rt.data = res;
+        data = JSON.parse(res);
+        rt.data = data.results;
         resolve(rt);
       })
       .catch(err => {
-        // console.error(err);
-        rt.status = false;
         rt.massage = err;
         reject(rt);
       });
   });
 };
+
 module.exports.textSearch = keyword => {
   /* eslint-disable promise/always-return */
   return new Promise((res, rej) => {
@@ -62,6 +66,7 @@ module.exports.textSearch = keyword => {
       });
   });
 };
+
 module.exports.PlaceDetail = place_id => {
   return new Promise((req, res) => {
     var ret = {};
