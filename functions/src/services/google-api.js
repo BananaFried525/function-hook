@@ -7,7 +7,6 @@ module.exports.findLocation = function() {
   // https://maps.googleapis.com/maps/api/directions/json?departure_time=now&mode=transit&origin=มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ แขวง วงศ์สว่าง เขตบางซื่อ กรุงเทพมหานคร 10800&destination=อนุสาวรีย์ชัยสมรภูมิ ถนน พหลโยธิน แขวง ถนนพญาไท เขตราชเทวี กรุงเทพมหานคร 10400&key=AIzaSyAAm6Jci_ckEgvGkb98Q15R1h8RtIsjt_8
 };
 
-
 module.exports.nearBySearch = function(user_locate, type) {
   return new Promise((resolve, reject) => {
     var rt = {};
@@ -24,7 +23,7 @@ module.exports.nearBySearch = function(user_locate, type) {
       }
     };
 
-    console.info('Request:',option);
+    console.info("Request:", option);
     restPromise(option)
       .then(res => {
         data = JSON.parse(res);
@@ -53,9 +52,26 @@ module.exports.textSearch = keyword => {
     };
     restPromise(option)
       .then(result => {
-        console.info(result);
+        const data = JSON.parse(result);
+        for (let i = 0; i < data.results.length; i++) {
+          if (!data.results[i].opening_hours) {
+            data.results[i].opening_hours = "ไม่มีข้อมูล";
+          } else {
+            data.results[i].opening_hours = "เปิดอยู่";
+          }
+        }
+        const results = data.results.map(result => {
+          return {
+            status: result.opening_hours,
+            name: result.name,
+            place_id: result.place_id,
+            rateing: result.rating,
+            address: result.formatted_address,
+            photo: result.photos[0].photo_reference
+          };
+        });
         ret.status = true;
-        ret.data = JSON.parse(result);
+        ret.data = results;
         res(ret);
       })
       .catch(error => {
