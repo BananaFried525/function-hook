@@ -3,11 +3,11 @@
 const db = require("../service/firestore");
 /*********************************** import schema validator ***********************************/
 const lov = require("../schema/lov.schema")["lovSchema"];
-const rest = require("../service/restaurant");
+
 const googleapi = require("../service/google-api");
 /*********************************** import undercore js ***********************************/
 const _ = require("underscore");
 
 module.exports = (req, res) => {
-  res.status(200).send("?")
+  res.status(200).send("?");
 };

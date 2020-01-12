@@ -8,7 +8,7 @@ module.exports.handleEvent = function(event) {
     var message = event.message;
     var replyToken = event.replyToken;
     var result;
-  
+
     if (event.type === "postback") {
       result = postbackHandle(event);
       resolve([replyToken, result]);
@@ -17,6 +17,7 @@ module.exports.handleEvent = function(event) {
         case "text":
           result = replyText(message);
           console.info("text message detected");
+
           break;
         case "location":
           var user_locate = message.latitude + "," + message.longitude;
@@ -24,11 +25,11 @@ module.exports.handleEvent = function(event) {
           googleApi
             .nearBySearch(user_locate)
             .then(res => {
-              if(res.length>0){
-                result = { type: "text", text: 'ไม่พบสิ่งที่ค้นหา' };
-              }else{
-                console.log(res)
-                console.log(typeof res)
+              if (res.length > 0) {
+                result = { type: "text", text: "ไม่พบสิ่งที่ค้นหา" };
+              } else {
+                console.log(res);
+                console.log(typeof res);
                 result = { type: "text", text: JSON.stringify(res.data[0]) };
               }
               resolve([replyToken, result]);
@@ -37,7 +38,7 @@ module.exports.handleEvent = function(event) {
               result = { type: "text", text: JSON.stringify(err.message) };
               resolve([replyToken, result]);
             });
-            /************************************************************** */
+          /************************************************************** */
           break;
         default:
           result = { type: "text", text: "ไม่สามารถค้นหาคำสั่งนี้พบ" };
@@ -117,12 +118,21 @@ function postbackHandle(event) {
               type: "action",
               action: {
                 type: "location",
-                label: "เลือกสถานที่"
+                label: "ค้นหาโรงแรมโดยรอบ"
+              }
+            },
+            {
+              type: "action",
+              action: {
+                type: "postback",
+                label: "ค้นหาโรงแรมจากจังหวัด",
+                data: "action_hotel"
               }
             }
           ]
         }
       };
+
       break;
     default:
       break;
