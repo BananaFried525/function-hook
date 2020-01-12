@@ -2,7 +2,10 @@
 const db = require("./firestore");
 const transition = require("../schema/transition.schema");
 const googleApi = require("./google-api");
+var templace = require("../config/config-flexbox")["flexbox_prototypePlace"];
+var FlexSelected = require("../config/config-flexbox")["flexbox_placeSelect"];
 
+const _ = require("underscore");
 module.exports.handleEvent = function(event) {
   return new Promise((resolve, reject) => {
     var message = event.message;
@@ -15,10 +18,36 @@ module.exports.handleEvent = function(event) {
     } else {
       switch (message.type) {
         case "text":
-          result = replyText(message);
-          console.info("text message detected");
+          // eslint-disable-next-line no-empty
+          if (message.text === "ชลบุรี") {
+            googleApi
+              .textSearch("ชลบุรี+โรงแรม")
+              .then(result => {
+                var data = result.data;
+                return data;
+              })
+              .then(data => {
+                console.log(data);
+                var tempplaceFlexbox = _.clone(templace);
+                // eslint-disable-next-line promise/no-nesting
+                getSeletedPlace(tempplaceFlexbox, data)
+                  .then(result => {
+                    resolve([replyToken, result]);
+                  })
+                  .catch(error => {
+                    resolve([replyToken, { type: "text", text: error }]);
+                  });
+              })
+              .catch(error => {
+                resolve([replyToken, { type: "text", text: error }]);
+              });
+          } else {
+            result = replyText(message);
+            console.info("text message detected");
+          }
 
           break;
+
         case "location":
           var user_locate = message.latitude + "," + message.longitude;
           /************************************************************** */
@@ -59,12 +88,296 @@ function replyText(message) {
   return reply;
 }
 
+function getSeletedPlace(temp, arr) {
+  return new Promise((res, rej) => {
+    var results = arr;
+    if (results.length > 10) {
+      for (let i = 0; i < 10; i++) {
+        const flex = {
+          type: "bubble",
+          body: {
+            type: "box",
+            layout: "vertical",
+            spacing: "sm",
+            contents: [
+              {
+                type: "text",
+                text: "ครัวเมืองลำปาง",
+                size: "lg",
+                align: "start",
+                weight: "bold",
+                wrap: true
+              },
+              {
+                type: "separator"
+              },
+              {
+                type: "box",
+                layout: "baseline",
+                contents: [
+                  {
+                    type: "text",
+                    text: "สถานที่ตั้ง:",
+                    flex: 4,
+                    size: "md",
+                    gravity: "bottom",
+                    weight: "bold"
+                  },
+                  {
+                    type: "text",
+                    text:
+                      "100 ถนน ห้วยแก้ว ตำบลสุเทพ อำเภอเมืองเชียงใหม่ เชียงใหม่ 50200",
+                    flex: 8,
+                    size: "sm",
+                    align: "start",
+                    weight: "regular",
+                    wrap: true
+                  },
+                  {
+                    type: "spacer"
+                  }
+                ]
+              },
+              {
+                type: "separator"
+              },
+              {
+                type: "box",
+                layout: "baseline",
+                contents: [
+                  {
+                    type: "text",
+                    text: "สถานะการให้บริการ:",
+                    flex: 3,
+                    margin: "sm",
+                    size: "sm",
+                    align: "start",
+                    weight: "bold"
+                  },
+                  {
+                    type: "text",
+                    text: "เปิดอยู่",
+                    flex: 2,
+                    margin: "sm",
+                    size: "sm",
+                    align: "start",
+                    weight: "bold",
+                    color: "#0CF929"
+                  }
+                ]
+              },
+              {
+                type: "box",
+                layout: "baseline",
+                contents: [
+                  {
+                    type: "text",
+                    text: "คะแนนเฉลี่ย",
+                    flex: 3,
+                    size: "sm",
+                    align: "start",
+                    weight: "bold"
+                  },
+                  {
+                    type: "icon",
+                    url:
+                      "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                    size: "xs"
+                  },
+                  {
+                    type: "text",
+                    text: "4.0",
+                    flex: 5,
+                    margin: "sm",
+                    size: "sm",
+                    align: "start",
+                    gravity: "center",
+                    weight: "regular"
+                  }
+                ]
+              }
+            ]
+          },
+          footer: {
+            type: "box",
+            layout: "vertical",
+            spacing: "sm",
+            contents: [
+              {
+                type: "button",
+                action: {
+                  type: "postback",
+                  label: "ดูรายละเอียด",
+                  data: '{"DATA":"BACD"}'
+                },
+                color: "#459950",
+                style: "primary"
+              }
+            ]
+          }
+        };
+        flex.body.contents[0].text = results[i].name;
+        flex.body.contents[2].contents[1].text = results[i].address;
+        flex.body.contents[4].contents[1].text = results[i].status;
+        results[i].status === "เปิดอยู่"
+          ? (flex.body.contents[4].contents[1].color = "#459950")
+          : (flex.body.contents[4].contents[1].color = "#cccccc");
+        flex.body.contents[5].contents[2].text = results[i].rateing.toString();
+        flex.footer.contents[0].action.data = JSON.stringify({
+          action: "postback_hotel",
+          place_id: results[i].place_id
+        });
+        temp.contents.contents.push(flex);
+      }
+    } else {
+      results.forEach(result => {
+        const flex = {
+          type: "bubble",
+          body: {
+            type: "box",
+            layout: "vertical",
+            spacing: "sm",
+            contents: [
+              {
+                type: "text",
+                text: "ครัวเมืองลำปาง",
+                size: "lg",
+                align: "start",
+                weight: "bold",
+                wrap: true
+              },
+              {
+                type: "separator"
+              },
+              {
+                type: "box",
+                layout: "baseline",
+                contents: [
+                  {
+                    type: "text",
+                    text: "สถานที่ตั้ง:",
+                    flex: 4,
+                    size: "md",
+                    gravity: "bottom",
+                    weight: "bold"
+                  },
+                  {
+                    type: "text",
+                    text:
+                      "100 ถนน ห้วยแก้ว ตำบลสุเทพ อำเภอเมืองเชียงใหม่ เชียงใหม่ 50200",
+                    flex: 8,
+                    size: "sm",
+                    align: "start",
+                    weight: "regular",
+                    wrap: true
+                  },
+                  {
+                    type: "spacer"
+                  }
+                ]
+              },
+              {
+                type: "separator"
+              },
+              {
+                type: "box",
+                layout: "baseline",
+                contents: [
+                  {
+                    type: "text",
+                    text: "สถานะการให้บริการ:",
+                    flex: 3,
+                    margin: "sm",
+                    size: "sm",
+                    align: "start",
+                    weight: "bold"
+                  },
+                  {
+                    type: "text",
+                    text: "เปิดอยู่",
+                    flex: 2,
+                    margin: "sm",
+                    size: "sm",
+                    align: "start",
+                    weight: "bold",
+                    color: "#0CF929"
+                  }
+                ]
+              },
+              {
+                type: "box",
+                layout: "baseline",
+                contents: [
+                  {
+                    type: "text",
+                    text: "คะแนนเฉลี่ย",
+                    flex: 3,
+                    size: "sm",
+                    align: "start",
+                    weight: "bold"
+                  },
+                  {
+                    type: "icon",
+                    url:
+                      "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                    size: "xs"
+                  },
+                  {
+                    type: "text",
+                    text: "4.0",
+                    flex: 5,
+                    margin: "sm",
+                    size: "sm",
+                    align: "start",
+                    gravity: "center",
+                    weight: "regular"
+                  }
+                ]
+              }
+            ]
+          },
+          footer: {
+            type: "box",
+            layout: "vertical",
+            spacing: "sm",
+            contents: [
+              {
+                type: "button",
+                action: {
+                  type: "postback",
+                  label: "ดูรายละเอียด",
+                  data: '{"DATA":"BACD"}'
+                },
+                color: "#459950",
+                style: "primary"
+              }
+            ]
+          }
+        };
+        flex.body.contents[0].text = result.name;
+        flex.body.contents[2].contents[1].text = result.address;
+        flex.body.contents[4].contents[1].text = result.status;
+        result.status === "เปิดอยู่"
+          ? (flex.body.contents[4].contents[1].color = "#459950")
+          : (flex.body.contents[4].contents[1].color = "#cccccc");
+        flex.body.contents[5].contents[2].text = results.rateing.toString();
+        flex.footer.contents[0].action.data = JSON.stringify({
+          action: "postback_hotel",
+          place_id: results.place_id
+        });
+        temp.contents.contents.push(flex);
+      });
+    }
+    var obj = temp;
+    res(obj);
+  });
+}
+
 function postbackHandle(event) {
   var reply = {
     type: "text",
     text: event.postback.data
   };
-
   var userId = event.source.userId;
   var fnType = event.postback.data;
   var timestamp = new Date();
@@ -134,9 +447,10 @@ function postbackHandle(event) {
       };
 
       break;
+    case "action_hotel":
+      break;
     default:
       break;
   }
-
   return reply;
 }
