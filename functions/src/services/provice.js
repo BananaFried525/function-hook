@@ -1,5 +1,5 @@
 /*********************************** import Database - Firestore ***********************************/
-const db = require("../service/firestore");
+const db = require("../services/firestore");
 /*********************************** import schema validator ***********************************/
 const lov = require("../schema/lov.schema")["lovSchema"];
 /*********************************** API getproviceOptions  ***********************************/

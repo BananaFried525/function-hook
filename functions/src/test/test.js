@@ -1,10 +1,10 @@
 /* eslint-disable promise/always- */
 /*********************************** import Database - Firestore ***********************************/
-const db = require("../service/firestore");
+const db = require("../services/firestore");
 /*********************************** import schema validator ***********************************/
 const lov = require("../schema/lov.schema")["lovSchema"];
-const rest = require("../service/restaurant");
-const googleapi = require("../service/google-api");
+const rest = require("../services/restaurant");
+const googleapi = require("../services/google-api");
 /*********************************** import undercore js ***********************************/
 const _ = require("underscore");
 
