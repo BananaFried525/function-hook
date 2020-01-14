@@ -7,6 +7,25 @@ module.exports.findLocation = function() {
   // https://maps.googleapis.com/maps/api/directions/json?departure_time=now&mode=transit&origin=มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ แขวง วงศ์สว่าง เขตบางซื่อ กรุงเทพมหานคร 10800&destination=อนุสาวรีย์ชัยสมรภูมิ ถนน พหลโยธิน แขวง ถนนพญาไท เขตราชเทวี กรุงเทพมหานคร 10400&key=AIzaSyAAm6Jci_ckEgvGkb98Q15R1h8RtIsjt_8
 };
 
+module.exports.sortedBus = function(){
+  return new Promise(async (resolve,reject)=>{
+    let rt = {};
+    let option = {
+      uri: "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
+      qs: {}
+    }
+    console.log(option);
+    try {
+      let resRest = await restPromise(option);
+      rt.data = JSON.parse(resRest).data.results;
+      resolve(rt);
+    } catch (err) {
+      rt.massage = err;
+      reject(rt)
+    }  
+  });
+}
+
 module.exports.nearBySearch = function(user_locate, type) {
   return new Promise((resolve, reject) => {
     var rt = {};

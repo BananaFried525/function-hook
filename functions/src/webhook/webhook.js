@@ -31,29 +31,4 @@ module.exports = async (req, res) => {
     console.error("Error message =>",err);
     return res.status(500).send("Code:500");
   }
-  // userService
-  //   .findUser(event.source.userId)
-  //   .then(user=>{
-  //     if(!user){
-  //       userService.createUser(event.source);
-  //     }
-  //     handle.handleEvent(event).then(result => {
-  //       console.info("result => ", result[1]);
-  //       client
-  //         .replyMessage(result[0], result[1])
-  //         .then(() => {
-  //           console.info("OK");
-  //           return res.status(200).send("Code:200");
-  //         })
-  //         .catch(err => {
-  //           console.error(err);
-  //           return res.status(500).send("Code:500");
-  //         });
-  //     });
-  //   })
-  //   .catch(err => {
-  //     console.error();
-  //     return res.status(500).send("Code:500");
-  //   });
-
 };

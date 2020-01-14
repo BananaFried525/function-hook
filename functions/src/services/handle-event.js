@@ -3,7 +3,7 @@
 /* eslint-disable promise/always-return */
 const googleApi = require("./google-api");
 const userService = require("./user");
-const transactionService = require('./transaction');
+const transactionService = require("./transaction");
 
 module.exports.handleEvent = function(event) {
   return new Promise(async (resolve, reject) => {
@@ -21,7 +21,7 @@ module.exports.handleEvent = function(event) {
         let isComplete = false; // เอาไว้ใช้ในกรณีที่ทำ action เสร็จ
         // ดึง User เพื่อเช็ค action
         let User = await userService.getUser(userId);
-        if (User.action !== "non") {
+        if (User.action !== "richmenu_hotel") {
           // ดัก action
           // แก้การใช้ function
           let user_locate = message.latitude + "," + message.longitude;
@@ -38,10 +38,46 @@ module.exports.handleEvent = function(event) {
           }
           isComplete = true;
 
-          if(isComplete){
           // Clear user action
-          completeAction(userId);
+          if (isComplete) completeAction(userId);
+          resolve([replyToken, result]);
+        } else if (User.action === "richmenu_bus") {
+          if (!User.transaction.origin) {
+            let origin = message.latitude + "," + message.longitude;
+            console.log(`User origin => ${origin}`);
+            User.transaction.origin = origin;
+
+            result = {
+              type: "text",
+              text: "กรุณาเลือกสถานที่ปลายทางด้วยครับ",
+              quickReply: {
+                items: [
+                  {
+                    type: "action",
+                    action: {
+                      type: "location",
+                      label: "Send location"
+                    }
+                  }
+                ]
+              }
+            };
+          } else if (!User.transaction.destination) {
+            let destination = message.latitude + "," + message.longitude;
+            console.log(`User destination => ${destination}`);
+            User.transaction.destination = destination;
+            console.log(`Sort by location`);
+
+            //พอกำหนดเสร็จให้ทำการ search ทันที
+            // let resSort = await googleApi.sortedBus();
+
+            result = {};
+            isComplete = true;
           }
+
+          // Clear user action
+          if (isComplete) completeAction(userId);
+
           resolve([replyToken, result]);
         } else {
           switch (message.type) {
@@ -59,6 +95,7 @@ module.exports.handleEvent = function(event) {
       }
     } catch (err) {
       result = err;
+      result = { type: "text", text: err };
       reject([replyToken, result]);
     }
   });
@@ -92,7 +129,7 @@ function postbackHandle(event) {
       lastedUse: new Date(),
       transaction
     };
-    
+
     try {
       let doc = await userService.updateUser(userData);
       switch (action) {
