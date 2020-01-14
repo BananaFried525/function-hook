@@ -57,3 +57,25 @@ module.exports.updateUser = function(element) {
     // ยังไม่เสร็จจร้าาาาาาา
   });
 };
+
+module.exports.getUser = function(userId){
+  return new Promise((resolve, reject) => {
+    db.collection("user")
+      .doc(userId)
+      .get()
+      .then(docs => {
+        if (!docs.exists) {
+          console.log("No such document!");
+          resolve(docs.data());
+        } else {
+          console.log("Document data:", docs.data());
+          resolve(docs.data());
+        }
+      })
+      .catch(err => {
+        console.log("Error getting document", err);
+        reject(err);
+      });
+  });
+}
+

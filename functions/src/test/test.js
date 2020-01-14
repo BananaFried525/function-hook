@@ -1,11 +1,9 @@
 /* eslint-disable promise/always-return */
 /* eslint-disable promise/always- */
 /*********************************** import Database - Firestore ***********************************/
-const db = require("../service/firestore");
-/*********************************** import schema validator ***********************************/
-const lov = require("../schema/lov.schema")["lovSchema"];
+const db = require("../services/firestore");
 
-const googleapi = require("../service/google-api");
+const googleapi = require("../services/google-api");
 /*********************************** import undercore js ***********************************/
 const _ = require("underscore");
 
