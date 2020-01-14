@@ -23,7 +23,7 @@ module.exports.handleEvent = function(event) {
         let isComplete = false; // เอาไว้ใช้ในกรณีที่ทำ action เสร็จ
         // ดึง User เพื่อเช็ค action
         let User = await userService.getUser(userId);
-        if (User.action !== "richmenu_hotel") {
+        if (User.action === "richmenu_hotel") {
           // ดัก action
           // แก้การใช้ function
           let user_locate = message.latitude + "," + message.longitude;
@@ -48,7 +48,8 @@ module.exports.handleEvent = function(event) {
             let origin = message.latitude + "," + message.longitude;
             console.log(`User origin => ${origin}`);
             User.transaction.origin = origin;
-
+            User.transaction.timeStamp = new Date();
+            await userService.updateUser(User);
             result = {
               type: "text",
               text: "กรุณาเลือกสถานที่ปลายทางด้วยครับ",
@@ -68,13 +69,15 @@ module.exports.handleEvent = function(event) {
             let destination = message.latitude + "," + message.longitude;
             console.log(`User destination => ${destination}`);
             User.transaction.destination = destination;
+            User.transaction.timeStamp = new Date();
             console.log(`Sort by location`);
-
             //พอกำหนดเสร็จให้ทำการ search ทันที
-            // let resSort = await googleApi.sortedBus();
+            // let resSort = await googleApi.sortedBus(User.transaction);
 
-            result = {};
+            result = { type: "text", text: "Complete" };
             isComplete = true;
+            User.transaction.isComplete = true;
+            await userService.updateUser(User);
           }
 
           // Clear user action
@@ -411,6 +414,7 @@ function getSeletedPlace(temp, arr) {
     res(obj);
   });
 }
+
 function postbackHandle(event) {
   return new Promise(async (resolve, reject) => {
     let reply = {
@@ -418,23 +422,23 @@ function postbackHandle(event) {
       text: event.postback.data
     };
 
-    let userId = event.source.userId;
-    let action = event.postback.data;
-    let transaction = transactionService.addTransaction(action);
-
-    /************************************Start user data update action**********************************/
-    let userData = {
-      userId,
-      action,
-      lastedUse: new Date(),
-      transaction
-    };
-
     try {
+      let userId = event.source.userId;
+      let action = event.postback.data;
+      let transaction = await transactionService.addTransaction(action);
+      console.info(`PostbackHandle Action => ${action}`);
+      /************************************Start user data update action**********************************/
+      let userData = {
+        userId,
+        action,
+        lastedUse: new Date(),
+        transaction
+      };
+      console.log(`New user data`,userData);
       let doc = await userService.updateUser(userData);
       switch (action) {
         case "richmenu_bus":
-          reply = {
+          reply = [{type:"text",text:`คุณได้ทำการเลือกการค้นหาเส้นทางรถเมล์`},{
             type: "text",
             text: "กรุณาเลือกสถานที่ต้นทางด้วยครับ",
             quickReply: {
@@ -448,7 +452,7 @@ function postbackHandle(event) {
                 }
               ]
             }
-          };
+          }];
           resolve(reply);
           break;
         case "richmenu_hotel":
