@@ -5,6 +5,8 @@ const googleApi = require("./google-api");
 const userService = require("./user");
 var templace = require("../config/config-flexbox")["flexbox_prototypePlace"];
 const _ = require("underscore");
+const transactionService = require("./transaction");
+
 module.exports.handleEvent = function(event) {
   return new Promise(async (resolve, reject) => {
     let message = event.message;
@@ -18,9 +20,12 @@ module.exports.handleEvent = function(event) {
         result = resPostback;
         resolve([replyToken, result]);
       } else {
+        let isComplete = false; // เอาไว้ใช้ในกรณีที่ทำ action เสร็จ
+        // ดึง User เพื่อเช็ค action
         let User = await userService.getUser(userId);
-        if (User.action !== "non") {
-          console.log("test");
+        if (User.action !== "richmenu_hotel") {
+          // ดัก action
+          // แก้การใช้ function
           let user_locate = message.latitude + "," + message.longitude;
           let resGoogle = await googleApi.nearBySearch(user_locate);
           if (resGoogle.data.length === 0) {
@@ -33,13 +38,49 @@ module.exports.handleEvent = function(event) {
               text: JSON.stringify(resGoogle.data[0])
             };
           }
-          let actionChange = {
-            userId,
-            lastedUse: new Date(),
-            action: "non"
-          };
-          await userService.updateUser(actionChange);
-          await resolve([replyToken, result]);
+          isComplete = true;
+
+          // Clear user action
+          if (isComplete) completeAction(userId);
+          resolve([replyToken, result]);
+        } else if (User.action === "richmenu_bus") {
+          if (!User.transaction.origin) {
+            let origin = message.latitude + "," + message.longitude;
+            console.log(`User origin => ${origin}`);
+            User.transaction.origin = origin;
+
+            result = {
+              type: "text",
+              text: "กรุณาเลือกสถานที่ปลายทางด้วยครับ",
+              quickReply: {
+                items: [
+                  {
+                    type: "action",
+                    action: {
+                      type: "location",
+                      label: "Send location"
+                    }
+                  }
+                ]
+              }
+            };
+          } else if (!User.transaction.destination) {
+            let destination = message.latitude + "," + message.longitude;
+            console.log(`User destination => ${destination}`);
+            User.transaction.destination = destination;
+            console.log(`Sort by location`);
+
+            //พอกำหนดเสร็จให้ทำการ search ทันที
+            // let resSort = await googleApi.sortedBus();
+
+            result = {};
+            isComplete = true;
+          }
+
+          // Clear user action
+          if (isComplete) completeAction(userId);
+
+          resolve([replyToken, result]);
         } else {
           switch (message.type) {
             case "text":
@@ -66,30 +107,6 @@ module.exports.handleEvent = function(event) {
               }
 
               break;
-            case "location":
-              let user_locate = message.latitude + "," + message.longitude;
-              /************************************************************** */
-              // googleApi
-              //   .nearBySearch(user_locate)
-              //   .then(res => {
-              //     if (res.length > 0) {
-              //       result = { type: "text", text: "ไม่พบสิ่งที่ค้นหา" };
-              //     } else {
-              //       console.log(res);
-              //       console.log(typeof res);
-              //       result = {
-              //         type: "text",
-              //         text: JSON.stringify(res.data[0])
-              //       };
-              //     }
-              //     resolve([replyToken, result]);
-              //   })
-              //   .catch(err => {
-              //     result = { type: "text", text: JSON.stringify(err.message) };
-              //     resolve([replyToken, result]);
-              //   });
-              /************************************************************** */
-              break;
             default:
               result = { type: "text", text: "ไม่สามารถค้นหาคำสั่งนี้พบ" };
               resolve([replyToken, result]);
@@ -99,54 +116,9 @@ module.exports.handleEvent = function(event) {
       }
     } catch (err) {
       result = err;
+      result = { type: "text", text: err };
       reject([replyToken, result]);
     }
-
-    //
-    // if (event.type === "postback") {
-    //   postbackHandle(event)
-    //     .then(rt => {
-    //       result = rt;
-    //       resolve([replyToken, result]);
-    //     })
-    //     .catch(err => {
-    //       result = err;
-    //       resolve([replyToken, result]);
-    //     });
-    // } else {
-    //   switch (message.type) {
-    //     case "text":
-    //       result = replyText(message);
-    //       console.info("text message detected");
-    //       resolve([replyToken, result]);
-    //       break;
-    //     case "location":
-    //       let user_locate = message.latitude + "," + message.longitude;
-    //       /************************************************************** */
-    //       googleApi
-    //         .nearBySearch(user_locate)
-    //         .then(res => {
-    //           if (res.length > 0) {
-    //             result = { type: "text", text: "ไม่พบสิ่งที่ค้นหา" };
-    //           } else {
-    //             console.log(res);
-    //             console.log(typeof res);
-    //             result = { type: "text", text: JSON.stringify(res.data[0]) };
-    //           }
-    //           resolve([replyToken, result]);
-    //         })
-    //         .catch(err => {
-    //           result = { type: "text", text: JSON.stringify(err.message) };
-    //           resolve([replyToken, result]);
-    //         });
-    //       /************************************************************** */
-    //       break;
-    //     default:
-    //       result = { type: "text", text: "ไม่สามารถค้นหาคำสั่งนี้พบ" };
-    //       resolve([replyToken, result]);
-    //       break;
-    //   }
-    // }
   });
 };
 
@@ -440,7 +412,7 @@ function getSeletedPlace(temp, arr) {
   });
 }
 function postbackHandle(event) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let reply = {
       type: "text",
       text: event.postback.data
@@ -448,72 +420,71 @@ function postbackHandle(event) {
 
     let userId = event.source.userId;
     let action = event.postback.data;
+    let transaction = transactionService.addTransaction(action);
 
     /************************************Start user data update action**********************************/
     let userData = {
       userId,
       action,
-      lastedUse: new Date()
+      lastedUse: new Date(),
+      transaction
     };
 
-    userService
-      .updateUser(userData)
-      .then(doc => {
-        switch (action) {
-          case "richmenu_bus":
-            reply = {
-              type: "text",
-              text: "กรุณาเลือกสถานที่ต้นทางด้วยครับ",
-              quickReply: {
-                items: [
-                  {
-                    type: "action",
-                    action: {
-                      type: "location",
-                      label: "Send location"
-                    }
+    try {
+      let doc = await userService.updateUser(userData);
+      switch (action) {
+        case "richmenu_bus":
+          reply = {
+            type: "text",
+            text: "กรุณาเลือกสถานที่ต้นทางด้วยครับ",
+            quickReply: {
+              items: [
+                {
+                  type: "action",
+                  action: {
+                    type: "location",
+                    label: "Send location"
                   }
-                ]
-              }
-            };
-            resolve(reply);
-            break;
-          case "richmenu_hotel":
-            reply = {
-              type: "text",
-              text: "เลือกวิธีการค้นหาได้เลยครับ",
-              quickReply: {
-                items: [
-                  {
-                    type: "action",
-                    action: {
-                      type: "location",
-                      label: "เลือกสถานที่รอบๆ"
-                    }
-                  },
-                  {
-                    type: "action",
-                    action: {
-                      type: "postback",
-                      label: "ค้นหาโรงแรมจากจังหวัด",
-                      data: "action_hotel"
-                    }
+                }
+              ]
+            }
+          };
+          resolve(reply);
+          break;
+        case "richmenu_hotel":
+          reply = {
+            type: "text",
+            text: "กรุณาเลือกสถานที่ปัจจุบัน",
+            quickReply: {
+              items: [
+                {
+                  type: "action",
+                  action: {
+                    type: "location",
+                    label: "เลือกสถานที่"
                   }
-                ]
-              }
-            };
-            resolve(reply);
-            break;
-
-          default:
-            break;
-        }
-      })
-      .catch(err => {
-        console.error("Error getting document", err);
-        reply.text("Error");
-        reject(reply);
-      });
-    /************************************End user data update action**********************************/
+                }
+              ]
+            }
+          };
+          resolve(reply);
+          break;
+        default:
+          break;
+      }
+    } catch (error) {
+      console.error("Error getting document", error);
+      reply.text("Error");
+      reject(reply);
+    }
   });
+}
+
+async function completeAction(userId) {
+  let actionChange = {
+    userId,
+    lastedUse: new Date(),
+    action: "non"
+  };
+  await userService.updateUser(actionChange);
 }
