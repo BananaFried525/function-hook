@@ -3,6 +3,7 @@
 /* eslint-disable promise/always-return */
 const googleApi = require("./google-api");
 const userService = require("./user");
+const transactionService = require('./transaction');
 
 module.exports.handleEvent = function(event) {
   return new Promise(async (resolve, reject) => {
@@ -17,9 +18,12 @@ module.exports.handleEvent = function(event) {
         result = resPostback;
         resolve([replyToken, result]);
       } else {
+        let isComplete = false; // เอาไว้ใช้ในกรณีที่ทำ action เสร็จ
+        // ดึง User เพื่อเช็ค action
         let User = await userService.getUser(userId);
         if (User.action !== "non") {
-          console.log("test");
+          // ดัก action
+          // แก้การใช้ function
           let user_locate = message.latitude + "," + message.longitude;
           let resGoogle = await googleApi.nearBySearch(user_locate);
           if (resGoogle.data.length === 0) {
@@ -32,43 +36,19 @@ module.exports.handleEvent = function(event) {
               text: JSON.stringify(resGoogle.data[0])
             };
           }
-          let actionChange = {
-            userId,
-            lastedUse: new Date(),
-            action: "non"
-          };
-          await userService.updateUser(actionChange);
-          await resolve([replyToken, result]);
+          isComplete = true;
+
+          if(isComplete){
+          // Clear user action
+          completeAction(userId);
+          }
+          resolve([replyToken, result]);
         } else {
           switch (message.type) {
             case "text":
               result = replyText(message);
               console.info("text message detected");
               resolve([replyToken, result]);
-              break;
-            case "location":
-              let user_locate = message.latitude + "," + message.longitude;
-              /************************************************************** */
-              // googleApi
-              //   .nearBySearch(user_locate)
-              //   .then(res => {
-              //     if (res.length > 0) {
-              //       result = { type: "text", text: "ไม่พบสิ่งที่ค้นหา" };
-              //     } else {
-              //       console.log(res);
-              //       console.log(typeof res);
-              //       result = {
-              //         type: "text",
-              //         text: JSON.stringify(res.data[0])
-              //       };
-              //     }
-              //     resolve([replyToken, result]);
-              //   })
-              //   .catch(err => {
-              //     result = { type: "text", text: JSON.stringify(err.message) };
-              //     resolve([replyToken, result]);
-              //   });
-              /************************************************************** */
               break;
             default:
               result = { type: "text", text: "ไม่สามารถค้นหาคำสั่งนี้พบ" };
@@ -81,52 +61,6 @@ module.exports.handleEvent = function(event) {
       result = err;
       reject([replyToken, result]);
     }
-
-    //
-    // if (event.type === "postback") {
-    //   postbackHandle(event)
-    //     .then(rt => {
-    //       result = rt;
-    //       resolve([replyToken, result]);
-    //     })
-    //     .catch(err => {
-    //       result = err;
-    //       resolve([replyToken, result]);
-    //     });
-    // } else {
-    //   switch (message.type) {
-    //     case "text":
-    //       result = replyText(message);
-    //       console.info("text message detected");
-    //       resolve([replyToken, result]);
-    //       break;
-    //     case "location":
-    //       let user_locate = message.latitude + "," + message.longitude;
-    //       /************************************************************** */
-    //       googleApi
-    //         .nearBySearch(user_locate)
-    //         .then(res => {
-    //           if (res.length > 0) {
-    //             result = { type: "text", text: "ไม่พบสิ่งที่ค้นหา" };
-    //           } else {
-    //             console.log(res);
-    //             console.log(typeof res);
-    //             result = { type: "text", text: JSON.stringify(res.data[0]) };
-    //           }
-    //           resolve([replyToken, result]);
-    //         })
-    //         .catch(err => {
-    //           result = { type: "text", text: JSON.stringify(err.message) };
-    //           resolve([replyToken, result]);
-    //         });
-    //       /************************************************************** */
-    //       break;
-    //     default:
-    //       result = { type: "text", text: "ไม่สามารถค้นหาคำสั่งนี้พบ" };
-    //       resolve([replyToken, result]);
-    //       break;
-    //   }
-    // }
   });
 };
 
@@ -141,7 +75,7 @@ function replyText(message) {
 }
 
 function postbackHandle(event) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let reply = {
       type: "text",
       text: event.postback.data
@@ -149,63 +83,71 @@ function postbackHandle(event) {
 
     let userId = event.source.userId;
     let action = event.postback.data;
+    let transaction = transactionService.addTransaction(action);
 
     /************************************Start user data update action**********************************/
     let userData = {
       userId,
       action,
-      lastedUse: new Date()
+      lastedUse: new Date(),
+      transaction
     };
-
-    userService
-      .updateUser(userData)
-      .then(doc => {
-        switch (action) {
-          case "richmenu_bus":
-            reply = {
-              type: "text",
-              text: "กรุณาเลือกสถานที่ต้นทางด้วยครับ",
-              quickReply: {
-                items: [
-                  {
-                    type: "action",
-                    action: {
-                      type: "location",
-                      label: "Send location"
-                    }
+    
+    try {
+      let doc = await userService.updateUser(userData);
+      switch (action) {
+        case "richmenu_bus":
+          reply = {
+            type: "text",
+            text: "กรุณาเลือกสถานที่ต้นทางด้วยครับ",
+            quickReply: {
+              items: [
+                {
+                  type: "action",
+                  action: {
+                    type: "location",
+                    label: "Send location"
                   }
-                ]
-              }
-            };
-            resolve(reply);
-            break;
-          case "richmenu_hotel":
-            reply = {
-              type: "text",
-              text: "กรุณาเลือกสถานที่ปัจจุบัน",
-              quickReply: {
-                items: [
-                  {
-                    type: "action",
-                    action: {
-                      type: "location",
-                      label: "เลือกสถานที่"
-                    }
+                }
+              ]
+            }
+          };
+          resolve(reply);
+          break;
+        case "richmenu_hotel":
+          reply = {
+            type: "text",
+            text: "กรุณาเลือกสถานที่ปัจจุบัน",
+            quickReply: {
+              items: [
+                {
+                  type: "action",
+                  action: {
+                    type: "location",
+                    label: "เลือกสถานที่"
                   }
-                ]
-              }
-            };
-            resolve(reply);
-            break;
-          default:
-            break;
-        }
-      })
-      .catch(err => {
-        console.error("Error getting document", err);
-        reply.text("Error");
-        reject(reply);
-      });
-    /************************************End user data update action**********************************/
+                }
+              ]
+            }
+          };
+          resolve(reply);
+          break;
+        default:
+          break;
+      }
+    } catch (error) {
+      console.error("Error getting document", error);
+      reply.text("Error");
+      reject(reply);
+    }
   });
+}
+
+async function completeAction(userId) {
+  let actionChange = {
+    userId,
+    lastedUse: new Date(),
+    action: "non"
+  };
+  await userService.updateUser(actionChange);
 }
