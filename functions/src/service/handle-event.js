@@ -96,7 +96,18 @@ function replyText(message) {
 
   return reply;
 }
-
+function showdetailPlace(temp, jsondata) {
+  return new Promise((res, rej) => {
+    var result = jsondata;
+    if (result) {
+      const flexbox_placeDetail = {};
+      const flexbox_placeTime = {};
+      const flexbox_placeReview = {};
+    } else {
+      rej(error);
+    }
+  });
+}
 function getSeletedPlace(temp, arr) {
   return new Promise((res, rej) => {
     var results = arr;
@@ -232,13 +243,10 @@ function getSeletedPlace(temp, arr) {
           ? (flex.body.contents[4].contents[1].color = "#459950")
           : (flex.body.contents[4].contents[1].color = "#cccccc");
         flex.body.contents[5].contents[2].text = results[i].rateing.toString();
-        flex.footer.contents[0].action.data = JSON.stringify({
-          action: "postback_hotel",
-          place_id: results[i].place_id
-        });
+        flex.footer.contents[0].action.data = `placeId_hotel,${results[i].place_id},${results[i].photo}`;
         temp.contents.contents.push(flex);
       }
-    } else {
+    } else if (results.length < 10) {
       results.forEach(result => {
         const flex = {
           type: "bubble",
@@ -370,12 +378,11 @@ function getSeletedPlace(temp, arr) {
           ? (flex.body.contents[4].contents[1].color = "#459950")
           : (flex.body.contents[4].contents[1].color = "#cccccc");
         flex.body.contents[5].contents[2].text = results.rateing.toString();
-        flex.footer.contents[0].action.data = JSON.stringify({
-          action: "postback_hotel",
-          place_id: results.place_id
-        });
+        flex.footer.contents[0].action.data = `placeId_hotel,${results.place_id},${result.photo}`;
         temp.contents.contents.push(flex);
       });
+    } else {
+      rej(error);
     }
     var obj = temp;
     res(obj);
@@ -390,6 +397,7 @@ function postbackHandle(event) {
   var userId = event.source.userId;
   var fnType = event.postback.data;
   var timestamp = new Date();
+
   return new Promise((resolve, reject) => {
     let reply = {
       type: "text",
@@ -398,14 +406,36 @@ function postbackHandle(event) {
 
     let userId = event.source.userId;
     let action = event.postback.data;
-
+    let place_action = action.split(",");
     /************************************Start user data update action**********************************/
     let userData = {
       userId,
       action,
       lastedUse: new Date()
     };
-
+    // eslint-disable-next-line no-empty
+    if (place_action[0] === "placeId_hotel") {
+      const place_id = _.isString(place_action[1]) ? place_action[1] : "";
+      const photo_ref = _.isString(place_action[2]) ? place_action[2] : "";
+      // eslint-disable-next-line promise/catch-or-return
+      // const templace = _.clone(templace);
+      googleApi
+        .PlaceDetail(place_id)
+        .then(result => {
+          return result.data; // obj placeDetail;
+        })
+        .then(data => {
+          console.log(data);
+          resolve({ type: "text", text: `${place_id},${photo_ref}` });
+        })
+        .catch(error_data => {
+          if (error_data)
+            resolve({
+              type: "text",
+              text: `เกิดข้อผิดพลาด กรุณาทำรายการใหม่อีกครั้ง`
+            });
+        });
+    }
     userService
       .updateUser(userData)
       .then(doc => {
@@ -419,8 +449,16 @@ function postbackHandle(event) {
                   {
                     type: "action",
                     action: {
-                      type: "location",
+                      type: "ค้นหาโรงแรมรอบๆ",
                       label: "Send location"
+                    }
+                  },
+                  {
+                    type: "action",
+                    action: {
+                      type: "postback",
+                      label: "ค้นหาโรงแรมจากจังหวัด",
+                      data: "action_hotel"
                     }
                   }
                 ]
@@ -429,22 +467,46 @@ function postbackHandle(event) {
             resolve(reply);
             break;
           case "richmenu_hotel":
+            // eslint-disable-next-line no-case-declarations
             reply = {
               type: "text",
-              text: "กรุณาเลือกสถานที่ปัจจุบัน",
+              text: "เลือกวิธีการค้นหาได้เลยครับ",
               quickReply: {
                 items: [
                   {
                     type: "action",
                     action: {
                       type: "location",
-                      label: "เลือกสถานที่"
+                      label: "เลือกสถานที่รอบๆ"
+                    }
+                  },
+                  {
+                    type: "action",
+                    action: {
+                      type: "postback",
+                      label: "ค้นหาโรงแรมจากจังหวัด",
+                      data: "action_hotel"
                     }
                   }
                 ]
               }
             };
             resolve(reply);
+            break;
+          case "action_hotel":
+            // eslint-disable-next-line promise/no-nesting
+            resolve({
+              type: "text",
+              text: "กรุณาพิมพ์ชื่อจังหวัดที่คุณต้องการค้นหาได้เลยครับ"
+            });
+          // eslint-disable-next-line no-fallthrough
+
+          // eslint-disable-next-line no-fallthrough
+          case "placeId_hotel":
+            resolve({
+              type: "text",
+              text: "test01"
+            });
             break;
           default:
             break;

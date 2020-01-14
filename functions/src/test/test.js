@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 /* eslint-disable promise/always- */
 /*********************************** import Database - Firestore ***********************************/
 const db = require("../service/firestore");
@@ -9,5 +10,6 @@ const googleapi = require("../service/google-api");
 const _ = require("underscore");
 
 module.exports = (req, res) => {
-  res.status(200).send("?");
+  // eslint-disable-next-line promise/catch-or-return
+  res.send("hello");
 };

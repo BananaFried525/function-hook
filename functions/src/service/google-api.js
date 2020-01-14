@@ -91,7 +91,7 @@ module.exports.PlaceDetail = place_id => {
       qs: {
         place_id: place_id,
         fields:
-          "formatted_phone_number,international_phone_number,opening_hours,website",
+          "name,formatted_address,user_ratings_total,formatted_phone_number,website,opening_hours,website,review",
         language: "th",
         key: configGoogle.key_place
       }
@@ -100,7 +100,7 @@ module.exports.PlaceDetail = place_id => {
       .then(result => {
         console.info(result);
         ret.status = true;
-        ret.data = JSON.parse(result);
+        ret.data = result;
         res(ret);
       })
       .catch(error => {
