@@ -12,23 +12,23 @@ module.exports = async (req, res) => {
   console.log(JSON.stringify(req.body.events[0]));
   if (req.body.events[0].replyToken === "00000000000000000000000000000000") {
     console.debug("Test pass");
+
     return res.status(200).send("Code:200,Message:Test");
   }
 
   var event = req.body.events[0];
   console.log(event.source.userId);
-  try{
+  try {
     let user = await userService.findUser(event.source.userId);
-    if(!user){
+    if (!user) {
       userService.createUser(event.source);
     }
     let resHandle = await handle.handleEvent(event);
-    await console.log("Result =>",resHandle[1])
-    let resClient = await client.replyMessage(resHandle[0],resHandle[1]);
+    await console.log("Result =>", resHandle[1]);
+    let resClient = await client.replyMessage(resHandle[0], resHandle[1]);
     return res.status(200).send("Code:200");
-
-  }catch(err){
-    console.error("Error message =>",err);
+  } catch (err) {
+    console.error("Error message =>", err);
     return res.status(500).send("Code:500");
   }
   // userService
@@ -55,5 +55,4 @@ module.exports = async (req, res) => {
   //     console.error();
   //     return res.status(500).send("Code:500");
   //   });
-
 };
