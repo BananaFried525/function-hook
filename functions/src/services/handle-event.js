@@ -89,13 +89,11 @@ module.exports.handleEvent = function(event) {
             case "text":
               if (message.text === "ชลบุรี") {
                 try {
-                  var tempplaceFlexbox = _.clone(templace);
                   const dataApi = await googleApi.textSearch("ชลบุรี+โรงแรม");
-                  const objectPlace = await getSeletedPlace(
-                    tempplaceFlexbox,
-                    dataApi.data
-                  );
-                  resolve([replyToken, objectPlace]);
+                  const objectPlace = await getSeletedPlace(dataApi.data);
+                  objectPlace.length > 1
+                    ? resolve([replyToken, [objectPlace[0], objectPlace[1]]])
+                    : resolve([replyToken, objectPlace[0]]);
                   // eslint-disable-next-line no-empty
                 } catch (error) {
                   resolve([
@@ -134,284 +132,175 @@ function replyText(message) {
 
   return reply;
 }
-function getSeletedPlace(temp, arr) {
+function getSeletedPlace(arr) {
+  console.log(arr.length);
+  const temp = {
+    type: "flex",
+    altText: "Flex Message",
+    contents: {
+      type: "carousel",
+      contents: []
+    }
+  };
   return new Promise((res, rej) => {
     var results = arr;
-    if (results.length > 10) {
-      for (let i = 0; i < 10; i++) {
-        const flex = {
-          type: "bubble",
-          body: {
-            type: "box",
-            layout: "vertical",
-            spacing: "sm",
-            contents: [
-              {
-                type: "text",
-                text: "ครัวเมืองลำปาง",
-                size: "lg",
-                align: "start",
-                weight: "bold",
-                wrap: true
-              },
-              {
-                type: "separator"
-              },
-              {
-                type: "box",
-                layout: "baseline",
-                contents: [
-                  {
-                    type: "text",
-                    text: "สถานที่ตั้ง:",
-                    flex: 4,
-                    size: "md",
-                    gravity: "bottom",
-                    weight: "bold"
-                  },
-                  {
-                    type: "text",
-                    text:
-                      "100 ถนน ห้วยแก้ว ตำบลสุเทพ อำเภอเมืองเชียงใหม่ เชียงใหม่ 50200",
-                    flex: 8,
-                    size: "sm",
-                    align: "start",
-                    weight: "regular",
-                    wrap: true
-                  },
-                  {
-                    type: "spacer"
-                  }
-                ]
-              },
-              {
-                type: "separator"
-              },
-              {
-                type: "box",
-                layout: "baseline",
-                contents: [
-                  {
-                    type: "text",
-                    text: "สถานะการให้บริการ:",
-                    flex: 3,
-                    margin: "sm",
-                    size: "sm",
-                    align: "start",
-                    weight: "bold"
-                  },
-                  {
-                    type: "text",
-                    text: "เปิดอยู่",
-                    flex: 2,
-                    margin: "sm",
-                    size: "sm",
-                    align: "start",
-                    weight: "bold",
-                    color: "#0CF929"
-                  }
-                ]
-              },
-              {
-                type: "box",
-                layout: "baseline",
-                contents: [
-                  {
-                    type: "text",
-                    text: "คะแนนเฉลี่ย",
-                    flex: 3,
-                    size: "sm",
-                    align: "start",
-                    weight: "bold"
-                  },
-                  {
-                    type: "icon",
-                    url:
-                      "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
-                    size: "xs"
-                  },
-                  {
-                    type: "text",
-                    text: "4.0",
-                    flex: 5,
-                    margin: "sm",
-                    size: "sm",
-                    align: "start",
-                    gravity: "center",
-                    weight: "regular"
-                  }
-                ]
-              }
-            ]
-          },
-          footer: {
-            type: "box",
-            layout: "vertical",
-            spacing: "sm",
-            contents: [
-              {
-                type: "button",
-                action: {
-                  type: "postback",
-                  label: "ดูรายละเอียด",
-                  data: ""
-                },
-                color: "#459950",
-                style: "primary"
-              }
-            ]
-          }
-        };
-        flex.body.contents[0].text = results[i].name;
-        flex.body.contents[2].contents[1].text = results[i].address;
-        flex.body.contents[4].contents[1].text = results[i].status;
-        results[i].status === "เปิดอยู่"
-          ? (flex.body.contents[4].contents[1].color = "#459950")
-          : (flex.body.contents[4].contents[1].color = "#cccccc");
-        flex.body.contents[5].contents[2].text = results[i].rateing.toString();
-        flex.footer.contents[0].action.data = `placeId_hotel,${results[i].place_id},${results[i].photo}`;
-        temp.contents.contents.push(flex);
+    var data = [];
+    var content1 = {
+      type: "flex",
+      altText: "Flex Message",
+      contents: {
+        type: "carousel",
+        contents: []
       }
-    } else if (results.length < 10) {
-      results.forEach(result => {
-        const flex = {
-          type: "bubble",
-          body: {
-            type: "box",
-            layout: "vertical",
-            spacing: "sm",
-            contents: [
-              {
-                type: "text",
-                text: "ครัวเมืองลำปาง",
-                size: "lg",
-                align: "start",
-                weight: "bold",
-                wrap: true
-              },
-              {
-                type: "separator"
-              },
-              {
-                type: "box",
-                layout: "baseline",
-                contents: [
-                  {
-                    type: "text",
-                    text: "สถานที่ตั้ง:",
-                    flex: 4,
-                    size: "md",
-                    gravity: "bottom",
-                    weight: "bold"
-                  },
-                  {
-                    type: "text",
-                    text:
-                      "100 ถนน ห้วยแก้ว ตำบลสุเทพ อำเภอเมืองเชียงใหม่ เชียงใหม่ 50200",
-                    flex: 8,
-                    size: "sm",
-                    align: "start",
-                    weight: "regular",
-                    wrap: true
-                  },
-                  {
-                    type: "spacer"
-                  }
-                ]
-              },
-              {
-                type: "separator"
-              },
-              {
-                type: "box",
-                layout: "baseline",
-                contents: [
-                  {
-                    type: "text",
-                    text: "สถานะการให้บริการ:",
-                    flex: 3,
-                    margin: "sm",
-                    size: "sm",
-                    align: "start",
-                    weight: "bold"
-                  },
-                  {
-                    type: "text",
-                    text: "เปิดอยู่",
-                    flex: 2,
-                    margin: "sm",
-                    size: "sm",
-                    align: "start",
-                    weight: "bold",
-                    color: "#0CF929"
-                  }
-                ]
-              },
-              {
-                type: "box",
-                layout: "baseline",
-                contents: [
-                  {
-                    type: "text",
-                    text: "คะแนนเฉลี่ย",
-                    flex: 3,
-                    size: "sm",
-                    align: "start",
-                    weight: "bold"
-                  },
-                  {
-                    type: "icon",
-                    url:
-                      "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
-                    size: "xs"
-                  },
-                  {
-                    type: "text",
-                    text: "4.0",
-                    flex: 5,
-                    margin: "sm",
-                    size: "sm",
-                    align: "start",
-                    gravity: "center",
-                    weight: "regular"
-                  }
-                ]
-              }
-            ]
-          },
-          footer: {
-            type: "box",
-            layout: "vertical",
-            spacing: "sm",
-            contents: [
-              {
-                type: "button",
-                action: {
-                  type: "postback",
-                  label: "ดูรายละเอียด",
-                  data: '{"DATA":"BACD"}'
+    };
+    var content2 = _.clone(content1);
+
+    // eslint-disable-next-line prefer-promise-reject-errors
+
+    results.forEach((results, index) => {
+      const flex = {
+        type: "bubble",
+        body: {
+          type: "box",
+          layout: "vertical",
+          spacing: "sm",
+          contents: [
+            {
+              type: "text",
+              text: "ครัวเมืองลำปาง",
+              size: "lg",
+              align: "start",
+              weight: "bold",
+              wrap: true
+            },
+            {
+              type: "separator"
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              contents: [
+                {
+                  type: "text",
+                  text: "สถานที่ตั้ง:",
+                  flex: 4,
+                  size: "md",
+                  gravity: "bottom",
+                  weight: "bold"
                 },
-                color: "#459950",
-                style: "primary"
-              }
-            ]
-          }
-        };
-        flex.body.contents[0].text = result.name;
-        flex.body.contents[2].contents[1].text = result.address;
-        flex.body.contents[4].contents[1].text = result.status;
-        result.status === "เปิดอยู่"
-          ? (flex.body.contents[4].contents[1].color = "#459950")
-          : (flex.body.contents[4].contents[1].color = "#cccccc");
-        flex.body.contents[5].contents[2].text = results.rateing.toString();
-        flex.footer.contents[0].action.data = `placeId_hotel,${results.place_id},${result.photo}`;
-        temp.contents.contents.push(flex);
-      });
+                {
+                  type: "text",
+                  text:
+                    "100 ถนน ห้วยแก้ว ตำบลสุเทพ อำเภอเมืองเชียงใหม่ เชียงใหม่ 50200",
+                  flex: 8,
+                  size: "sm",
+                  align: "start",
+                  weight: "regular",
+                  wrap: true
+                },
+                {
+                  type: "spacer"
+                }
+              ]
+            },
+            {
+              type: "separator"
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              contents: [
+                {
+                  type: "text",
+                  text: "สถานะการให้บริการ:",
+                  flex: 3,
+                  margin: "sm",
+                  size: "sm",
+                  align: "start",
+                  weight: "bold"
+                },
+                {
+                  type: "text",
+                  text: "เปิดอยู่",
+                  flex: 2,
+                  margin: "sm",
+                  size: "sm",
+                  align: "start",
+                  weight: "bold",
+                  color: "#0CF929"
+                }
+              ]
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              contents: [
+                {
+                  type: "text",
+                  text: "คะแนนเฉลี่ย",
+                  flex: 3,
+                  size: "sm",
+                  align: "start",
+                  weight: "bold"
+                },
+                {
+                  type: "icon",
+                  url:
+                    "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                  size: "xs"
+                },
+                {
+                  type: "text",
+                  text: "4.0",
+                  flex: 5,
+                  margin: "sm",
+                  size: "sm",
+                  align: "start",
+                  gravity: "center",
+                  weight: "regular"
+                }
+              ]
+            }
+          ]
+        },
+        footer: {
+          type: "box",
+          layout: "vertical",
+          spacing: "sm",
+          contents: [
+            {
+              type: "button",
+              action: {
+                type: "postback",
+                label: "ดูรายละเอียด",
+                data: ""
+              },
+              color: "#459950",
+              style: "primary"
+            }
+          ]
+        }
+      };
+      flex.body.contents[0].text = results.name;
+      flex.body.contents[2].contents[1].text = results.address;
+      flex.body.contents[4].contents[1].text = results.status;
+      results.status === "เปิดอยู่"
+        ? (flex.body.contents[4].contents[1].color = "#459950")
+        : (flex.body.contents[4].contents[1].color = "#cccccc");
+      flex.body.contents[5].contents[2].text = results.rateing;
+      flex.footer.contents[0].action.data = `placeId_hotel,${results.place_id},${results.photos[0].photo_reference}`;
+      if (index < 10) {
+        content1.contents.contents.push(flex);
+      } else {
+        content2.contents.contents.push(flex);
+      }
+    });
+    if (results.length < 10) {
+      data = [content1];
     } else {
-      rej(error);
+      data = [content1, content2];
     }
-    var obj = temp;
-    res(obj);
+    res(data);
   });
 }
 
@@ -434,25 +323,28 @@ function postbackHandle(event) {
         lastedUse: new Date(),
         transaction
       };
-      console.log(`New user data`,userData);
+      console.log(`New user data`, userData);
       let doc = await userService.updateUser(userData);
       switch (action) {
         case "richmenu_bus":
-          reply = [{type:"text",text:`คุณได้ทำการเลือกการค้นหาเส้นทางรถเมล์`},{
-            type: "text",
-            text: "กรุณาเลือกสถานที่ต้นทางด้วยครับ",
-            quickReply: {
-              items: [
-                {
-                  type: "action",
-                  action: {
-                    type: "location",
-                    label: "Send location"
+          reply = [
+            { type: "text", text: `คุณได้ทำการเลือกการค้นหาเส้นทางรถเมล์` },
+            {
+              type: "text",
+              text: "กรุณาเลือกสถานที่ต้นทางด้วยครับ",
+              quickReply: {
+                items: [
+                  {
+                    type: "action",
+                    action: {
+                      type: "location",
+                      label: "Send location"
+                    }
                   }
-                }
-              ]
+                ]
+              }
             }
-          }];
+          ];
           resolve(reply);
           break;
         case "richmenu_hotel":
