@@ -65,7 +65,7 @@ module.exports.nearBySearch = function(user_locate, type) {
 
 module.exports.textSearch = keyword => {
   /* eslint-disable promise/always-return */
-  return new Promise((res, rej) => {
+  return new Promise(async (res, rej) => {
     var ret = {};
     var option = {
       uri: "https://maps.googleapis.com/maps/api/place/textsearch/json",
@@ -78,15 +78,15 @@ module.exports.textSearch = keyword => {
     };
     restPromise(option)
       .then(result => {
-        const data = JSON.parse(result);
+        var data = JSON.parse(result);
         for (let i = 0; i < data.results.length; i++) {
-          if (!data.results.opening_hours) {
-            data.results.opening_hours = "ไม่มีข้อมูล";
+          if (!data.results[i].opening_hours) {
+            data.results[i].opening_hours = "ไม่มีข้อมูล";
           } else {
-            data.results.opening_hours = "เปิดอยู่";
+            data.results[i].opening_hours = "เปิดอยู่";
           }
         }
-        const results = data.results.map(result => {
+        var results = data.results.map(result => {
           return {
             status: result.opening_hours,
             name: result.name,
@@ -110,23 +110,22 @@ module.exports.textSearch = keyword => {
 };
 
 module.exports.PlaceDetail = place_id => {
-  return new Promise((req, res) => {
+  return new Promise((res, rej) => {
     var ret = {};
     const option = {
       uri: "https://maps.googleapis.com/maps/api/place/details/json",
       qs: {
         place_id: place_id,
         fields:
-          "name,formatted_address,user_ratings_total,formatted_phone_number,website,opening_hours,website,review",
+          "name,formatted_address,user_ratings_total,formatted_phone_number,website,opening_hours,website,review,rating",
         language: "th",
         key: configGoogle.key_place
       }
     };
     restPromise(option)
       .then(result => {
-        console.info(result);
         ret.status = true;
-        ret.data = result;
+        ret.data = JSON.parse(result);
         res(ret);
       })
       .catch(error => {

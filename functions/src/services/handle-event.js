@@ -2,9 +2,9 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable promise/always-return */
 const googleApi = require("./google-api");
+const flexService = require("./service-flex");
 const userService = require("./user");
 var templace = require("../config/config-flexbox")["flexbox_prototypePlace"];
-const _ = require("underscore");
 const transactionService = require("./transaction");
 
 module.exports.handleEvent = function(event) {
@@ -16,6 +16,740 @@ module.exports.handleEvent = function(event) {
 
     try {
       if (event.type === "postback") {
+        const details = event.postback.data.split("^")[0];
+        const place_id = event.postback.data.split("^")[1];
+        const photo_ref = event.postback.data.split("^")[2];
+        switch (details) {
+          case "placeId_hotel":
+            const url_photo = await googleApi.placePhotoreFerence(photo_ref);
+            const getdetail = await googleApi.PlaceDetail(place_id);
+            const detail = getdetail.data.result;
+            const review = detail.reviews;
+            const time_open = detail.opening_hours;
+            const flexDetail_result = await flexService.flexdetail(
+              detail,
+              url_photo.data
+            );
+            // console.log(time_open);
+            // const flexTime_result = await flexService.Flextime(time_open);
+
+            let review1 = {
+              type: "flex",
+              altText: "Flex Message",
+              contents: {
+                type: "bubble",
+                header: {
+                  type: "box",
+                  layout: "horizontal",
+                  contents: [
+                    {
+                      type: "text",
+                      text: "REVIEW",
+                      size: "sm",
+                      weight: "bold",
+                      color: "#AAAAAA"
+                    }
+                  ]
+                },
+                hero: {
+                  type: "image",
+                  url:
+                    "https://lh4.ggpht.com/-bXx83tZHuW8/AAAAAAAAAAI/AAAAAAAAAAA/R9umGJGU518/s128-c0x00000000-cc-rp-mo-ba4/photo.jpg",
+                  size: "xl",
+                  aspectRatio: "20:13",
+                  action: {
+                    type: "uri",
+                    label: "Action",
+                    uri: "https://linecorp.com/"
+                  }
+                },
+                body: {
+                  type: "box",
+                  layout: "vertical",
+                  spacing: "md",
+                  contents: [
+                    {
+                      type: "box",
+                      layout: "vertical",
+                      contents: [
+                        {
+                          type: "text",
+                          text: "ลุงยุทธ บานไม่รู้โรย",
+                          flex: 8,
+                          size: "lg",
+                          align: "center",
+                          gravity: "bottom",
+                          weight: "bold",
+                          wrap: true
+                        },
+                        {
+                          type: "separator"
+                        }
+                      ]
+                    },
+                    {
+                      type: "box",
+                      layout: "vertical",
+                      contents: [
+                        {
+                          type: "text",
+                          text: "ความคิดเห็น:",
+                          flex: 8,
+                          size: "md",
+                          align: "start",
+                          gravity: "center",
+                          weight: "bold",
+                          wrap: true
+                        },
+                        {
+                          type: "text",
+                          text:
+                            "รสอาหารใช่ได้แต่พนักควรเปลี่ยนยกทีมไปซืัอกินนะไม่ได้ขอกินฟรีพูดจาไม่ดีสมควรเปลี่ยนยกทีมเลย",
+                          flex: 1,
+                          size: "md",
+                          align: "start",
+                          wrap: true
+                        }
+                      ]
+                    },
+                    {
+                      type: "box",
+                      layout: "baseline",
+                      contents: [
+                        {
+                          type: "text",
+                          text: "การให้คะแนน:",
+                          flex: 0,
+                          margin: "sm",
+                          size: "sm",
+                          align: "start",
+                          weight: "bold"
+                        },
+                        {
+                          type: "icon",
+                          url:
+                            "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                          size: "xs"
+                        },
+                        {
+                          type: "text",
+                          text: " 2.5"
+                        }
+                      ]
+                    },
+                    {
+                      type: "box",
+                      layout: "baseline",
+                      contents: [
+                        {
+                          type: "text",
+                          text: "แสดงความคิดเห็นเมื่อ",
+                          flex: 6,
+                          margin: "sm",
+                          size: "sm",
+                          align: "start",
+                          weight: "bold"
+                        },
+                        {
+                          type: "text",
+                          text: "2 ปีที่แล้ว",
+                          flex: 4,
+                          margin: "sm",
+                          size: "sm",
+                          align: "start",
+                          weight: "bold",
+                          color: "#EA7F7F"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                footer: {
+                  type: "box",
+                  layout: "horizontal",
+                  contents: [
+                    {
+                      type: "button",
+                      action: {
+                        type: "uri",
+                        label: "ดูรายละเอียดผู้รีวิว",
+                        uri:
+                          "https://www.google.com/maps/contrib/110408252214450046707/reviews/@14.108896,99.6294087,9.94z"
+                      },
+                      color: "#04A4B6",
+                      style: "primary"
+                    }
+                  ]
+                }
+              }
+            };
+            var time = {
+              type: "bubble",
+              body: {
+                type: "box",
+                layout: "vertical",
+                spacing: "sm",
+                contents: [
+                  {
+                    type: "box",
+                    layout: "vertical",
+                    spacing: "xl",
+                    contents: [
+                      {
+                        type: "text",
+                        text: "วันเวลาที่เปิดทำการ",
+                        margin: "sm",
+                        size: "lg",
+                        align: "center",
+                        weight: "bold"
+                      },
+                      {
+                        type: "separator"
+                      },
+                      {
+                        type: "text",
+                        text: "วันอาทิตย์ 8:00–18:00",
+                        align: "center"
+                      },
+                      {
+                        type: "separator"
+                      },
+                      {
+                        type: "text",
+                        text: "วันจันทร์ 8:00–18:00",
+                        align: "center"
+                      },
+                      {
+                        type: "separator"
+                      },
+                      {
+                        type: "text",
+                        text: "วันอังคาร 8:00–18:00",
+                        align: "center"
+                      },
+                      {
+                        type: "separator"
+                      },
+                      {
+                        type: "text",
+                        text: "วันพุธ 8:00–18:00",
+                        align: "center"
+                      },
+                      {
+                        type: "separator"
+                      },
+                      {
+                        type: "text",
+                        text: "วันพฤหัสบดี 8:00–18:00",
+                        align: "center"
+                      },
+                      {
+                        type: "separator"
+                      },
+                      {
+                        type: "text",
+                        text: "วันศุกร์ 8:00–18:00",
+                        align: "center"
+                      },
+                      {
+                        type: "separator"
+                      },
+                      {
+                        type: "text",
+                        text: "วันเสาร์ 8:00–18:00",
+                        align: "center"
+                      },
+                      {
+                        type: "separator"
+                      }
+                    ]
+                  },
+                  {
+                    type: "box",
+                    layout: "baseline",
+                    spacing: "xl",
+                    contents: [
+                      {
+                        type: "text",
+                        text: "สถานะการให้บริการ:",
+                        flex: 3,
+                        margin: "sm",
+                        size: "lg",
+                        align: "start",
+                        weight: "bold"
+                      },
+                      {
+                        type: "text",
+                        text: "เปิดอยู่",
+                        flex: 1,
+                        margin: "sm",
+                        size: "lg",
+                        align: "start",
+                        weight: "bold",
+                        color: "#0CF929"
+                      }
+                    ]
+                  }
+                ]
+              }
+            };
+            resolve([
+              replyToken,
+              {
+                type: "flex",
+                altText: "Flex Message",
+                contents: {
+                  type: "carousel",
+                  contents: [
+                    flexDetail_result.data,
+                    time,
+                    {
+                      type: "bubble",
+                      header: {
+                        type: "box",
+                        layout: "horizontal",
+                        contents: [
+                          {
+                            type: "text",
+                            text: "REVIEW",
+                            size: "sm",
+                            weight: "bold",
+                            color: "#AAAAAA"
+                          }
+                        ]
+                      },
+                      hero: {
+                        type: "image",
+                        url:
+                          "https://lh4.ggpht.com/-bXx83tZHuW8/AAAAAAAAAAI/AAAAAAAAAAA/R9umGJGU518/s128-c0x00000000-cc-rp-mo-ba4/photo.jpg",
+                        size: "xl",
+                        aspectRatio: "20:13",
+                        action: {
+                          type: "uri",
+                          label: "Action",
+                          uri: "https://linecorp.com/"
+                        }
+                      },
+                      body: {
+                        type: "box",
+                        layout: "vertical",
+                        spacing: "md",
+                        contents: [
+                          {
+                            type: "box",
+                            layout: "vertical",
+                            contents: [
+                              {
+                                type: "text",
+                                text: "ลุงยุทธ บานไม่รู้โรย",
+                                flex: 8,
+                                size: "lg",
+                                align: "center",
+                                gravity: "bottom",
+                                weight: "bold",
+                                wrap: true
+                              },
+                              {
+                                type: "separator"
+                              }
+                            ]
+                          },
+                          {
+                            type: "box",
+                            layout: "vertical",
+                            contents: [
+                              {
+                                type: "text",
+                                text: "ความคิดเห็น:",
+                                flex: 8,
+                                size: "md",
+                                align: "start",
+                                gravity: "center",
+                                weight: "bold",
+                                wrap: true
+                              },
+                              {
+                                type: "text",
+                                text:
+                                  "รสอาหารใช่ได้แต่พนักควรเปลี่ยนยกทีมไปซืัอกินนะไม่ได้ขอกินฟรีพูดจาไม่ดีสมควรเปลี่ยนยกทีมเลย",
+                                flex: 1,
+                                size: "md",
+                                align: "start",
+                                wrap: true
+                              }
+                            ]
+                          },
+                          {
+                            type: "box",
+                            layout: "baseline",
+                            contents: [
+                              {
+                                type: "text",
+                                text: "การให้คะแนน:",
+                                flex: 0,
+                                margin: "sm",
+                                size: "sm",
+                                align: "start",
+                                weight: "bold"
+                              },
+                              {
+                                type: "icon",
+                                url:
+                                  "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                                size: "xs"
+                              },
+                              {
+                                type: "text",
+                                text: " 2.5"
+                              }
+                            ]
+                          },
+                          {
+                            type: "box",
+                            layout: "baseline",
+                            contents: [
+                              {
+                                type: "text",
+                                text: "แสดงความคิดเห็นเมื่อ",
+                                flex: 6,
+                                margin: "sm",
+                                size: "sm",
+                                align: "start",
+                                weight: "bold"
+                              },
+                              {
+                                type: "text",
+                                text: "2 ปีที่แล้ว",
+                                flex: 4,
+                                margin: "sm",
+                                size: "sm",
+                                align: "start",
+                                weight: "bold",
+                                color: "#EA7F7F"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      footer: {
+                        type: "box",
+                        layout: "horizontal",
+                        contents: [
+                          {
+                            type: "button",
+                            action: {
+                              type: "uri",
+                              label: "ดูรายละเอียดผู้รีวิว",
+                              uri:
+                                "https://www.google.com/maps/contrib/110408252214450046707/reviews/@14.108896,99.6294087,9.94z"
+                            },
+                            color: "#04A4B6",
+                            style: "primary"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      type: "bubble",
+                      header: {
+                        type: "box",
+                        layout: "horizontal",
+                        contents: [
+                          {
+                            type: "text",
+                            text: "REVIEW",
+                            size: "sm",
+                            weight: "bold",
+                            color: "#AAAAAA"
+                          }
+                        ]
+                      },
+                      hero: {
+                        type: "image",
+                        url:
+                          "https://lh6.ggpht.com/-G4Ww6palWT8/AAAAAAAAAAI/AAAAAAAAAAA/GL4_WgqxtYI/s128-c0x00000000-cc-rp-mo-ba3/photo.jpg",
+                        size: "xl",
+                        aspectRatio: "20:13",
+                        action: {
+                          type: "uri",
+                          label: "Action",
+                          uri: "https://linecorp.com/"
+                        }
+                      },
+                      body: {
+                        type: "box",
+                        layout: "vertical",
+                        spacing: "md",
+                        contents: [
+                          {
+                            type: "box",
+                            layout: "vertical",
+                            contents: [
+                              {
+                                type: "text",
+                                text: "jintanan kangwankiatichai",
+                                flex: 8,
+                                size: "lg",
+                                align: "center",
+                                gravity: "bottom",
+                                weight: "bold",
+                                wrap: true
+                              },
+                              {
+                                type: "separator"
+                              }
+                            ]
+                          },
+                          {
+                            type: "box",
+                            layout: "vertical",
+                            contents: [
+                              {
+                                type: "text",
+                                text: "ความคิดเห็น:",
+                                flex: 8,
+                                size: "md",
+                                align: "start",
+                                gravity: "center",
+                                weight: "bold",
+                                wrap: true
+                              },
+                              {
+                                type: "text",
+                                text:
+                                  "อาหารเหนือและอาหารตามสั่ง อาหารเหนือจะมีทำไว้อยู่แล้ว เลือกจากในหม้อเอา น้ำพริกอ่องอร่อยดี",
+                                flex: 1,
+                                size: "md",
+                                align: "start",
+                                wrap: true
+                              }
+                            ]
+                          },
+                          {
+                            type: "box",
+                            layout: "baseline",
+                            contents: [
+                              {
+                                type: "text",
+                                text: "การให้คะแนน:",
+                                flex: 0,
+                                margin: "sm",
+                                size: "sm",
+                                align: "start",
+                                weight: "bold"
+                              },
+                              {
+                                type: "icon",
+                                url:
+                                  "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                                size: "xs"
+                              },
+                              {
+                                type: "text",
+                                text: " 4.4"
+                              }
+                            ]
+                          },
+                          {
+                            type: "box",
+                            layout: "baseline",
+                            contents: [
+                              {
+                                type: "text",
+                                text: "แสดงความคิดเห็นเมื่อ",
+                                flex: 6,
+                                margin: "sm",
+                                size: "sm",
+                                align: "start",
+                                weight: "bold"
+                              },
+                              {
+                                type: "text",
+                                text: "2 เดือนที่แล้ว",
+                                flex: 4,
+                                margin: "sm",
+                                size: "sm",
+                                align: "start",
+                                weight: "bold",
+                                color: "#EA7F7F"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      footer: {
+                        type: "box",
+                        layout: "horizontal",
+                        contents: [
+                          {
+                            type: "button",
+                            action: {
+                              type: "uri",
+                              label: "ดูรายละเอียดผู้รีวิว",
+                              uri:
+                                "https://www.google.com/maps/contrib/112186095773426382645/reviews"
+                            },
+                            color: "#04A4B6",
+                            style: "primary"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      type: "bubble",
+                      header: {
+                        type: "box",
+                        layout: "horizontal",
+                        contents: [
+                          {
+                            type: "text",
+                            text: "REVIEW",
+                            size: "sm",
+                            weight: "bold",
+                            color: "#AAAAAA"
+                          }
+                        ]
+                      },
+                      hero: {
+                        type: "image",
+                        url:
+                          "https://lh6.ggpht.com/-8fvHpUpV66E/AAAAAAAAAAI/AAAAAAAAAAA/hYGvE-lZQl4/s128-c0x00000000-cc-rp-mo-ba4/photo.jpg",
+                        size: "xl",
+                        aspectRatio: "20:13",
+                        action: {
+                          type: "uri",
+                          label: "Action",
+                          uri: "https://linecorp.com/"
+                        }
+                      },
+                      body: {
+                        type: "box",
+                        layout: "vertical",
+                        spacing: "md",
+                        contents: [
+                          {
+                            type: "box",
+                            layout: "vertical",
+                            contents: [
+                              {
+                                type: "text",
+                                text: "overdose13",
+                                flex: 8,
+                                size: "lg",
+                                align: "center",
+                                gravity: "bottom",
+                                weight: "bold",
+                                wrap: true
+                              },
+                              {
+                                type: "separator"
+                              }
+                            ]
+                          },
+                          {
+                            type: "box",
+                            layout: "vertical",
+                            contents: [
+                              {
+                                type: "text",
+                                text: "ความคิดเห็น:",
+                                flex: 8,
+                                size: "md",
+                                align: "start",
+                                gravity: "center",
+                                weight: "bold",
+                                wrap: true
+                              },
+                              {
+                                type: "text",
+                                text: "อาหารอร่อย แนะนำครับ",
+                                flex: 1,
+                                size: "md",
+                                align: "start",
+                                wrap: true
+                              }
+                            ]
+                          },
+                          {
+                            type: "box",
+                            layout: "baseline",
+                            contents: [
+                              {
+                                type: "text",
+                                text: "การให้คะแนน:",
+                                flex: 0,
+                                margin: "sm",
+                                size: "sm",
+                                align: "start",
+                                weight: "bold"
+                              },
+                              {
+                                type: "icon",
+                                url:
+                                  "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                                size: "xs"
+                              },
+                              {
+                                type: "text",
+                                text: " 4.4"
+                              }
+                            ]
+                          },
+                          {
+                            type: "box",
+                            layout: "baseline",
+                            contents: [
+                              {
+                                type: "text",
+                                text: "แสดงความคิดเห็นเมื่อ",
+                                flex: 6,
+                                margin: "sm",
+                                size: "sm",
+                                align: "start",
+                                weight: "bold"
+                              },
+                              {
+                                type: "text",
+                                text: "ปีที่แล้ว",
+                                flex: 4,
+                                margin: "sm",
+                                size: "sm",
+                                align: "start",
+                                weight: "bold",
+                                color: "#EA7F7F"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      footer: {
+                        type: "box",
+                        layout: "horizontal",
+                        contents: [
+                          {
+                            type: "button",
+                            action: {
+                              type: "uri",
+                              label: "ดูรายละเอียดผู้รีวิว",
+                              uri:
+                                "https://www.google.com/maps/contrib/112186095773426382645/reviews"
+                            },
+                            color: "#04A4B6",
+                            style: "primary"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]);
+
+            break;
+          default:
+            break;
+        }
+      } else if (event.type === "postback") {
         let resPostback = await postbackHandle(event);
         result = resPostback;
         resolve([replyToken, result]);
@@ -90,17 +824,132 @@ module.exports.handleEvent = function(event) {
               if (message.text === "ชลบุรี") {
                 try {
                   const dataApi = await googleApi.textSearch("ชลบุรี+โรงแรม");
-                  const objectPlace = await getSeletedPlace(dataApi.data);
-                  objectPlace.length > 1
-                    ? resolve([replyToken, [objectPlace[0], objectPlace[1]]])
-                    : resolve([replyToken, objectPlace[0]]);
-                  // eslint-disable-next-line no-empty
+                  const objectPlace = await getSeletedPlace(
+                    dataApi.data,
+                    templace
+                  );
+                  resolve([replyToken, objectPlace.data]);
                 } catch (error) {
+                  console.log(error);
                   resolve([
                     replyToken,
                     { type: "text", text: "กรุณาลองใหม่อีกครั้ง" }
                   ]);
                 }
+              } else if (message.text === "น่าน") {
+                try {
+                  const dataApi = await googleApi.textSearch("น่าน+ร้านอาหาร");
+                  const objectPlace = await getSeletedPlace(
+                    dataApi.data,
+                    templace
+                  );
+                  resolve([replyToken, objectPlace.data]);
+                } catch (error) {
+                  console.log(error);
+                  resolve([
+                    replyToken,
+                    { type: "text", text: "กรุณาลองใหม่อีกครั้ง" }
+                  ]);
+                }
+              } else if (message.text === "เชียงใหม่") {
+                try {
+                  const dataApi = await googleApi.textSearch(
+                    "เชียงใหม่+แหล่งท่องเที่ยว"
+                  );
+                  const objectPlace = await getSeletedPlace(
+                    dataApi.data,
+                    templace
+                  );
+                  resolve([replyToken, objectPlace.data]);
+                } catch (error) {
+                  console.log(error);
+                  resolve([
+                    replyToken,
+                    { type: "text", text: "กรุณาลองใหม่อีกครั้ง" }
+                  ]);
+                }
+                เชียงใหม่แหล่งท่องเที่ยว;
+              } else if (message.text === "ธนา") {
+                resolve([
+                  replyToken,
+                  {
+                    type: "flex",
+                    altText: "Flex Message",
+                    contents: {
+                      type: "bubble",
+                      direction: "ltr",
+                      header: {
+                        type: "box",
+                        layout: "vertical",
+                        contents: [
+                          { type: "text", text: "เส้นทาง", align: "center" }
+                        ]
+                      },
+                      body: {
+                        type: "box",
+                        layout: "vertical",
+                        contents: [
+                          {
+                            type: "text",
+                            text:
+                              "เดินไปที่ ป้ายรถประจำทาง โรงเรียนพระรามหกเทคโนโลยี",
+                            wrap: true
+                          },
+                          { type: "separator", margin: "xs", color: "#3F3F3F" },
+                          {
+                            type: "text",
+                            text: "ปลายทาง: ป้ายรถประจำทาง โรงเรียนเทศบาล 2"
+                          },
+                          {
+                            type: "text",
+                            text: "รถเมล์สาย: 175ร (ตลาดพลู - ตลาดนนท์)"
+                          },
+                          { type: "separator", margin: "xs", color: "#3F3F3F" },
+                          {
+                            type: "text",
+                            text: "ปลายทาง: ป้ายรถประจำทาง ธนาคารทหารไทย สนญ 2"
+                          },
+                          {
+                            type: "text",
+                            text: "รถเมล์สาย: 90ร (บางพูน - ย่านสินค้าพหลโยธิน)"
+                          },
+                          { type: "separator", margin: "xs", color: "#3F3F3F" },
+                          {
+                            type: "text",
+                            text: "ปลายทาง: ป้ายรถประจำทาง แยกถนนนิมิตรใหม่"
+                          },
+                          {
+                            type: "text",
+                            text: "รถเมล์สาย: 8ปอ (สะพานพุทธ - แฮปปี้แลนด์)"
+                          },
+                          { type: "separator", margin: "xs", color: "#3F3F3F" },
+                          {
+                            type: "text",
+                            text:
+                              "เดินไปที่ ป้ายรถประจำทาง โรงเรียนพระรามหกเทคโนโลยี",
+                            wrap: true
+                          },
+                          { type: "separator", margin: "xs", color: "#3F3F3F" }
+                        ]
+                      },
+                      footer: {
+                        type: "box",
+                        layout: "horizontal",
+                        contents: [
+                          {
+                            type: "button",
+                            action: {
+                              type: "postback",
+                              label: "รายงานความผิดผลาด",
+                              text: "รายงานความผิดผลาด",
+                              data: "REPORT"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]);
               } else {
                 result = replyText(message);
                 console.info("text message detected");
@@ -133,19 +982,14 @@ function replyText(message) {
   return reply;
 }
 function getSeletedPlace(arr) {
-  console.log(arr.length);
-  const temp = {
-    type: "flex",
-    altText: "Flex Message",
-    contents: {
-      type: "carousel",
-      contents: []
-    }
-  };
   return new Promise((res, rej) => {
-    var results = arr;
-    var data = [];
-    var content1 = {
+    var ret = {};
+    if (!arr) {
+      ret.status = false;
+      ret.message = "error";
+      rej(ret);
+    }
+    var temp = {
       type: "flex",
       altText: "Flex Message",
       contents: {
@@ -153,154 +997,282 @@ function getSeletedPlace(arr) {
         contents: []
       }
     };
-    var content2 = _.clone(content1);
-
-    // eslint-disable-next-line prefer-promise-reject-errors
-
-    results.forEach((results, index) => {
-      const flex = {
-        type: "bubble",
-        body: {
-          type: "box",
-          layout: "vertical",
-          spacing: "sm",
-          contents: [
-            {
-              type: "text",
-              text: "ครัวเมืองลำปาง",
-              size: "lg",
-              align: "start",
-              weight: "bold",
-              wrap: true
-            },
-            {
-              type: "separator"
-            },
-            {
-              type: "box",
-              layout: "baseline",
-              contents: [
-                {
-                  type: "text",
-                  text: "สถานที่ตั้ง:",
-                  flex: 4,
-                  size: "md",
-                  gravity: "bottom",
-                  weight: "bold"
-                },
-                {
-                  type: "text",
-                  text:
-                    "100 ถนน ห้วยแก้ว ตำบลสุเทพ อำเภอเมืองเชียงใหม่ เชียงใหม่ 50200",
-                  flex: 8,
-                  size: "sm",
-                  align: "start",
-                  weight: "regular",
-                  wrap: true
-                },
-                {
-                  type: "spacer"
-                }
-              ]
-            },
-            {
-              type: "separator"
-            },
-            {
-              type: "box",
-              layout: "baseline",
-              contents: [
-                {
-                  type: "text",
-                  text: "สถานะการให้บริการ:",
-                  flex: 3,
-                  margin: "sm",
-                  size: "sm",
-                  align: "start",
-                  weight: "bold"
-                },
-                {
-                  type: "text",
-                  text: "เปิดอยู่",
-                  flex: 2,
-                  margin: "sm",
-                  size: "sm",
-                  align: "start",
-                  weight: "bold",
-                  color: "#0CF929"
-                }
-              ]
-            },
-            {
-              type: "box",
-              layout: "baseline",
-              contents: [
-                {
-                  type: "text",
-                  text: "คะแนนเฉลี่ย",
-                  flex: 3,
-                  size: "sm",
-                  align: "start",
-                  weight: "bold"
-                },
-                {
-                  type: "icon",
-                  url:
-                    "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
-                  size: "xs"
-                },
-                {
-                  type: "text",
-                  text: "4.0",
-                  flex: 5,
-                  margin: "sm",
-                  size: "sm",
-                  align: "start",
-                  gravity: "center",
-                  weight: "regular"
-                }
-              ]
-            }
-          ]
-        },
-        footer: {
-          type: "box",
-          layout: "vertical",
-          spacing: "sm",
-          contents: [
-            {
-              type: "button",
-              action: {
-                type: "postback",
-                label: "ดูรายละเอียด",
-                data: ""
+    var results = arr;
+    if (results.length > 10) {
+      for (let i = 0; i < 10; i++) {
+        const flex = {
+          type: "bubble",
+          body: {
+            type: "box",
+            layout: "vertical",
+            spacing: "sm",
+            contents: [
+              {
+                type: "text",
+                text: "ครัวเมืองลำปาง",
+                size: "lg",
+                align: "start",
+                weight: "bold",
+                wrap: true
               },
-              color: "#459950",
-              style: "primary"
-            }
-          ]
-        }
-      };
-      flex.body.contents[0].text = results.name;
-      flex.body.contents[2].contents[1].text = results.address;
-      flex.body.contents[4].contents[1].text = results.status;
-      results.status === "เปิดอยู่"
-        ? (flex.body.contents[4].contents[1].color = "#459950")
-        : (flex.body.contents[4].contents[1].color = "#cccccc");
-      flex.body.contents[5].contents[2].text = results.rateing;
-      flex.footer.contents[0].action.data = `placeId_hotel,${results.place_id},${results.photos[0].photo_reference}`;
-      if (index < 10) {
-        content1.contents.contents.push(flex);
-      } else {
-        content2.contents.contents.push(flex);
+              {
+                type: "separator"
+              },
+              {
+                type: "box",
+                layout: "baseline",
+                contents: [
+                  {
+                    type: "text",
+                    text: "สถานที่ตั้ง:",
+                    flex: 4,
+                    size: "md",
+                    gravity: "bottom",
+                    weight: "bold"
+                  },
+                  {
+                    type: "text",
+                    text:
+                      "100 ถนน ห้วยแก้ว ตำบลสุเทพ อำเภอเมืองเชียงใหม่ เชียงใหม่ 50200",
+                    flex: 8,
+                    size: "sm",
+                    align: "start",
+                    weight: "regular",
+                    wrap: true
+                  },
+                  {
+                    type: "spacer"
+                  }
+                ]
+              },
+              {
+                type: "separator"
+              },
+              {
+                type: "box",
+                layout: "baseline",
+                contents: [
+                  {
+                    type: "text",
+                    text: "สถานะการให้บริการ:",
+                    flex: 3,
+                    margin: "sm",
+                    size: "sm",
+                    align: "start",
+                    weight: "bold"
+                  },
+                  {
+                    type: "text",
+                    text: "เปิดอยู่",
+                    flex: 2,
+                    margin: "sm",
+                    size: "sm",
+                    align: "start",
+                    weight: "bold",
+                    color: "#0CF929"
+                  }
+                ]
+              },
+              {
+                type: "box",
+                layout: "baseline",
+                contents: [
+                  {
+                    type: "text",
+                    text: "คะแนนเฉลี่ย",
+                    flex: 3,
+                    size: "sm",
+                    align: "start",
+                    weight: "bold"
+                  },
+                  {
+                    type: "icon",
+                    url:
+                      "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                    size: "xs"
+                  },
+                  {
+                    type: "text",
+                    text: "4.0",
+                    flex: 5,
+                    margin: "sm",
+                    size: "sm",
+                    align: "start",
+                    gravity: "center",
+                    weight: "regular"
+                  }
+                ]
+              }
+            ]
+          },
+          footer: {
+            type: "box",
+            layout: "vertical",
+            spacing: "sm",
+            contents: [
+              {
+                type: "button",
+                action: {
+                  type: "postback",
+                  label: "ดูรายละเอียด",
+                  data: '{"DATA":"BACD"}'
+                },
+                color: "#459950",
+                style: "primary"
+              }
+            ]
+          }
+        };
+        flex.body.contents[0].text = results[i].name;
+        flex.body.contents[2].contents[1].text = results[i].address;
+        flex.body.contents[4].contents[1].text = results[i].status;
+        results[i].status === "เปิดอยู่"
+          ? (flex.body.contents[4].contents[1].color = "#459950")
+          : (flex.body.contents[4].contents[1].color = "#cccccc");
+        flex.body.contents[5].contents[2].text = results[i].rateing.toString();
+        flex.footer.contents[0].action.data = `placeId_hotel^${results[i].place_id}^${results[i].photo}`;
+        temp.contents.contents.push(flex);
       }
-    });
-    if (results.length < 10) {
-      data = [content1];
     } else {
-      data = [content1, content2];
+      results.forEach(result => {
+        const flex = {
+          type: "bubble",
+          body: {
+            type: "box",
+            layout: "vertical",
+            spacing: "sm",
+            contents: [
+              {
+                type: "text",
+                text: "ครัวเมืองลำปาง",
+                size: "lg",
+                align: "start",
+                weight: "bold",
+                wrap: true
+              },
+              {
+                type: "separator"
+              },
+              {
+                type: "box",
+                layout: "baseline",
+                contents: [
+                  {
+                    type: "text",
+                    text: "สถานที่ตั้ง:",
+                    flex: 4,
+                    size: "md",
+                    gravity: "bottom",
+                    weight: "bold"
+                  },
+                  {
+                    type: "text",
+                    text:
+                      "100 ถนน ห้วยแก้ว ตำบลสุเทพ อำเภอเมืองเชียงใหม่ เชียงใหม่ 50200",
+                    flex: 8,
+                    size: "sm",
+                    align: "start",
+                    weight: "regular",
+                    wrap: true
+                  },
+                  {
+                    type: "spacer"
+                  }
+                ]
+              },
+              {
+                type: "separator"
+              },
+              {
+                type: "box",
+                layout: "baseline",
+                contents: [
+                  {
+                    type: "text",
+                    text: "สถานะการให้บริการ:",
+                    flex: 3,
+                    margin: "sm",
+                    size: "sm",
+                    align: "start",
+                    weight: "bold"
+                  },
+                  {
+                    type: "text",
+                    text: "เปิดอยู่",
+                    flex: 2,
+                    margin: "sm",
+                    size: "sm",
+                    align: "start",
+                    weight: "bold",
+                    color: "#0CF929"
+                  }
+                ]
+              },
+              {
+                type: "box",
+                layout: "baseline",
+                contents: [
+                  {
+                    type: "text",
+                    text: "คะแนนเฉลี่ย",
+                    flex: 3,
+                    size: "sm",
+                    align: "start",
+                    weight: "bold"
+                  },
+                  {
+                    type: "icon",
+                    url:
+                      "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                    size: "xs"
+                  },
+                  {
+                    type: "text",
+                    text: "4.0",
+                    flex: 5,
+                    margin: "sm",
+                    size: "sm",
+                    align: "start",
+                    gravity: "center",
+                    weight: "regular"
+                  }
+                ]
+              }
+            ]
+          },
+          footer: {
+            type: "box",
+            layout: "vertical",
+            spacing: "sm",
+            contents: [
+              {
+                type: "button",
+                action: {
+                  type: "postback",
+                  label: "ดูรายละเอียด",
+                  data: '{"DATA":"BACD"}'
+                },
+                color: "#459950",
+                style: "primary"
+              }
+            ]
+          }
+        };
+        flex.body.contents[0].text = result.name;
+        flex.body.contents[2].contents[1].text = result.address;
+        flex.body.contents[4].contents[1].text = result.status;
+        result.status === "เปิดอยู่"
+          ? (flex.body.contents[4].contents[1].color = "#459950")
+          : (flex.body.contents[4].contents[1].color = "#cccccc");
+        flex.body.contents[5].contents[2].text = results.rateing.toString();
+        flex.footer.contents[0].action.data = `placeId_hotel,${results.place_id},${result.photo}`;
+        temp.contents.contents.push(flex);
+      });
     }
-    res(data);
+    ret.status = true;
+    ret.data = temp;
+
+    res(ret);
   });
 }
 
