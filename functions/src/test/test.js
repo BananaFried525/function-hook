@@ -5,9 +5,11 @@ const db = require("../services/firestore");
 var templace = require("../config/config-flexbox")["flexbox_prototypePlace"];
 const googleapi = require("../services/google-api");
 const _ = require("underscore");
+const temp = require("../template/busdirection.json");
+// functions/src/template/busdirection.json
 /*********************************** import undercore js ***********************************/
 
-module.exports = async (req, res) => {
+Router.get(`/jay`, async (req, res) => {
   try {
     const prototype = {
       type: "flex",
@@ -54,7 +56,7 @@ module.exports = async (req, res) => {
   }
 
   // eslint-disable-next-line promise/catch-or-return
-};
+});
 
 function flexreview(review) {
   const arrayReivew = review;

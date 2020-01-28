@@ -20,7 +20,10 @@ const app = express();
 
 app.use(cors({ origin: true }));
 
-app.get("/test", test);
+/**
+ * ?test for android and other don't forget to discommit
+ */
+app.use("/test", test);
 
 /*********************************** Start middle,catch err for line webhook ***********************************/
 app.use(middleware(configLine));

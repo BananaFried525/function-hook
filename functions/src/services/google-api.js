@@ -2,11 +2,14 @@
 const restPromise = require("request-promise");
 const configGoogle = require("../config/config.json")["google"];
 const _ = require("underscore");
-
 module.exports.findLocation = function() {
   // https://maps.googleapis.com/maps/api/directions/json?departure_time=now&mode=transit&origin=มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ แขวง วงศ์สว่าง เขตบางซื่อ กรุงเทพมหานคร 10800&destination=อนุสาวรีย์ชัยสมรภูมิ ถนน พหลโยธิน แขวง ถนนพญาไท เขตราชเทวี กรุงเทพมหานคร 10400&key=AIzaSyAAm6Jci_ckEgvGkb98Q15R1h8RtIsjt_8
 };
 
+/**
+ * @param element User transaction
+ * @resolve direction data
+ */
 module.exports.sortedBus = function(element) {
   return new Promise(async (resolve, reject) => {
     let rt = {};
@@ -24,10 +27,12 @@ module.exports.sortedBus = function(element) {
     console.log(option);
     try {
       let resRest = await restPromise(option);
-      rt.data = JSON.parse(resRest).data.results;
+      rt = JSON.parse(resRest);
+      console.info(rt);
       resolve(rt);
     } catch (err) {
       rt.massage = err;
+      console.error(rt);
       reject(rt);
     }
   });
