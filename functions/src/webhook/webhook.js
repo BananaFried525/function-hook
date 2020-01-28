@@ -8,6 +8,7 @@ const handle = require("../services/handle-event");
 const userService = require("../services/user");
 const client = new line.Client(configLine);
 
+
 module.exports = async (req, res) => {
   console.log(JSON.stringify(req.body.events[0]));
   if (req.body.events[0].replyToken === "00000000000000000000000000000000") {

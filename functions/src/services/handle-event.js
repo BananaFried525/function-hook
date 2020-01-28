@@ -65,6 +65,10 @@ module.exports.handleEvent = function(event) {
                 ]
               }
             };
+
+            /**
+             * !Direction Bus
+             */
           } else if (!User.transaction.destination) {
             let destination = message.latitude + "," + message.longitude;
             console.log(`User destination => ${destination}`);
@@ -72,7 +76,7 @@ module.exports.handleEvent = function(event) {
             User.transaction.timeStamp = new Date();
             console.log(`Sort by location`);
             //พอกำหนดเสร็จให้ทำการ search ทันที
-            // let resSort = await googleApi.sortedBus(User.transaction);
+            let resSort = await googleApi.sortedBus(User.transaction);
 
             result = { type: "text", text: "Complete" };
             isComplete = true;
