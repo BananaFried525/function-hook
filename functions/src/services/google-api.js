@@ -7,20 +7,20 @@ module.exports.findLocation = function() {
   // https://maps.googleapis.com/maps/api/directions/json?departure_time=now&mode=transit&origin=มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ แขวง วงศ์สว่าง เขตบางซื่อ กรุงเทพมหานคร 10800&destination=อนุสาวรีย์ชัยสมรภูมิ ถนน พหลโยธิน แขวง ถนนพญาไท เขตราชเทวี กรุงเทพมหานคร 10400&key=AIzaSyAAm6Jci_ckEgvGkb98Q15R1h8RtIsjt_8
 };
 
-module.exports.sortedBus = function(element){
-  return new Promise(async (resolve,reject)=>{
+module.exports.sortedBus = function(element) {
+  return new Promise(async (resolve, reject) => {
     let rt = {};
     let option = {
       uri: "https://maps.googleapis.com/maps/api/directions/json",
       qs: {
-        key:configGoogle.key_place,
-        origin:element.origin,
-        destination:element.destination,
-        mode:"transit",
-        transit_mode:"bus",
-        language:"th"
+        key: configGoogle.key_place,
+        origin: element.origin,
+        destination: element.destination,
+        mode: "transit",
+        transit_mode: "bus",
+        language: "th"
       }
-    }
+    };
     console.log(option);
     try {
       let resRest = await restPromise(option);
@@ -28,10 +28,10 @@ module.exports.sortedBus = function(element){
       resolve(rt);
     } catch (err) {
       rt.massage = err;
-      reject(rt)
-    }  
+      reject(rt);
+    }
   });
-}
+};
 
 module.exports.nearBySearch = function(user_locate, type) {
   return new Promise((resolve, reject) => {
@@ -80,10 +80,10 @@ module.exports.textSearch = keyword => {
       .then(result => {
         const data = JSON.parse(result);
         for (let i = 0; i < data.results.length; i++) {
-          if (!data.results[i].opening_hours) {
-            data.results[i].opening_hours = "ไม่มีข้อมูล";
+          if (!data.results.opening_hours) {
+            data.results.opening_hours = "ไม่มีข้อมูล";
           } else {
-            data.results[i].opening_hours = "เปิดอยู่";
+            data.results.opening_hours = "เปิดอยู่";
           }
         }
         const results = data.results.map(result => {
