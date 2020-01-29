@@ -16,7 +16,7 @@ module.exports.handleEvent = function(event) {
     let userId = event.source.userId;
 
     try {
-      if (event.type === "postback") {
+      if (event.type === "postback" && event.postback.text === "ดูรายละเอียด") {
         const details = event.postback.data.split("^")[0];
         const place_id = event.postback.data.split("^")[1];
         const photo_ref = event.postback.data.split("^")[2];
