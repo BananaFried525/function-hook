@@ -6,6 +6,7 @@ const flexService = require("./service-flex");
 const userService = require("./user");
 var templace = require("../config/config-flexbox")["flexbox_prototypePlace"];
 const transactionService = require("./transaction");
+const tempDirectionBus = require("../template/busdirection.json");
 
 module.exports.handleEvent = function(event) {
   return new Promise(async (resolve, reject) => {
@@ -36,12 +37,12 @@ module.exports.handleEvent = function(event) {
             let review1 = {
               type: "flex",
               altText: "Flex Message",
-              contents: {
+              content: {
                 type: "bubble",
                 header: {
                   type: "box",
                   layout: "horizontal",
-                  contents: [
+                  content: [
                     {
                       type: "text",
                       text: "REVIEW",
@@ -67,11 +68,11 @@ module.exports.handleEvent = function(event) {
                   type: "box",
                   layout: "vertical",
                   spacing: "md",
-                  contents: [
+                  content: [
                     {
                       type: "box",
                       layout: "vertical",
-                      contents: [
+                      content: [
                         {
                           type: "text",
                           text: "ลุงยุทธ บานไม่รู้โรย",
@@ -90,7 +91,7 @@ module.exports.handleEvent = function(event) {
                     {
                       type: "box",
                       layout: "vertical",
-                      contents: [
+                      content: [
                         {
                           type: "text",
                           text: "ความคิดเห็น:",
@@ -115,7 +116,7 @@ module.exports.handleEvent = function(event) {
                     {
                       type: "box",
                       layout: "baseline",
-                      contents: [
+                      content: [
                         {
                           type: "text",
                           text: "การให้คะแนน:",
@@ -140,7 +141,7 @@ module.exports.handleEvent = function(event) {
                     {
                       type: "box",
                       layout: "baseline",
-                      contents: [
+                      content: [
                         {
                           type: "text",
                           text: "แสดงความคิดเห็นเมื่อ",
@@ -167,7 +168,7 @@ module.exports.handleEvent = function(event) {
                 footer: {
                   type: "box",
                   layout: "horizontal",
-                  contents: [
+                  content: [
                     {
                       type: "button",
                       action: {
@@ -189,12 +190,12 @@ module.exports.handleEvent = function(event) {
                 type: "box",
                 layout: "vertical",
                 spacing: "sm",
-                contents: [
+                content: [
                   {
                     type: "box",
                     layout: "vertical",
                     spacing: "xl",
-                    contents: [
+                    content: [
                       {
                         type: "text",
                         text: "วันเวลาที่เปิดทำการ",
@@ -268,7 +269,7 @@ module.exports.handleEvent = function(event) {
                     type: "box",
                     layout: "baseline",
                     spacing: "xl",
-                    contents: [
+                    content: [
                       {
                         type: "text",
                         text: "สถานะการให้บริการ:",
@@ -817,8 +818,48 @@ module.exports.handleEvent = function(event) {
             console.log(`Sort by location`);
             //พอกำหนดเสร็จให้ทำการ search ทันที
             let resSort = await googleApi.sortedBus(User.transaction);
-
-            result = { type: "text", text: "Complete" };
+            let steps = resSort.routes[0].legs[0].steps;
+            let content = [];
+            let temp = tempDirectionBus;
+            await steps.forEach((step, i) => {
+              if (step.travel_mode === "WALKING") {
+                console.log(step.html_instructions);
+                let walking = {
+                  type: "text",
+                  text: `${step.html_instructions}`,
+                  wrap: true
+                };
+                content.push(walking);
+              } else if (step.travel_mode === "TRANSIT") {
+                console.log(`เป้าหมาย => `, step.transit_details.headsign);
+                console.log(
+                  `หมายเลขรถ =>`,
+                  step.transit_details.line.short_name
+                );
+                console.log(`รถเมล์สาย =>`, step.transit_details.line.name);
+                console.log(`นั่ง => `, step.html_instructions);
+                let bus1 = {
+                  type: "text",
+                  text: `ปลายทาง: ${step.transit_details.headsign}`,
+                  wrap: true
+                };
+                let bus2 = {
+                  type: "text",
+                  text: `รถเมล์สาย: ${step.transit_details.line.short_name} (${step.transit_details.line.name})`,
+                  wrap: true
+                };
+                content.push(bus1, bus2);
+              }
+              let separator = {
+                type: "separator",
+                margin: "xs",
+                color: "#3F3F3F"
+              };
+              content.push(separator);
+            });
+            temp.contents.body.contents = content;
+            console.info(temp);
+            result = temp;
             isComplete = true;
             User.transaction.isComplete = true;
             await userService.updateUser(User);
@@ -885,20 +926,20 @@ module.exports.handleEvent = function(event) {
                   {
                     type: "flex",
                     altText: "Flex Message",
-                    contents: {
+                    content: {
                       type: "bubble",
                       direction: "ltr",
                       header: {
                         type: "box",
                         layout: "vertical",
-                        contents: [
+                        content: [
                           { type: "text", text: "เส้นทาง", align: "center" }
                         ]
                       },
                       body: {
                         type: "box",
                         layout: "vertical",
-                        contents: [
+                        content: [
                           {
                             type: "text",
                             text:
@@ -945,7 +986,7 @@ module.exports.handleEvent = function(event) {
                       footer: {
                         type: "box",
                         layout: "horizontal",
-                        contents: [
+                        content: [
                           {
                             type: "button",
                             action: {
@@ -1002,9 +1043,9 @@ function getSeletedPlace(arr) {
     var temp = {
       type: "flex",
       altText: "Flex Message",
-      contents: {
+      content: {
         type: "carousel",
-        contents: []
+        content: []
       }
     };
     var results = arr;
@@ -1016,7 +1057,7 @@ function getSeletedPlace(arr) {
             type: "box",
             layout: "vertical",
             spacing: "sm",
-            contents: [
+            content: [
               {
                 type: "text",
                 text: "ครัวเมืองลำปาง",
@@ -1031,7 +1072,7 @@ function getSeletedPlace(arr) {
               {
                 type: "box",
                 layout: "baseline",
-                contents: [
+                content: [
                   {
                     type: "text",
                     text: "สถานที่ตั้ง:",
@@ -1061,7 +1102,7 @@ function getSeletedPlace(arr) {
               {
                 type: "box",
                 layout: "baseline",
-                contents: [
+                content: [
                   {
                     type: "text",
                     text: "สถานะการให้บริการ:",
@@ -1086,7 +1127,7 @@ function getSeletedPlace(arr) {
               {
                 type: "box",
                 layout: "baseline",
-                contents: [
+                content: [
                   {
                     type: "text",
                     text: "คะแนนเฉลี่ย",
@@ -1119,7 +1160,7 @@ function getSeletedPlace(arr) {
             type: "box",
             layout: "vertical",
             spacing: "sm",
-            contents: [
+            content: [
               {
                 type: "button",
                 action: {
@@ -1134,15 +1175,15 @@ function getSeletedPlace(arr) {
             ]
           }
         };
-        flex.body.contents[0].text = results[i].name;
-        flex.body.contents[2].contents[1].text = results[i].address;
-        flex.body.contents[4].contents[1].text = results[i].status;
+        flex.body.content[0].text = results[i].name;
+        flex.body.content[2].content[1].text = results[i].address;
+        flex.body.content[4].content[1].text = results[i].status;
         results[i].status === "เปิดอยู่"
-          ? (flex.body.contents[4].contents[1].color = "#459950")
-          : (flex.body.contents[4].contents[1].color = "#cccccc");
-        flex.body.contents[5].contents[2].text = results[i].rateing.toString();
-        flex.footer.contents[0].action.data = `placeId_hotel^${results[i].place_id}^${results[i].photo}`;
-        temp.contents.contents.push(flex);
+          ? (flex.body.content[4].content[1].color = "#459950")
+          : (flex.body.content[4].content[1].color = "#cccccc");
+        flex.body.content[5].content[2].text = results[i].rateing.toString();
+        flex.footer.content[0].action.data = `placeId_hotel^${results[i].place_id}^${results[i].photo}`;
+        temp.content.content.push(flex);
       }
     } else {
       results.forEach(result => {
@@ -1152,7 +1193,7 @@ function getSeletedPlace(arr) {
             type: "box",
             layout: "vertical",
             spacing: "sm",
-            contents: [
+            content: [
               {
                 type: "text",
                 text: "ครัวเมืองลำปาง",
@@ -1167,7 +1208,7 @@ function getSeletedPlace(arr) {
               {
                 type: "box",
                 layout: "baseline",
-                contents: [
+                content: [
                   {
                     type: "text",
                     text: "สถานที่ตั้ง:",
@@ -1197,7 +1238,7 @@ function getSeletedPlace(arr) {
               {
                 type: "box",
                 layout: "baseline",
-                contents: [
+                content: [
                   {
                     type: "text",
                     text: "สถานะการให้บริการ:",
@@ -1222,7 +1263,7 @@ function getSeletedPlace(arr) {
               {
                 type: "box",
                 layout: "baseline",
-                contents: [
+                content: [
                   {
                     type: "text",
                     text: "คะแนนเฉลี่ย",
@@ -1255,7 +1296,7 @@ function getSeletedPlace(arr) {
             type: "box",
             layout: "vertical",
             spacing: "sm",
-            contents: [
+            content: [
               {
                 type: "button",
                 action: {
@@ -1269,15 +1310,15 @@ function getSeletedPlace(arr) {
             ]
           }
         };
-        flex.body.contents[0].text = result.name;
-        flex.body.contents[2].contents[1].text = result.address;
-        flex.body.contents[4].contents[1].text = result.status;
+        flex.body.content[0].text = result.name;
+        flex.body.content[2].content[1].text = result.address;
+        flex.body.content[4].content[1].text = result.status;
         result.status === "เปิดอยู่"
-          ? (flex.body.contents[4].contents[1].color = "#459950")
-          : (flex.body.contents[4].contents[1].color = "#cccccc");
-        flex.body.contents[5].contents[2].text = results.rateing.toString();
-        flex.footer.contents[0].action.data = `placeId_hotel,${results.place_id},${result.photo}`;
-        temp.contents.contents.push(flex);
+          ? (flex.body.content[4].content[1].color = "#459950")
+          : (flex.body.content[4].content[1].color = "#cccccc");
+        flex.body.content[5].content[2].text = results.rateing.toString();
+        flex.footer.content[0].action.data = `placeId_hotel,${results.place_id},${result.photo}`;
+        temp.content.content.push(flex);
       });
     }
     ret.status = true;
