@@ -6,6 +6,9 @@ var templace = require("../config/config-flexbox")["flexbox_prototypePlace"];
 const googleapi = require("../services/google-api");
 const _ = require("underscore");
 const temp = require("../template/busdirection.json");
+const express = require("express");
+const Router = express.Router();
+
 // functions/src/template/busdirection.json
 /*********************************** import undercore js ***********************************/
 
@@ -550,5 +553,5 @@ function flexdetail(detail, url_photo) {
     }
   });
 }
-
+module.exports = Router;
 // eslint-dis

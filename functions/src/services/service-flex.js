@@ -212,7 +212,7 @@ module.exports.flexdetail = function(detail, url_photo) {
   });
 };
 
-module.exports.Flextime = function(timedata) {
+module.exports.flextime = function(timedata) {
   return new Promise((res, rej) => {
     const ret = {};
 
@@ -221,118 +221,114 @@ module.exports.Flextime = function(timedata) {
     } else {
       var weekday_array = timedata.weekday_text;
       var opening = timedata.open_now;
-      const flextime = {
-        type: "flex",
-        altText: "Flex Message",
-        contents: {
-          type: "bubble",
-          body: {
-            type: "box",
-            layout: "vertical",
-            spacing: "sm",
-            contents: [
-              {
-                type: "box",
-                layout: "vertical",
-                spacing: "xl",
-                contents: [
-                  {
-                    type: "text",
-                    text: "วันเวลาที่เปิดทำการ",
-                    margin: "sm",
-                    size: "lg",
-                    align: "center",
-                    weight: "bold"
-                  },
-                  {
-                    type: "separator"
-                  },
-                  {
-                    type: "text",
-                    text: "วันอาทิตย์ 8:00–18:00",
-                    align: "center"
-                  },
-                  {
-                    type: "separator"
-                  },
-                  {
-                    type: "text",
-                    text: "วันจันทร์ 8:00–18:00",
-                    align: "center"
-                  },
-                  {
-                    type: "separator"
-                  },
-                  {
-                    type: "text",
-                    text: "วันอังคาร 8:00–18:00",
-                    align: "center"
-                  },
-                  {
-                    type: "separator"
-                  },
-                  {
-                    type: "text",
-                    text: "วันพุธ 8:00–18:00",
-                    align: "center"
-                  },
-                  {
-                    type: "separator"
-                  },
-                  {
-                    type: "text",
-                    text: "วันพฤหัสบดี 8:00–18:00",
-                    align: "center"
-                  },
-                  {
-                    type: "separator"
-                  },
-                  {
-                    type: "text",
-                    text: "วันศุกร์ 8:00–18:00",
-                    align: "center"
-                  },
-                  {
-                    type: "separator"
-                  },
-                  {
-                    type: "text",
-                    text: "วันเสาร์ 8:00–18:00",
-                    align: "center"
-                  },
-                  {
-                    type: "separator"
-                  }
-                ]
-              },
-              {
-                type: "box",
-                layout: "baseline",
-                spacing: "xl",
-                contents: [
-                  {
-                    type: "text",
-                    text: "สถานะการให้บริการ:",
-                    flex: 3,
-                    margin: "sm",
-                    size: "lg",
-                    align: "start",
-                    weight: "bold"
-                  },
-                  {
-                    type: "text",
-                    text: "เปิดอยู่",
-                    flex: 1,
-                    margin: "sm",
-                    size: "lg",
-                    align: "start",
-                    weight: "bold",
-                    color: "#0CF929"
-                  }
-                ]
-              }
-            ]
-          }
+      var flextime = {
+        type: "bubble",
+        body: {
+          type: "box",
+          layout: "vertical",
+          spacing: "sm",
+          contents: [
+            {
+              type: "box",
+              layout: "vertical",
+              spacing: "xl",
+              contents: [
+                {
+                  type: "text",
+                  text: "วันเวลาที่เปิดทำการ",
+                  margin: "sm",
+                  size: "lg",
+                  align: "center",
+                  weight: "bold"
+                },
+                {
+                  type: "separator"
+                },
+                {
+                  type: "text",
+                  text: "วันอาทิตย์ 8:00–18:00",
+                  align: "center"
+                },
+                {
+                  type: "separator"
+                },
+                {
+                  type: "text",
+                  text: "วันจันทร์ 8:00–18:00",
+                  align: "center"
+                },
+                {
+                  type: "separator"
+                },
+                {
+                  type: "text",
+                  text: "วันอังคาร 8:00–18:00",
+                  align: "center"
+                },
+                {
+                  type: "separator"
+                },
+                {
+                  type: "text",
+                  text: "วันพุธ 8:00–18:00",
+                  align: "center"
+                },
+                {
+                  type: "separator"
+                },
+                {
+                  type: "text",
+                  text: "วันพฤหัสบดี 8:00–18:00",
+                  align: "center"
+                },
+                {
+                  type: "separator"
+                },
+                {
+                  type: "text",
+                  text: "วันศุกร์ 8:00–18:00",
+                  align: "center"
+                },
+                {
+                  type: "separator"
+                },
+                {
+                  type: "text",
+                  text: "วันเสาร์ 8:00–18:00",
+                  align: "center"
+                },
+                {
+                  type: "separator"
+                }
+              ]
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              spacing: "xl",
+              contents: [
+                {
+                  type: "text",
+                  text: "สถานะการให้บริการ:",
+                  flex: 3,
+                  margin: "sm",
+                  size: "lg",
+                  align: "start",
+                  weight: "bold"
+                },
+                {
+                  type: "text",
+                  text: "เปิดอยู่",
+                  flex: 1,
+                  margin: "sm",
+                  size: "lg",
+                  align: "start",
+                  weight: "bold",
+                  color: "#0CF929"
+                }
+              ]
+            }
+          ]
         }
       };
       for (let i = 0, j = 2; i < weekday_array.length; i++, j = j + 2) {

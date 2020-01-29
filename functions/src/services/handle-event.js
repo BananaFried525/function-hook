@@ -30,9 +30,9 @@ module.exports.handleEvent = function(event) {
               detail,
               url_photo.data
             );
-            // console.log(time_open);
-            // const flexTime_result = await flexService.Flextime(time_open);
-
+            console.log(time_open, "time_open");
+            // const flexTime_result = await flexService.flextime(time_open);
+            // console.log(flexTime_result.data, "flex result");
             let review1 = {
               type: "flex",
               altText: "Flex Message",
@@ -295,454 +295,460 @@ module.exports.handleEvent = function(event) {
             };
             resolve([
               replyToken,
-              {
-                type: "flex",
-                altText: "Flex Message",
-                contents: {
-                  type: "carousel",
-                  contents: [
-                    flexDetail_result.data,
-                    time,
-                    {
-                      type: "bubble",
-                      header: {
-                        type: "box",
-                        layout: "horizontal",
-                        contents: [
-                          {
-                            type: "text",
-                            text: "REVIEW",
-                            size: "sm",
-                            weight: "bold",
-                            color: "#AAAAAA"
+              [
+                {
+                  type: "flex",
+                  altText: "Flex Message",
+                  contents: {
+                    type: "carousel",
+                    contents: [
+                      flexDetail_result.data,
+                      time,
+                      {
+                        type: "bubble",
+                        header: {
+                          type: "box",
+                          layout: "horizontal",
+                          contents: [
+                            {
+                              type: "text",
+                              text: "REVIEW",
+                              size: "sm",
+                              weight: "bold",
+                              color: "#AAAAAA"
+                            }
+                          ]
+                        },
+                        hero: {
+                          type: "image",
+                          url:
+                            "https://lh4.ggpht.com/-bXx83tZHuW8/AAAAAAAAAAI/AAAAAAAAAAA/R9umGJGU518/s128-c0x00000000-cc-rp-mo-ba4/photo.jpg",
+                          size: "xl",
+                          aspectRatio: "20:13",
+                          action: {
+                            type: "uri",
+                            label: "Action",
+                            uri: "https://linecorp.com/"
                           }
-                        ]
-                      },
-                      hero: {
-                        type: "image",
-                        url:
-                          "https://lh4.ggpht.com/-bXx83tZHuW8/AAAAAAAAAAI/AAAAAAAAAAA/R9umGJGU518/s128-c0x00000000-cc-rp-mo-ba4/photo.jpg",
-                        size: "xl",
-                        aspectRatio: "20:13",
-                        action: {
-                          type: "uri",
-                          label: "Action",
-                          uri: "https://linecorp.com/"
+                        },
+                        body: {
+                          type: "box",
+                          layout: "vertical",
+                          spacing: "md",
+                          contents: [
+                            {
+                              type: "box",
+                              layout: "vertical",
+                              contents: [
+                                {
+                                  type: "text",
+                                  text: "ลุงยุทธ บานไม่รู้โรย",
+                                  flex: 8,
+                                  size: "lg",
+                                  align: "center",
+                                  gravity: "bottom",
+                                  weight: "bold",
+                                  wrap: true
+                                },
+                                {
+                                  type: "separator"
+                                }
+                              ]
+                            },
+                            {
+                              type: "box",
+                              layout: "vertical",
+                              contents: [
+                                {
+                                  type: "text",
+                                  text: "ความคิดเห็น:",
+                                  flex: 8,
+                                  size: "md",
+                                  align: "start",
+                                  gravity: "center",
+                                  weight: "bold",
+                                  wrap: true
+                                },
+                                {
+                                  type: "text",
+                                  text:
+                                    "รสอาหารใช่ได้แต่พนักควรเปลี่ยนยกทีมไปซืัอกินนะไม่ได้ขอกินฟรีพูดจาไม่ดีสมควรเปลี่ยนยกทีมเลย",
+                                  flex: 1,
+                                  size: "md",
+                                  align: "start",
+                                  wrap: true
+                                }
+                              ]
+                            },
+                            {
+                              type: "box",
+                              layout: "baseline",
+                              contents: [
+                                {
+                                  type: "text",
+                                  text: "การให้คะแนน:",
+                                  flex: 0,
+                                  margin: "sm",
+                                  size: "sm",
+                                  align: "start",
+                                  weight: "bold"
+                                },
+                                {
+                                  type: "icon",
+                                  url:
+                                    "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                                  size: "xs"
+                                },
+                                {
+                                  type: "text",
+                                  text: " 2.5"
+                                }
+                              ]
+                            },
+                            {
+                              type: "box",
+                              layout: "baseline",
+                              contents: [
+                                {
+                                  type: "text",
+                                  text: "แสดงความคิดเห็นเมื่อ",
+                                  flex: 6,
+                                  margin: "sm",
+                                  size: "sm",
+                                  align: "start",
+                                  weight: "bold"
+                                },
+                                {
+                                  type: "text",
+                                  text: "2 ปีที่แล้ว",
+                                  flex: 4,
+                                  margin: "sm",
+                                  size: "sm",
+                                  align: "start",
+                                  weight: "bold",
+                                  color: "#EA7F7F"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        footer: {
+                          type: "box",
+                          layout: "horizontal",
+                          contents: [
+                            {
+                              type: "button",
+                              action: {
+                                type: "uri",
+                                label: "ดูรายละเอียดผู้รีวิว",
+                                uri:
+                                  "https://www.google.com/maps/contrib/110408252214450046707/reviews/@14.108896,99.6294087,9.94z"
+                              },
+                              color: "#04A4B6",
+                              style: "primary"
+                            }
+                          ]
                         }
                       },
-                      body: {
-                        type: "box",
-                        layout: "vertical",
-                        spacing: "md",
-                        contents: [
-                          {
-                            type: "box",
-                            layout: "vertical",
-                            contents: [
-                              {
-                                type: "text",
-                                text: "ลุงยุทธ บานไม่รู้โรย",
-                                flex: 8,
-                                size: "lg",
-                                align: "center",
-                                gravity: "bottom",
-                                weight: "bold",
-                                wrap: true
-                              },
-                              {
-                                type: "separator"
-                              }
-                            ]
-                          },
-                          {
-                            type: "box",
-                            layout: "vertical",
-                            contents: [
-                              {
-                                type: "text",
-                                text: "ความคิดเห็น:",
-                                flex: 8,
-                                size: "md",
-                                align: "start",
-                                gravity: "center",
-                                weight: "bold",
-                                wrap: true
-                              },
-                              {
-                                type: "text",
-                                text:
-                                  "รสอาหารใช่ได้แต่พนักควรเปลี่ยนยกทีมไปซืัอกินนะไม่ได้ขอกินฟรีพูดจาไม่ดีสมควรเปลี่ยนยกทีมเลย",
-                                flex: 1,
-                                size: "md",
-                                align: "start",
-                                wrap: true
-                              }
-                            ]
-                          },
-                          {
-                            type: "box",
-                            layout: "baseline",
-                            contents: [
-                              {
-                                type: "text",
-                                text: "การให้คะแนน:",
-                                flex: 0,
-                                margin: "sm",
-                                size: "sm",
-                                align: "start",
-                                weight: "bold"
-                              },
-                              {
-                                type: "icon",
-                                url:
-                                  "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
-                                size: "xs"
-                              },
-                              {
-                                type: "text",
-                                text: " 2.5"
-                              }
-                            ]
-                          },
-                          {
-                            type: "box",
-                            layout: "baseline",
-                            contents: [
-                              {
-                                type: "text",
-                                text: "แสดงความคิดเห็นเมื่อ",
-                                flex: 6,
-                                margin: "sm",
-                                size: "sm",
-                                align: "start",
-                                weight: "bold"
-                              },
-                              {
-                                type: "text",
-                                text: "2 ปีที่แล้ว",
-                                flex: 4,
-                                margin: "sm",
-                                size: "sm",
-                                align: "start",
-                                weight: "bold",
-                                color: "#EA7F7F"
-                              }
-                            ]
+                      {
+                        type: "bubble",
+                        header: {
+                          type: "box",
+                          layout: "horizontal",
+                          contents: [
+                            {
+                              type: "text",
+                              text: "REVIEW",
+                              size: "sm",
+                              weight: "bold",
+                              color: "#AAAAAA"
+                            }
+                          ]
+                        },
+                        hero: {
+                          type: "image",
+                          url:
+                            "https://lh6.ggpht.com/-G4Ww6palWT8/AAAAAAAAAAI/AAAAAAAAAAA/GL4_WgqxtYI/s128-c0x00000000-cc-rp-mo-ba3/photo.jpg",
+                          size: "xl",
+                          aspectRatio: "20:13",
+                          action: {
+                            type: "uri",
+                            label: "Action",
+                            uri: "https://linecorp.com/"
                           }
-                        ]
-                      },
-                      footer: {
-                        type: "box",
-                        layout: "horizontal",
-                        contents: [
-                          {
-                            type: "button",
-                            action: {
-                              type: "uri",
-                              label: "ดูรายละเอียดผู้รีวิว",
-                              uri:
-                                "https://www.google.com/maps/contrib/110408252214450046707/reviews/@14.108896,99.6294087,9.94z"
+                        },
+                        body: {
+                          type: "box",
+                          layout: "vertical",
+                          spacing: "md",
+                          contents: [
+                            {
+                              type: "box",
+                              layout: "vertical",
+                              contents: [
+                                {
+                                  type: "text",
+                                  text: "jintanan kangwankiatichai",
+                                  flex: 8,
+                                  size: "lg",
+                                  align: "center",
+                                  gravity: "bottom",
+                                  weight: "bold",
+                                  wrap: true
+                                },
+                                {
+                                  type: "separator"
+                                }
+                              ]
                             },
-                            color: "#04A4B6",
-                            style: "primary"
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      type: "bubble",
-                      header: {
-                        type: "box",
-                        layout: "horizontal",
-                        contents: [
-                          {
-                            type: "text",
-                            text: "REVIEW",
-                            size: "sm",
-                            weight: "bold",
-                            color: "#AAAAAA"
-                          }
-                        ]
-                      },
-                      hero: {
-                        type: "image",
-                        url:
-                          "https://lh6.ggpht.com/-G4Ww6palWT8/AAAAAAAAAAI/AAAAAAAAAAA/GL4_WgqxtYI/s128-c0x00000000-cc-rp-mo-ba3/photo.jpg",
-                        size: "xl",
-                        aspectRatio: "20:13",
-                        action: {
-                          type: "uri",
-                          label: "Action",
-                          uri: "https://linecorp.com/"
+                            {
+                              type: "box",
+                              layout: "vertical",
+                              contents: [
+                                {
+                                  type: "text",
+                                  text: "ความคิดเห็น:",
+                                  flex: 8,
+                                  size: "md",
+                                  align: "start",
+                                  gravity: "center",
+                                  weight: "bold",
+                                  wrap: true
+                                },
+                                {
+                                  type: "text",
+                                  text:
+                                    "อาหารเหนือและอาหารตามสั่ง อาหารเหนือจะมีทำไว้อยู่แล้ว เลือกจากในหม้อเอา น้ำพริกอ่องอร่อยดี",
+                                  flex: 1,
+                                  size: "md",
+                                  align: "start",
+                                  wrap: true
+                                }
+                              ]
+                            },
+                            {
+                              type: "box",
+                              layout: "baseline",
+                              contents: [
+                                {
+                                  type: "text",
+                                  text: "การให้คะแนน:",
+                                  flex: 0,
+                                  margin: "sm",
+                                  size: "sm",
+                                  align: "start",
+                                  weight: "bold"
+                                },
+                                {
+                                  type: "icon",
+                                  url:
+                                    "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                                  size: "xs"
+                                },
+                                {
+                                  type: "text",
+                                  text: " 4.4"
+                                }
+                              ]
+                            },
+                            {
+                              type: "box",
+                              layout: "baseline",
+                              contents: [
+                                {
+                                  type: "text",
+                                  text: "แสดงความคิดเห็นเมื่อ",
+                                  flex: 6,
+                                  margin: "sm",
+                                  size: "sm",
+                                  align: "start",
+                                  weight: "bold"
+                                },
+                                {
+                                  type: "text",
+                                  text: "2 เดือนที่แล้ว",
+                                  flex: 4,
+                                  margin: "sm",
+                                  size: "sm",
+                                  align: "start",
+                                  weight: "bold",
+                                  color: "#EA7F7F"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        footer: {
+                          type: "box",
+                          layout: "horizontal",
+                          contents: [
+                            {
+                              type: "button",
+                              action: {
+                                type: "uri",
+                                label: "ดูรายละเอียดผู้รีวิว",
+                                uri:
+                                  "https://www.google.com/maps/contrib/112186095773426382645/reviews"
+                              },
+                              color: "#04A4B6",
+                              style: "primary"
+                            }
+                          ]
                         }
                       },
-                      body: {
-                        type: "box",
-                        layout: "vertical",
-                        spacing: "md",
-                        contents: [
-                          {
-                            type: "box",
-                            layout: "vertical",
-                            contents: [
-                              {
-                                type: "text",
-                                text: "jintanan kangwankiatichai",
-                                flex: 8,
-                                size: "lg",
-                                align: "center",
-                                gravity: "bottom",
-                                weight: "bold",
-                                wrap: true
-                              },
-                              {
-                                type: "separator"
-                              }
-                            ]
-                          },
-                          {
-                            type: "box",
-                            layout: "vertical",
-                            contents: [
-                              {
-                                type: "text",
-                                text: "ความคิดเห็น:",
-                                flex: 8,
-                                size: "md",
-                                align: "start",
-                                gravity: "center",
-                                weight: "bold",
-                                wrap: true
-                              },
-                              {
-                                type: "text",
-                                text:
-                                  "อาหารเหนือและอาหารตามสั่ง อาหารเหนือจะมีทำไว้อยู่แล้ว เลือกจากในหม้อเอา น้ำพริกอ่องอร่อยดี",
-                                flex: 1,
-                                size: "md",
-                                align: "start",
-                                wrap: true
-                              }
-                            ]
-                          },
-                          {
-                            type: "box",
-                            layout: "baseline",
-                            contents: [
-                              {
-                                type: "text",
-                                text: "การให้คะแนน:",
-                                flex: 0,
-                                margin: "sm",
-                                size: "sm",
-                                align: "start",
-                                weight: "bold"
-                              },
-                              {
-                                type: "icon",
-                                url:
-                                  "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
-                                size: "xs"
-                              },
-                              {
-                                type: "text",
-                                text: " 4.4"
-                              }
-                            ]
-                          },
-                          {
-                            type: "box",
-                            layout: "baseline",
-                            contents: [
-                              {
-                                type: "text",
-                                text: "แสดงความคิดเห็นเมื่อ",
-                                flex: 6,
-                                margin: "sm",
-                                size: "sm",
-                                align: "start",
-                                weight: "bold"
-                              },
-                              {
-                                type: "text",
-                                text: "2 เดือนที่แล้ว",
-                                flex: 4,
-                                margin: "sm",
-                                size: "sm",
-                                align: "start",
-                                weight: "bold",
-                                color: "#EA7F7F"
-                              }
-                            ]
+                      {
+                        type: "bubble",
+                        header: {
+                          type: "box",
+                          layout: "horizontal",
+                          contents: [
+                            {
+                              type: "text",
+                              text: "REVIEW",
+                              size: "sm",
+                              weight: "bold",
+                              color: "#AAAAAA"
+                            }
+                          ]
+                        },
+                        hero: {
+                          type: "image",
+                          url:
+                            "https://lh6.ggpht.com/-8fvHpUpV66E/AAAAAAAAAAI/AAAAAAAAAAA/hYGvE-lZQl4/s128-c0x00000000-cc-rp-mo-ba4/photo.jpg",
+                          size: "xl",
+                          aspectRatio: "20:13",
+                          action: {
+                            type: "uri",
+                            label: "Action",
+                            uri: "https://linecorp.com/"
                           }
-                        ]
-                      },
-                      footer: {
-                        type: "box",
-                        layout: "horizontal",
-                        contents: [
-                          {
-                            type: "button",
-                            action: {
-                              type: "uri",
-                              label: "ดูรายละเอียดผู้รีวิว",
-                              uri:
-                                "https://www.google.com/maps/contrib/112186095773426382645/reviews"
+                        },
+                        body: {
+                          type: "box",
+                          layout: "vertical",
+                          spacing: "md",
+                          contents: [
+                            {
+                              type: "box",
+                              layout: "vertical",
+                              contents: [
+                                {
+                                  type: "text",
+                                  text: "overdose13",
+                                  flex: 8,
+                                  size: "lg",
+                                  align: "center",
+                                  gravity: "bottom",
+                                  weight: "bold",
+                                  wrap: true
+                                },
+                                {
+                                  type: "separator"
+                                }
+                              ]
                             },
-                            color: "#04A4B6",
-                            style: "primary"
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      type: "bubble",
-                      header: {
-                        type: "box",
-                        layout: "horizontal",
-                        contents: [
-                          {
-                            type: "text",
-                            text: "REVIEW",
-                            size: "sm",
-                            weight: "bold",
-                            color: "#AAAAAA"
-                          }
-                        ]
-                      },
-                      hero: {
-                        type: "image",
-                        url:
-                          "https://lh6.ggpht.com/-8fvHpUpV66E/AAAAAAAAAAI/AAAAAAAAAAA/hYGvE-lZQl4/s128-c0x00000000-cc-rp-mo-ba4/photo.jpg",
-                        size: "xl",
-                        aspectRatio: "20:13",
-                        action: {
-                          type: "uri",
-                          label: "Action",
-                          uri: "https://linecorp.com/"
+                            {
+                              type: "box",
+                              layout: "vertical",
+                              contents: [
+                                {
+                                  type: "text",
+                                  text: "ความคิดเห็น:",
+                                  flex: 8,
+                                  size: "md",
+                                  align: "start",
+                                  gravity: "center",
+                                  weight: "bold",
+                                  wrap: true
+                                },
+                                {
+                                  type: "text",
+                                  text: "อาหารอร่อย แนะนำครับ",
+                                  flex: 1,
+                                  size: "md",
+                                  align: "start",
+                                  wrap: true
+                                }
+                              ]
+                            },
+                            {
+                              type: "box",
+                              layout: "baseline",
+                              contents: [
+                                {
+                                  type: "text",
+                                  text: "การให้คะแนน:",
+                                  flex: 0,
+                                  margin: "sm",
+                                  size: "sm",
+                                  align: "start",
+                                  weight: "bold"
+                                },
+                                {
+                                  type: "icon",
+                                  url:
+                                    "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                                  size: "xs"
+                                },
+                                {
+                                  type: "text",
+                                  text: " 4.4"
+                                }
+                              ]
+                            },
+                            {
+                              type: "box",
+                              layout: "baseline",
+                              contents: [
+                                {
+                                  type: "text",
+                                  text: "แสดงความคิดเห็นเมื่อ",
+                                  flex: 6,
+                                  margin: "sm",
+                                  size: "sm",
+                                  align: "start",
+                                  weight: "bold"
+                                },
+                                {
+                                  type: "text",
+                                  text: "ปีที่แล้ว",
+                                  flex: 4,
+                                  margin: "sm",
+                                  size: "sm",
+                                  align: "start",
+                                  weight: "bold",
+                                  color: "#EA7F7F"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        footer: {
+                          type: "box",
+                          layout: "horizontal",
+                          contents: [
+                            {
+                              type: "button",
+                              action: {
+                                type: "uri",
+                                label: "ดูรายละเอียดผู้รีวิว",
+                                uri:
+                                  "https://www.google.com/maps/contrib/112186095773426382645/reviews"
+                              },
+                              color: "#04A4B6",
+                              style: "primary"
+                            }
+                          ]
                         }
-                      },
-                      body: {
-                        type: "box",
-                        layout: "vertical",
-                        spacing: "md",
-                        contents: [
-                          {
-                            type: "box",
-                            layout: "vertical",
-                            contents: [
-                              {
-                                type: "text",
-                                text: "overdose13",
-                                flex: 8,
-                                size: "lg",
-                                align: "center",
-                                gravity: "bottom",
-                                weight: "bold",
-                                wrap: true
-                              },
-                              {
-                                type: "separator"
-                              }
-                            ]
-                          },
-                          {
-                            type: "box",
-                            layout: "vertical",
-                            contents: [
-                              {
-                                type: "text",
-                                text: "ความคิดเห็น:",
-                                flex: 8,
-                                size: "md",
-                                align: "start",
-                                gravity: "center",
-                                weight: "bold",
-                                wrap: true
-                              },
-                              {
-                                type: "text",
-                                text: "อาหารอร่อย แนะนำครับ",
-                                flex: 1,
-                                size: "md",
-                                align: "start",
-                                wrap: true
-                              }
-                            ]
-                          },
-                          {
-                            type: "box",
-                            layout: "baseline",
-                            contents: [
-                              {
-                                type: "text",
-                                text: "การให้คะแนน:",
-                                flex: 0,
-                                margin: "sm",
-                                size: "sm",
-                                align: "start",
-                                weight: "bold"
-                              },
-                              {
-                                type: "icon",
-                                url:
-                                  "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
-                                size: "xs"
-                              },
-                              {
-                                type: "text",
-                                text: " 4.4"
-                              }
-                            ]
-                          },
-                          {
-                            type: "box",
-                            layout: "baseline",
-                            contents: [
-                              {
-                                type: "text",
-                                text: "แสดงความคิดเห็นเมื่อ",
-                                flex: 6,
-                                margin: "sm",
-                                size: "sm",
-                                align: "start",
-                                weight: "bold"
-                              },
-                              {
-                                type: "text",
-                                text: "ปีที่แล้ว",
-                                flex: 4,
-                                margin: "sm",
-                                size: "sm",
-                                align: "start",
-                                weight: "bold",
-                                color: "#EA7F7F"
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      footer: {
-                        type: "box",
-                        layout: "horizontal",
-                        contents: [
-                          {
-                            type: "button",
-                            action: {
-                              type: "uri",
-                              label: "ดูรายละเอียดผู้รีวิว",
-                              uri:
-                                "https://www.google.com/maps/contrib/112186095773426382645/reviews"
-                            },
-                            color: "#04A4B6",
-                            style: "primary"
-                          }
-                        ]
                       }
-                    }
-                  ]
+                    ]
+                  }
+                },
+                {
+                  type: "text",
+                  text: "คุณต้องการที่จะสอบเรื่องอื่นอีกมั้ยครับ ?"
                 }
-              }
+              ]
             ]);
 
             break;
@@ -1119,6 +1125,7 @@ function getSeletedPlace(arr) {
                 action: {
                   type: "postback",
                   label: "ดูรายละเอียด",
+                  text: "ดูรายละเอียด",
                   data: '{"DATA":"BACD"}'
                 },
                 color: "#459950",
