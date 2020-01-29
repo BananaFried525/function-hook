@@ -6,9 +6,63 @@ var templace = require("../config/config-flexbox")["flexbox_prototypePlace"];
 const googleapi = require("../services/google-api");
 const _ = require("underscore");
 const temp = require("../template/busdirection.json");
+const express = require('express');
+const Router = express.Router();
 // functions/src/template/busdirection.json
 /*********************************** import undercore js ***********************************/
 
+/**
+ * ! ห้ า ม ล บ
+ * *Test only
+ */
+Router.get("/ohm", async (req, res) => {
+  try {
+    let bus_res = await googleapi.sortedBus({
+      origin: `13.805207063673178,100.50962261751535`,
+      destination: `เดอะมอลล์บางกะปิ`
+    });
+    let steps = bus_res.routes[0].legs[0].steps;
+    let result = [];
+    await steps.forEach((step, i) => {
+      if (step.travel_mode === "WALKING") {
+        console.log(step.html_instructions);
+        let walking = {
+          type: "text",
+          text: `${step.html_instructions}`,
+          wrap: true
+        };
+        result.push(walking);
+      } else if (step.travel_mode === "TRANSIT") {
+        console.log(`เป้าหมาย => `, step.transit_details.headsign);
+        console.log(`หมายเลขรถ =>`, step.transit_details.line.short_name);
+        console.log(`รถเมล์สาย =>`, step.transit_details.line.name);
+        console.log(`นั่ง => `, step.html_instructions);
+        let bus1 = {
+          type: "text",
+          text: `ปลายทาง: ${step.transit_details.headsign}`,
+          wrap: true
+        };
+        let bus2 = {
+          type: "text",
+          text: `รถเมล์สาย: ${step.transit_details.line.short_name} (${step.transit_details.line.name})`,
+          wrap: true
+        };
+        result.push(bus1, bus2);
+      }
+      let separator = {
+        type: "separator",
+        margin: "xs",
+        color: "#3F3F3F"
+      };
+      result.push(separator);
+    });
+    console.log(result)
+    temp.contents.body.content = result;
+    res.status(200).json(temp);
+  } catch (error) {
+    res.status(500).json(JSON.stringify(error));
+  }
+});
 Router.get(`/jay`, async (req, res) => {
   try {
     const prototype = {
@@ -552,3 +606,4 @@ function flexdetail(detail, url_photo) {
 }
 
 // eslint-dis
+module.exports = Router;
