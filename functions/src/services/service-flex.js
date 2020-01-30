@@ -258,7 +258,7 @@ module.exports.flextime = function(timedata) {
                   type: "text",
                   text: "วันเวลาเปิดทำการ",
                   margin: "sm",
-                  size: "md",
+                  size: "lg",
                   align: "center",
                   weight: "bold"
                 },
@@ -363,6 +363,170 @@ module.exports.flextime = function(timedata) {
       ret.data = flextime;
       res(ret);
     }
+  });
+};
+module.exports.flexreview = function(arrreview) {
+  return new Promise((res, rej) => {
+    var ret = {};
+    if (!arrreview) {
+      ret.status = false;
+      ret.message = "error";
+      rej(ert);
+    }
+    var arr = arrreview;
+    var temp = [];
+    arr.forEach(element => {
+      let flex = {
+        type: "bubble",
+        header: {
+          type: "box",
+          layout: "vertical",
+          contents: [
+            {
+              type: "text",
+              text: "REVIEW",
+              margin: "none",
+              size: "sm",
+              align: "start",
+              gravity: "top",
+              weight: "bold",
+              color: "#AAAAAA"
+            },
+            {
+              type: "image",
+              url: element.profile_photo_url,
+              align: "center",
+              aspectRatio: "4:3",
+              aspectMode: "fit"
+            }
+          ]
+        },
+        body: {
+          type: "box",
+          layout: "vertical",
+          spacing: "md",
+          contents: [
+            {
+              type: "box",
+              layout: "vertical",
+              contents: [
+                {
+                  type: "text",
+                  text: element.author_name,
+                  flex: 8,
+                  size: "md",
+                  align: "center",
+                  gravity: "center",
+                  weight: "bold",
+                  wrap: true
+                },
+                {
+                  type: "separator",
+                  margin: "lg"
+                }
+              ]
+            },
+            {
+              type: "box",
+              layout: "vertical",
+              contents: [
+                {
+                  type: "text",
+                  text: "ความคิดเห็น:",
+                  flex: 8,
+                  size: "md",
+                  align: "start",
+                  gravity: "center",
+                  weight: "bold",
+                  wrap: true
+                },
+                {
+                  type: "text",
+                  text:
+                    element.text.length > 250
+                      ? element.text.substring(0, 250) + "..."
+                      : element.text,
+                  flex: 0,
+                  size: "xs",
+                  align: "start",
+                  wrap: true
+                }
+              ]
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              contents: [
+                {
+                  type: "text",
+                  text: "การให้คะแนน:",
+                  flex: 0,
+                  margin: "xs",
+                  size: "sm",
+                  align: "start",
+                  weight: "bold"
+                },
+                {
+                  type: "icon",
+                  url:
+                    "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                  size: "xs"
+                },
+                {
+                  type: "text",
+                  text: ` ${element.rating}`
+                }
+              ]
+            },
+            {
+              type: "box",
+              layout: "baseline",
+              contents: [
+                {
+                  type: "text",
+                  text: "แสดงความคิดเห็นเมื่อ",
+                  flex: 6,
+                  margin: "xs",
+                  size: "sm",
+                  align: "start",
+                  weight: "bold"
+                },
+                {
+                  type: "text",
+                  text: element.relative_time_description,
+                  flex: 4,
+                  margin: "sm",
+                  size: "sm",
+                  align: "start",
+                  weight: "bold",
+                  color: "#EA7F7F"
+                }
+              ]
+            }
+          ]
+        },
+        footer: {
+          type: "box",
+          layout: "horizontal",
+          contents: [
+            {
+              type: "button",
+              action: {
+                type: "uri",
+                label: "ดูรายละเอียดผู้รีวิว",
+                uri: element.author_url
+              },
+              color: "#04A4B6",
+              style: "primary"
+            }
+          ]
+        }
+      };
+      temp.push(flex);
+    });
+    ret.status = true;
+    ret.data = temp;
+    res(ret);
   });
 };
 module.exports.getSeletedPlace = function(temp, arr) {
