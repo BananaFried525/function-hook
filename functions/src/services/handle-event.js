@@ -168,10 +168,29 @@ module.exports.handleEvent = function(event) {
             case "text":
               if (message.text === "ชลบุรี") {
                 try {
-                  var tempplaceFlexbox = _.clone(templace);
+                  // var tempplaceFlexbox = _.clone(templace);
                   const dataApi = await googleApi.textSearch("ชลบุรี+โรงแรม");
                   const objectPlace = await getSeletedPlace(
-                    tempplaceFlexbox,
+                    templace,
+                    dataApi.data
+                  );
+                  resolve([replyToken, objectPlace]);
+                  // eslint-disable-next-line no-empty
+                } catch (error) {
+                  console.log(error);
+
+                  resolve([
+                    replyToken,
+                    { type: "text", text: "กรุณาลองใหม่อีกครั้ง" }
+                  ]);
+                }
+              } else if (message.text === "ระยอง") {
+                try {
+                  // eslint-disable-next-line no-redeclare
+
+                  const dataApi = await googleApi.textSearch("ระยอง+ร้านอาหาร");
+                  const objectPlace = await getSeletedPlace(
+                    templace,
                     dataApi.data
                   );
                   resolve([replyToken, objectPlace]);
@@ -187,10 +206,10 @@ module.exports.handleEvent = function(event) {
               } else if (message.text === "น่าน") {
                 try {
                   // eslint-disable-next-line no-redeclare
-                  var tempplaceFlexbox = _.clone(templace);
+
                   const dataApi = await googleApi.textSearch("น่าน+ร้านอาหาร");
                   const objectPlace = await getSeletedPlace(
-                    tempplaceFlexbox,
+                    templace,
                     dataApi.data
                   );
                   resolve([replyToken, objectPlace]);
@@ -210,7 +229,7 @@ module.exports.handleEvent = function(event) {
                   "ลำปาง+แหล่งท่องเที่ยว"
                 );
                 const objectPlace = await getSeletedPlace(
-                  tempplaceFlexbox,
+                  templace,
                   dataApi.data
                 );
                 resolve([replyToken, objectPlace]);
