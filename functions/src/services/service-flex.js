@@ -4,14 +4,14 @@ module.exports.flexdetail = function(detail, url_photo) {
     var phone = "ไม่มีข้อมูล";
     var website = "ไม่มีข้อมูล";
     let action_phone = {
-      type: "message",
+      type: "postback",
       label: "โทร",
-      text: "ขออภัยเราไม่มีข้อมูลดังกล่าว"
+      data: "error_tel"
     };
     let action_website = {
-      type: "message",
+      type: "postback",
       label: "เว็บไซต์",
-      text: "ขออภัยเราไม่มีข้อมูลดังกล่าว"
+      data: "error_web"
     };
 
     if (detail.formatted_phone_number) {
@@ -118,7 +118,7 @@ module.exports.flexdetail = function(detail, url_photo) {
                   text: "จำนวนการรีวิว:",
                   flex: 3,
                   margin: "sm",
-                  size: "sm",
+                  size: "xs",
                   align: "start",
                   weight: "bold"
                 },
@@ -142,7 +142,7 @@ module.exports.flexdetail = function(detail, url_photo) {
                   text: "เบอร์โทร:",
                   flex: 3,
                   margin: "sm",
-                  size: "sm",
+                  size: "xs",
                   align: "start",
                   weight: "bold"
                 },
@@ -165,7 +165,7 @@ module.exports.flexdetail = function(detail, url_photo) {
                   type: "text",
                   text: "เว็บไซต์:",
                   flex: 3,
-                  size: "md",
+                  size: "xs",
                   gravity: "bottom",
                   weight: "bold"
                 },
@@ -220,7 +220,28 @@ module.exports.flextime = function(timedata) {
       res(ret);
     } else {
       var weekday_array = timedata.weekday_text;
-      var opening = timedata.open_now;
+      var opening;
+      var color_status;
+      if (timedata.open_now) {
+        opening = "เปิดอยู่";
+        color_status = "#21bf73";
+      } else {
+        opening = "ปิดทำการ";
+        color_status = "#fd5e53";
+      }
+      var i = new Date().getUTCDay();
+      var flex = [2, 4, 6, 8, 10, 12, 14];
+      var b = [
+        "วันอาทิตย์",
+        "วันจันทร์",
+        "วันอังคาร",
+        "วันพุธ",
+        "วันพฤหัสบดี",
+        "วันศุกร์",
+        "วันเสาร์"
+      ];
+      const index = weekday_array.findIndex(day => b[i] === day.split(":")[0]);
+      console.log(flex[index]);
       var flextime = {
         type: "bubble",
         body: {
@@ -235,9 +256,9 @@ module.exports.flextime = function(timedata) {
               contents: [
                 {
                   type: "text",
-                  text: "วันเวลาที่เปิดทำการ",
+                  text: "วันเวลาเปิดทำการ",
                   margin: "sm",
-                  size: "lg",
+                  size: "md",
                   align: "center",
                   weight: "bold"
                 },
@@ -246,7 +267,7 @@ module.exports.flextime = function(timedata) {
                 },
                 {
                   type: "text",
-                  text: "วันอาทิตย์ 8:00–18:00",
+                  text: weekday_array[0],
                   align: "center"
                 },
                 {
@@ -254,7 +275,7 @@ module.exports.flextime = function(timedata) {
                 },
                 {
                   type: "text",
-                  text: "วันจันทร์ 8:00–18:00",
+                  text: weekday_array[1],
                   align: "center"
                 },
                 {
@@ -262,7 +283,7 @@ module.exports.flextime = function(timedata) {
                 },
                 {
                   type: "text",
-                  text: "วันอังคาร 8:00–18:00",
+                  text: weekday_array[2],
                   align: "center"
                 },
                 {
@@ -270,7 +291,7 @@ module.exports.flextime = function(timedata) {
                 },
                 {
                   type: "text",
-                  text: "วันพุธ 8:00–18:00",
+                  text: weekday_array[3],
                   align: "center"
                 },
                 {
@@ -278,7 +299,7 @@ module.exports.flextime = function(timedata) {
                 },
                 {
                   type: "text",
-                  text: "วันพฤหัสบดี 8:00–18:00",
+                  text: weekday_array[4],
                   align: "center"
                 },
                 {
@@ -286,7 +307,7 @@ module.exports.flextime = function(timedata) {
                 },
                 {
                   type: "text",
-                  text: "วันศุกร์ 8:00–18:00",
+                  text: weekday_array[5],
                   align: "center"
                 },
                 {
@@ -294,7 +315,7 @@ module.exports.flextime = function(timedata) {
                 },
                 {
                   type: "text",
-                  text: "วันเสาร์ 8:00–18:00",
+                  text: weekday_array[6],
                   align: "center"
                 },
                 {
@@ -318,23 +339,26 @@ module.exports.flextime = function(timedata) {
                 },
                 {
                   type: "text",
-                  text: "เปิดอยู่",
+                  text: opening,
                   flex: 1,
                   margin: "sm",
-                  size: "lg",
+                  size: "sm",
                   align: "start",
                   weight: "bold",
-                  color: "#0CF929"
+                  color: color_status
                 }
               ]
             }
           ]
         }
       };
-      for (let i = 0, j = 2; i < weekday_array.length; i++, j = j + 2) {
-        flextime.contents.body.contents[0].contents[j].text = weekday_array[i];
-      }
-      flextime.contents.body.contents[1].contents[1].text = opening;
+      flextime.body.contents[0].contents[flex[index]] = {
+        type: "text",
+        text: weekday_array[index],
+        align: "center",
+        weight: "bold",
+        color: color_status
+      };
       ret.status = true;
       ret.data = flextime;
       res(ret);
@@ -477,7 +501,7 @@ module.exports.getSeletedPlace = function(temp, arr) {
           ? (flex.body.contents[4].contents[1].color = "#459950")
           : (flex.body.contents[4].contents[1].color = "#cccccc");
         flex.body.contents[5].contents[2].text = results[i].rateing.toString();
-        flex.footer.contents[0].action.data = `placeId_hotel,${results[i].place_id},${results[i].photo}`;
+        flex.footer.contents[0].action.data = `placeId_hotel^${results[i].place_id}^${results[i].photo}`;
         temp1.contents.contents.push(flex);
       }
     } else if (results.length < 10) {
@@ -597,7 +621,7 @@ module.exports.getSeletedPlace = function(temp, arr) {
                 action: {
                   type: "postback",
                   label: "ดูรายละเอียด",
-                  data: '{"DATA":"BACD"}'
+                  data: ""
                 },
                 color: "#459950",
                 style: "primary"
@@ -612,7 +636,7 @@ module.exports.getSeletedPlace = function(temp, arr) {
           ? (flex.body.contents[4].contents[1].color = "#459950")
           : (flex.body.contents[4].contents[1].color = "#cccccc");
         flex.body.contents[5].contents[2].text = results.rateing.toString();
-        flex.footer.contents[0].action.data = `placeId_hotel,${results.place_id},${result.photo}`;
+        flex.footer.contents[0].action.data = `placeId_hotel^${results.place_id}^${result.photo}`;
         temp1.contents.contents.push(flex);
       });
     } else {

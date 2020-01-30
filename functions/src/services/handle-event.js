@@ -15,37 +15,369 @@ module.exports.handleEvent = function(event) {
     let userId = event.source.userId;
 
     try {
-      if (event.type === "postback" && event.postback.text === "ดูรายละเอียด") {
-        const details = event.postback.data.split("^")[0];
-        const place_id = event.postback.data.split("^")[1];
-        const photo_ref = event.postback.data.split("^")[2];
+      if (event.type === "postback") {
+        /**
+         * !จับ error case
+         * *เว็บและเบอร์โทรไม่มีข้อมูล
+         */
+        switch (event.postback.data) {
+          case "error_web":
+            resolve([
+              replyToken,
+              {
+                type: "text",
+                text: "ขออภัยด้วยครับเราไม่ข้อมูลเว็บดังกล่าว :("
+              }
+            ]);
+            break;
+          case "error_tel":
+            resolve([
+              replyToken,
+              {
+                type: "text",
+                text: "ขออภัยด้วยครับเราไม่ข้อมูลเบอร์โทรดังกล่าว :("
+              }
+            ]);
+            break;
+          // eslint-disable-next-line no-fallthrough
+          default:
+            break;
+        }
+        var details = event.postback.data.split("^")[0];
+        var place_id = event.postback.data.split("^")[1];
+        var photo_ref = event.postback.data.split("^")[2];
+        /**
+         * !จับ เคส detail
+         * *
+         */
         switch (details) {
           case "placeId_hotel":
             const url_photo = await googleApi.placePhotoreFerence(photo_ref);
             const getdetail = await googleApi.PlaceDetail(place_id);
             const detail = getdetail.data.result;
+            var flexTime_result;
             const review = detail.reviews;
             const time_open = detail.opening_hours;
             const flexDetail_result = await flexService.flexdetail(
               detail,
               url_photo.data
             );
-            console.log(time_open, "time_open");
-            // const flexTime_result = await flexService.flextime(time_open);
-            // console.log(flexTime_result.data, "flex result");
+            time_open
+              ? (flexTime_result = await flexService.flextime(time_open))
+              : "";
 
+            let prototype = {
+              type: "flex",
+              altText: "Flex Message",
+              contents: {
+                type: "carousel",
+                contents: []
+              }
+            };
+            prototype.contents.contents.push(flexDetail_result.data);
+            flexTime_result
+              ? prototype.contents.contents.push(flexTime_result.data)
+              : "";
+            prototype.contents.contents.push({
+              type: "bubble",
+              header: {
+                type: "box",
+                layout: "horizontal",
+                contents: [
+                  {
+                    type: "text",
+                    text: "REVIEW",
+                    size: "sm",
+                    weight: "bold",
+                    color: "#AAAAAA"
+                  }
+                ]
+              },
+              hero: {
+                type: "image",
+                url:
+                  "https://lh4.ggpht.com/-9gGotsN7IfI/AAAAAAAAAAI/AAAAAAAAAAA/YE0A0cnAdhY/s128-c0x00000000-cc-rp-mo-ba5/photo.jpg",
+                size: "xl",
+                aspectRatio: "20:13",
+                action: {
+                  type: "uri",
+                  label: "Action",
+                  uri: "https://linecorp.com/"
+                }
+              },
+              body: {
+                type: "box",
+                layout: "vertical",
+                spacing: "md",
+                contents: [
+                  {
+                    type: "box",
+                    layout: "vertical",
+                    contents: [
+                      {
+                        type: "text",
+                        text: "Samrit Ninpangan",
+                        flex: 8,
+                        size: "lg",
+                        align: "center",
+                        gravity: "bottom",
+                        weight: "bold",
+                        wrap: true
+                      },
+                      {
+                        type: "separator"
+                      }
+                    ]
+                  },
+                  {
+                    type: "box",
+                    layout: "vertical",
+                    contents: [
+                      {
+                        type: "text",
+                        text: "ความคิดเห็น:",
+                        flex: 8,
+                        size: "md",
+                        align: "start",
+                        gravity: "center",
+                        weight: "bold",
+                        wrap: true
+                      },
+                      {
+                        type: "text",
+                        text: "อาหารอร่อย แนะนำครับ",
+                        flex: 1,
+                        size: "md",
+                        align: "start",
+                        wrap: true
+                      }
+                    ]
+                  },
+                  {
+                    type: "box",
+                    layout: "baseline",
+                    contents: [
+                      {
+                        type: "text",
+                        text: "การให้คะแนน:",
+                        flex: 0,
+                        margin: "sm",
+                        size: "sm",
+                        align: "start",
+                        weight: "bold"
+                      },
+                      {
+                        type: "icon",
+                        url:
+                          "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                        size: "xs"
+                      },
+                      {
+                        type: "text",
+                        text: " 4.4"
+                      }
+                    ]
+                  },
+                  {
+                    type: "box",
+                    layout: "baseline",
+                    contents: [
+                      {
+                        type: "text",
+                        text: "แสดงความคิดเห็นเมื่อ",
+                        flex: 6,
+                        margin: "sm",
+                        size: "sm",
+                        align: "start",
+                        weight: "bold"
+                      },
+                      {
+                        type: "text",
+                        text: "ปีที่แล้ว",
+                        flex: 4,
+                        margin: "sm",
+                        size: "sm",
+                        align: "start",
+                        weight: "bold",
+                        color: "#EA7F7F"
+                      }
+                    ]
+                  }
+                ]
+              },
+              footer: {
+                type: "box",
+                layout: "horizontal",
+                contents: [
+                  {
+                    type: "button",
+                    action: {
+                      type: "uri",
+                      label: "ดูรายละเอียดผู้รีวิว",
+                      uri:
+                        "https://www.google.com/maps/contrib/112186095773426382645/reviews"
+                    },
+                    color: "#04A4B6",
+                    style: "primary"
+                  }
+                ]
+              }
+            });
+            prototype.contents.contents.push({
+              type: "bubble",
+              header: {
+                type: "box",
+                layout: "horizontal",
+                contents: [
+                  {
+                    type: "text",
+                    text: "REVIEW",
+                    size: "sm",
+                    weight: "bold",
+                    color: "#AAAAAA"
+                  }
+                ]
+              },
+              hero: {
+                type: "image",
+                url:
+                  "https://lh4.ggpht.com/-9gGotsN7IfI/AAAAAAAAAAI/AAAAAAAAAAA/YE0A0cnAdhY/s128-c0x00000000-cc-rp-mo-ba5/photo.jpg",
+                size: "xl",
+                aspectRatio: "20:13",
+                action: {
+                  type: "uri",
+                  label: "Action",
+                  uri: "https://linecorp.com/"
+                }
+              },
+              body: {
+                type: "box",
+                layout: "vertical",
+                spacing: "md",
+                contents: [
+                  {
+                    type: "box",
+                    layout: "vertical",
+                    contents: [
+                      {
+                        type: "text",
+                        text: "Samrit Ninpangan",
+                        flex: 8,
+                        size: "lg",
+                        align: "center",
+                        gravity: "bottom",
+                        weight: "bold",
+                        wrap: true
+                      },
+                      {
+                        type: "separator"
+                      }
+                    ]
+                  },
+                  {
+                    type: "box",
+                    layout: "vertical",
+                    contents: [
+                      {
+                        type: "text",
+                        text: "ความคิดเห็น:",
+                        flex: 8,
+                        size: "md",
+                        align: "start",
+                        gravity: "center",
+                        weight: "bold",
+                        wrap: true
+                      },
+                      {
+                        type: "text",
+                        text: "อาหารอร่อย แนะนำครับ",
+                        flex: 1,
+                        size: "md",
+                        align: "start",
+                        wrap: true
+                      }
+                    ]
+                  },
+                  {
+                    type: "box",
+                    layout: "baseline",
+                    contents: [
+                      {
+                        type: "text",
+                        text: "การให้คะแนน:",
+                        flex: 0,
+                        margin: "sm",
+                        size: "sm",
+                        align: "start",
+                        weight: "bold"
+                      },
+                      {
+                        type: "icon",
+                        url:
+                          "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                        size: "xs"
+                      },
+                      {
+                        type: "text",
+                        text: " 4.4"
+                      }
+                    ]
+                  },
+                  {
+                    type: "box",
+                    layout: "baseline",
+                    contents: [
+                      {
+                        type: "text",
+                        text: "แสดงความคิดเห็นเมื่อ",
+                        flex: 6,
+                        margin: "sm",
+                        size: "sm",
+                        align: "start",
+                        weight: "bold"
+                      },
+                      {
+                        type: "text",
+                        text: "ปีที่แล้ว",
+                        flex: 4,
+                        margin: "sm",
+                        size: "sm",
+                        align: "start",
+                        weight: "bold",
+                        color: "#EA7F7F"
+                      }
+                    ]
+                  }
+                ]
+              },
+              footer: {
+                type: "box",
+                layout: "horizontal",
+                contents: [
+                  {
+                    type: "button",
+                    action: {
+                      type: "uri",
+                      label: "ดูรายละเอียดผู้รีวิว",
+                      uri:
+                        ' "https://www.google.com/maps/contrib/112186095773426382645/reviews"'
+                    },
+                    color: "#04A4B6",
+                    style: "primary"
+                  }
+                ]
+              }
+            });
             resolve([
               replyToken,
               [
-                flexDetail_result.data,
-                {
-                  type: "text",
-                  text: "คุณต้องการที่จะสอบเรื่องอื่นอีกมั้ยครับ ?"
-                }
+                prototype,
+                { type: "text", text: "คุณต้องการจะสอบถามเรื่องอื่นอีกหรือไม่" }
               ]
             ]);
 
             break;
+
           default:
             break;
         }
@@ -228,7 +560,7 @@ module.exports.handleEvent = function(event) {
                       contents: []
                     }
                   };
-                  const dataApi = await googleApi.textSearch("น่าน+ร้านอาหาร");
+                  const dataApi = await googleApi.textSearch("น่าน+โรงแรม");
                   const objectPlace = await flexService.getSeletedPlace(
                     tempflex,
                     dataApi.data
