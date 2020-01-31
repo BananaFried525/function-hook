@@ -7,15 +7,22 @@ const db = require("./firestore");
  */
 module.exports.getLov = function(element) {
   return new Promise((resolve, reject) => {
+    console.log(element);
     db.collection("lov")
       .where("lovName", "==", element)
+      .get()
       .then(docs => {
-        if (!docs.exists) {
+        console.log(docs[0]);
+        if (docs.empty) {
           console.log("No such document!");
           resolve(false);
         } else {
-          console.log("Document data:", docs.data());
-          resolve(docs.data());
+          let resGet ;
+          docs.forEach(doc=>{
+            resGet = doc.data();
+          })
+          console.log("Document data:",resGet);
+          resolve(resGet);
         }
       })
       .catch(err => {

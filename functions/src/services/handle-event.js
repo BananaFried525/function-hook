@@ -72,6 +72,7 @@ module.exports.handleEvent = function(event) {
               result = { type: "text", text: "ไม่พบสิ่งที่ค้นหา" };
             } else {
               console.info(``,resNearby.data);
+              // แก้ตัวแมพ
               let objectPlace = await flexService.getSeletedPlace(temp,resNearby.data);
               console.info(`Line response =>`,objectPlace);
               result = objectPlace;
@@ -340,7 +341,7 @@ function postbackHandle(event) {
         case "richmenu_hotel":
           reply = {
             type: "text",
-            text: "กรุณาเลือกสถานที่ปัจจุบัน",
+            text: "กรุณาเลือกสถานที่ปัจจุบันหรือพิมพ์ชื่อจังหวัด",
             quickReply: {
               items: [
                 {
@@ -348,13 +349,6 @@ function postbackHandle(event) {
                   action: {
                     type: "location",
                     label: "กรุณาเลือกสถานที่"
-                  }
-                },
-                {
-                  type: "action",
-                  action: {
-                    type: "text",
-                    label: "กรุณาพิมพ์ชื่อจังหวัด"
                   }
                 }
               ]
