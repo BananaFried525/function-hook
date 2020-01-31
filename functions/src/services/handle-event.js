@@ -16,95 +16,100 @@ module.exports.handleEvent = function(event) {
 
     try {
       if (event.type === "postback") {
-        /**
-         * !จับ error case
-         * *เว็บและเบอร์โทรไม่มีข้อมูล
-         */
-        switch (event.postback.data) {
-          case "error_web":
-            resolve([
-              replyToken,
-              {
-                type: "text",
-                text: "ขออภัยด้วยครับเราไม่ข้อมูลเว็บดังกล่าว :("
-              }
-            ]);
-            break;
-          case "error_tel":
-            resolve([
-              replyToken,
-              {
-                type: "text",
-                text: "ขออภัยด้วยครับเราไม่ข้อมูลเบอร์โทรดังกล่าว :("
-              }
-            ]);
-            break;
-          // eslint-disable-next-line no-fallthrough
-          default:
-            break;
+        let isDetail = event.postback.data.split(`^`)[0] ? true : false;
+        if (isDetail) {
+          let resDetail = await checkDetail(event);
+          result = resDetail;
+          resolve([replyToken, result]);
+        } else {
+          let resPostback = await postbackHandle(event);
+          result = resPostback;
+          resolve([replyToken, result]);
         }
-        var details = event.postback.data.split("^")[0];
-        var place_id = event.postback.data.split("^")[1];
-        var photo_ref = event.postback.data.split("^")[2];
-        /**
-         * !จับ เคส detail
-         * *
-         */
-        switch (details) {
-          case "placeId_hotel":
-            const url_photo = await googleApi.placePhotoreFerence(photo_ref);
-            const getdetail = await googleApi.PlaceDetail(place_id);
-            const detail = getdetail.data.result;
-
-            const review = detail.reviews;
-            const time_open = detail.opening_hours;
-            const flexDetail_result = await flexService.flexdetail(
-              detail,
-              url_photo.data
-            );
-            var flexTime_result;
-            var flexReivew_result;
-
-            time_open
-              ? (flexTime_result = await flexService.flextime(time_open))
-              : "";
-            review
-              ? (flexReivew_result = await flexService.flexreview(review))
-              : "";
-            let prototype = {
-              type: "flex",
-              altText: "Flex Message",
-              contents: {
-                type: "carousel",
-                contents: []
-              }
-            };
-
-            prototype.contents.contents.push(flexDetail_result.data);
-            flexTime_result
-              ? prototype.contents.contents.push(flexTime_result.data)
-              : "";
-            flexReivew_result.data.forEach(e => {
-              prototype.contents.contents.push(e);
-            });
-            resolve([
-              replyToken,
-              [
-                prototype,
-                { type: "text", text: "คุณต้องการจะสอบถามเรื่องอื่นอีกหรือไม่" }
-              ]
-            ]);
-
-            break;
-
-          default:
-            break;
-        }
-      } else if (event.type === "postback") {
-        let resPostback = await postbackHandle(event);
-        result = resPostback;
-        resolve([replyToken, result]);
-      } else {
+        // /**
+        //  * !จับ error case
+        //  * *เว็บและเบอร์โทรไม่มีข้อมูล
+        //  */
+        // switch (event.postback.data) {
+        //   case "error_web":
+        //     resolve([
+        //       replyToken,
+        //       {
+        //         type: "text",
+        //         text: "ขออภัยด้วยครับเราไม่ข้อมูลเว็บดังกล่าว :("
+        //       }
+        //     ]);
+        //     break;
+        //   case "error_tel":
+        //     resolve([
+        //       replyToken,
+        //       {
+        //         type: "text",
+        //         text: "ขออภัยด้วยครับเราไม่ข้อมูลเบอร์โทรดังกล่าว :("
+        //       }
+        //     ]);
+        //     break;
+        //   // eslint-disable-next-line no-fallthrough
+        //   default:
+        //     break;
+        // }
+        // var details = event.postback.data.split("^")[0];
+        // var place_id = event.postback.data.split("^")[1];
+        // var photo_ref = event.postback.data.split("^")[2];
+        // /**
+        //  * !จับ เคส detail
+        //  * *
+        //  */
+        // switch (details) {
+        //   case "placeId_hotel":
+        //     const url_photo = await googleApi.placePhotoreFerence(photo_ref);
+        //     const getdetail = await googleApi.PlaceDetail(place_id);
+        //     const detail = getdetail.data.result;
+        //     const review = detail.reviews;
+        //     const time_open = detail.opening_hours;
+        //     const flexDetail_result = await flexService.flexdetail(
+        //       detail,
+        //       url_photo.data
+        //     );
+        //     var flexTime_result;
+        //     var flexReivew_result;
+        //     time_open
+        //       ? (flexTime_result = await flexService.flextime(time_open))
+        //       : "";
+        //     review
+        //       ? (flexReivew_result = await flexService.flexreview(review))
+        //       : "";
+        //     let prototype = {
+        //       type: "flex",
+        //       altText: "Flex Message",
+        //       contents: {
+        //         type: "carousel",
+        //         contents: []
+        //       }
+        //     };
+        //     prototype.contents.contents.push(flexDetail_result.data);
+        //     flexTime_result
+        //       ? prototype.contents.contents.push(flexTime_result.data)
+        //       : "";
+        //     flexReivew_result.data.forEach(e => {
+        //       prototype.contents.contents.push(e);
+        //     });
+        //     resolve([
+        //       replyToken,
+        //       [
+        //         prototype,
+        //         { type: "text", text: "คุณต้องการจะสอบถามเรื่องอื่นอีกหรือไม่" }
+        //       ]
+        //     ]);
+        //     break;
+        //   default:
+        //     break;
+        // }
+        // } else if (event.type === "postback") {
+        //   let resPostback = await postbackHandle(event);
+        //   result = resPostback;
+        //   resolve([replyToken, result]);
+        } else {
         let isComplete = false; // เอาไว้ใช้ในกรณีที่ทำ action เสร็จ
         // ดึง User เพื่อเช็ค action
         let User = await userService.getUser(userId);
@@ -424,4 +429,95 @@ async function completeAction(userId) {
     action: "non"
   };
   await userService.updateUser(actionChange);
+}
+
+/**
+ *
+ */
+async function checkDetail(element) {
+  return new Promise(async (resolve, reject) => {
+    /**
+     * !จับ error case
+     * *เว็บและเบอร์โทรไม่มีข้อมูล
+     */
+    switch (element.postback.data) {
+      case "error_web":
+        resolve([
+          replyToken,
+          {
+            type: "text",
+            text: "ขออภัยด้วยครับเราไม่ข้อมูลเว็บดังกล่าว :("
+          }
+        ]);
+        break;
+      case "error_tel":
+        resolve([
+          replyToken,
+          {
+            type: "text",
+            text: "ขออภัยด้วยครับเราไม่ข้อมูลเบอร์โทรดังกล่าว :("
+          }
+        ]);
+        break;
+      // eslint-disable-next-line no-fallthrough
+      default:
+        break;
+    }
+
+    var details = element.postback.data.split("^")[0];
+    var place_id = element.postback.data.split("^")[1];
+    var photo_ref = element.postback.data.split("^")[2];
+
+    /**
+     * !จับ เคส detail
+     */
+    switch (details) {
+      case "placeId_hotel":
+        const url_photo = await googleApi.placePhotoreFerence(photo_ref);
+        const getdetail = await googleApi.PlaceDetail(place_id);
+        const detail = getdetail.data.result;
+
+        const review = detail.reviews;
+        const time_open = detail.opening_hours;
+        const flexDetail_result = await flexService.flexdetail(
+          detail,
+          url_photo.data
+        );
+        var flexTime_result;
+        var flexReivew_result;
+
+        time_open
+          ? (flexTime_result = await flexService.flextime(time_open))
+          : "";
+        review
+          ? (flexReivew_result = await flexService.flexreview(review))
+          : "";
+        let prototype = {
+          type: "flex",
+          altText: "Flex Message",
+          contents: {
+            type: "carousel",
+            contents: []
+          }
+        };
+
+        prototype.contents.contents.push(flexDetail_result.data);
+        flexTime_result
+          ? prototype.contents.contents.push(flexTime_result.data)
+          : "";
+        flexReivew_result.data.forEach(e => {
+          prototype.contents.contents.push(e);
+        });
+        resolve([
+          replyToken,
+          [
+            prototype,
+            { type: "text", text: "คุณต้องการจะสอบถามเรื่องอื่นอีกหรือไม่" }
+          ]
+        ]);
+        break;
+      default:
+        break;
+    }
+  });
 }
