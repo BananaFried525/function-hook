@@ -7,7 +7,7 @@ const userService = require("./user");
 const transactionService = require("./transaction");
 const tempDirectionBus = require("../template/busdirection.json");
 const _ = require("underscore");
-module.exports.handleEvent = function(event) {
+module.exports.handleEvent = function (event) {
   return new Promise(async (resolve, reject) => {
     let message = event.message;
     let replyToken = event.replyToken;
@@ -16,12 +16,16 @@ module.exports.handleEvent = function(event) {
 
     try {
       if (event.type === "postback") {
-        let isDetail = event.postback.data.split(`^`)[0] ? true : false;
+        let isDetail = event.postback.data.split(`^`)[0] === 'placeId_hotel' ? true : false;
+        console.log(isDetail);
         if (isDetail) {
+
           let resDetail = await checkDetail(event);
           result = resDetail;
           resolve([replyToken, result]);
+
         } else {
+
           let resPostback = await postbackHandle(event);
           result = resPostback;
           resolve([replyToken, result]);
@@ -109,7 +113,7 @@ module.exports.handleEvent = function(event) {
         //   let resPostback = await postbackHandle(event);
         //   result = resPostback;
         //   resolve([replyToken, result]);
-        } else {
+      } else {
         let isComplete = false; // เอาไว้ใช้ในกรณีที่ทำ action เสร็จ
         // ดึง User เพื่อเช็ค action
         let User = await userService.getUser(userId);
@@ -442,22 +446,20 @@ async function checkDetail(element) {
      */
     switch (element.postback.data) {
       case "error_web":
-        resolve([
-          replyToken,
+        resolve(
           {
             type: "text",
             text: "ขออภัยด้วยครับเราไม่ข้อมูลเว็บดังกล่าว :("
           }
-        ]);
+        );
         break;
       case "error_tel":
-        resolve([
-          replyToken,
+        resolve(
           {
             type: "text",
             text: "ขออภัยด้วยครับเราไม่ข้อมูลเบอร์โทรดังกล่าว :("
           }
-        ]);
+        );
         break;
       // eslint-disable-next-line no-fallthrough
       default:
@@ -508,13 +510,10 @@ async function checkDetail(element) {
         flexReivew_result.data.forEach(e => {
           prototype.contents.contents.push(e);
         });
-        resolve([
-          replyToken,
-          [
-            prototype,
-            { type: "text", text: "คุณต้องการจะสอบถามเรื่องอื่นอีกหรือไม่" }
-          ]
-        ]);
+        resolve(
+          prototype,
+          { type: "text", text: "คุณต้องการจะสอบถามเรื่องอื่นอีกหรือไม่" }
+        );
         break;
       default:
         break;
