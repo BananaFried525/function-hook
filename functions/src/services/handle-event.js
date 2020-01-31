@@ -4,10 +4,12 @@
 const googleApi = require("./google-api");
 const flexService = require("./service-flex");
 const userService = require("./user");
+const lovService = require("./lov");
 const transactionService = require("./transaction");
 const tempDirectionBus = require("../template/busdirection.json");
 const _ = require("underscore");
-module.exports.handleEvent = function (event) {
+
+module.exports.handleEvent = function(event) {
   return new Promise(async (resolve, reject) => {
     let message = event.message;
     let replyToken = event.replyToken;
@@ -16,125 +18,66 @@ module.exports.handleEvent = function (event) {
 
     try {
       if (event.type === "postback") {
-        let isDetail = event.postback.data.split(`^`)[0] === 'placeId_hotel' ? true : false;
-        console.log(isDetail);
+        let isDetail =
+          event.postback.data.split(`^`)[0] === "placeId_hotel" ? true : false;
         if (isDetail) {
-
           let resDetail = await checkDetail(event);
           result = resDetail;
           resolve([replyToken, result]);
-
         } else {
-
           let resPostback = await postbackHandle(event);
           result = resPostback;
           resolve([replyToken, result]);
         }
-        // /**
-        //  * !จับ error case
-        //  * *เว็บและเบอร์โทรไม่มีข้อมูล
-        //  */
-        // switch (event.postback.data) {
-        //   case "error_web":
-        //     resolve([
-        //       replyToken,
-        //       {
-        //         type: "text",
-        //         text: "ขออภัยด้วยครับเราไม่ข้อมูลเว็บดังกล่าว :("
-        //       }
-        //     ]);
-        //     break;
-        //   case "error_tel":
-        //     resolve([
-        //       replyToken,
-        //       {
-        //         type: "text",
-        //         text: "ขออภัยด้วยครับเราไม่ข้อมูลเบอร์โทรดังกล่าว :("
-        //       }
-        //     ]);
-        //     break;
-        //   // eslint-disable-next-line no-fallthrough
-        //   default:
-        //     break;
-        // }
-        // var details = event.postback.data.split("^")[0];
-        // var place_id = event.postback.data.split("^")[1];
-        // var photo_ref = event.postback.data.split("^")[2];
-        // /**
-        //  * !จับ เคส detail
-        //  * *
-        //  */
-        // switch (details) {
-        //   case "placeId_hotel":
-        //     const url_photo = await googleApi.placePhotoreFerence(photo_ref);
-        //     const getdetail = await googleApi.PlaceDetail(place_id);
-        //     const detail = getdetail.data.result;
-        //     const review = detail.reviews;
-        //     const time_open = detail.opening_hours;
-        //     const flexDetail_result = await flexService.flexdetail(
-        //       detail,
-        //       url_photo.data
-        //     );
-        //     var flexTime_result;
-        //     var flexReivew_result;
-        //     time_open
-        //       ? (flexTime_result = await flexService.flextime(time_open))
-        //       : "";
-        //     review
-        //       ? (flexReivew_result = await flexService.flexreview(review))
-        //       : "";
-        //     let prototype = {
-        //       type: "flex",
-        //       altText: "Flex Message",
-        //       contents: {
-        //         type: "carousel",
-        //         contents: []
-        //       }
-        //     };
-        //     prototype.contents.contents.push(flexDetail_result.data);
-        //     flexTime_result
-        //       ? prototype.contents.contents.push(flexTime_result.data)
-        //       : "";
-        //     flexReivew_result.data.forEach(e => {
-        //       prototype.contents.contents.push(e);
-        //     });
-        //     resolve([
-        //       replyToken,
-        //       [
-        //         prototype,
-        //         { type: "text", text: "คุณต้องการจะสอบถามเรื่องอื่นอีกหรือไม่" }
-        //       ]
-        //     ]);
-        //     break;
-        //   default:
-        //     break;
-        // }
-        // } else if (event.type === "postback") {
-        //   let resPostback = await postbackHandle(event);
-        //   result = resPostback;
-        //   resolve([replyToken, result]);
       } else {
         let isComplete = false; // เอาไว้ใช้ในกรณีที่ทำ action เสร็จ
-        // ดึง User เพื่อเช็ค action
         let User = await userService.getUser(userId);
+        /**
+         * *Search Hotel
+         */
         if (User.action === "richmenu_hotel") {
-          // ดัก action
-          // แก้การใช้ function
-          let user_locate = message.latitude + "," + message.longitude;
-          let resGoogle = await googleApi.nearBySearch(user_locate);
-          if (resGoogle.data.length === 0) {
-            result = { type: "text", text: "ไม่พบสิ่งที่ค้นหา" };
+          var temp = {
+            type: "flex",
+            altText: "Flex Message",
+            contents: {
+              type: "carousel",
+              contents: []
+            }
+          };
+          if (message.type === "text") {
+            let resProvice = await lovService.getLov(message.text);
+            if (resProvice) {
+              const dataApi = await googleApi.textSearch(
+                `${resProvice.lovName}+โรงแรม`
+              );
+              const objectPlace = await flexService.getSeletedPlace(
+                temp,
+                dataApi.data
+              );
+              console.info(`Line response =>`,objectPlace);
+              result = objectPlace;
+              isComplete = true;
+            } else {
+              console.error("invalid provice");
+              result = {
+                type: "text",
+                text: "กรุณาพิมพ์ชื่อจังหวัดให้ถูกต้อง"
+              };
+            }
           } else {
-            console.log(resGoogle);
-            console.log(typeof resGoogle);
-            result = {
-              type: "text",
-              text: JSON.stringify(resGoogle.data[0])
-            };
+            let user_locate = message.latitude + "," + message.longitude;
+            let resNearby = await googleApi.nearBySearch(user_locate);
+            if (resNearby.data.length === 0) {
+              console.error(`not found`);
+              result = { type: "text", text: "ไม่พบสิ่งที่ค้นหา" };
+            } else {
+              console.info(``,resNearby.data);
+              let objectPlace = await flexService.getSeletedPlace(temp,resNearby.data);
+              console.info(`Line response =>`,objectPlace);
+              result = objectPlace;
+              isComplete = true;
+            }
           }
-          isComplete = true;
-
-          // Clear user action
           if (isComplete) completeAction(userId);
           resolve([replyToken, result]);
         } else if (User.action === "richmenu_bus") {
@@ -245,7 +188,6 @@ module.exports.handleEvent = function (event) {
                   // eslint-disable-next-line no-empty
                 } catch (error) {
                   console.log(error);
-
                   resolve([
                     replyToken,
                     { type: "text", text: "กรุณาลองใหม่อีกครั้ง" }
@@ -327,7 +269,6 @@ module.exports.handleEvent = function (event) {
                 console.info("text message detected");
                 resolve([replyToken, result]);
               }
-
               break;
             default:
               result = { type: "text", text: "ไม่สามารถค้นหาคำสั่งนี้พบ" };
@@ -348,9 +289,8 @@ function replyText(message) {
   let reply = "";
   reply = {
     type: "text",
-    text: message.text
+    text: "กรุณาเลือกทำรายการ"
   };
-
   return reply;
 }
 
@@ -407,7 +347,14 @@ function postbackHandle(event) {
                   type: "action",
                   action: {
                     type: "location",
-                    label: "เลือกสถานที่"
+                    label: "กรุณาเลือกสถานที่"
+                  }
+                },
+                {
+                  type: "action",
+                  action: {
+                    type: "text",
+                    label: "กรุณาพิมพ์ชื่อจังหวัด"
                   }
                 }
               ]
@@ -446,20 +393,16 @@ async function checkDetail(element) {
      */
     switch (element.postback.data) {
       case "error_web":
-        resolve(
-          {
-            type: "text",
-            text: "ขออภัยด้วยครับเราไม่ข้อมูลเว็บดังกล่าว :("
-          }
-        );
+        resolve({
+          type: "text",
+          text: "ขออภัยด้วยครับเราไม่ข้อมูลเว็บดังกล่าว :("
+        });
         break;
       case "error_tel":
-        resolve(
-          {
-            type: "text",
-            text: "ขออภัยด้วยครับเราไม่ข้อมูลเบอร์โทรดังกล่าว :("
-          }
-        );
+        resolve({
+          type: "text",
+          text: "ขออภัยด้วยครับเราไม่ข้อมูลเบอร์โทรดังกล่าว :("
+        });
         break;
       // eslint-disable-next-line no-fallthrough
       default:
@@ -510,10 +453,10 @@ async function checkDetail(element) {
         flexReivew_result.data.forEach(e => {
           prototype.contents.contents.push(e);
         });
-        resolve(
-          prototype,
-          { type: "text", text: "คุณต้องการจะสอบถามเรื่องอื่นอีกหรือไม่" }
-        );
+        resolve(prototype, {
+          type: "text",
+          text: "คุณต้องการจะสอบถามเรื่องอื่นอีกหรือไม่"
+        });
         break;
       default:
         break;
