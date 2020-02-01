@@ -2,21 +2,33 @@ module.exports.addTransaction = function(action) {
   return new Promise((resolve, reject) => {
     let transaction;
     if (action === "richmenu_hotel") {
-      let transaction = nearBySeach;
+      let transaction = searchHotel;
       transaction.action = action;
       resolve(transaction);
     } else if (action === "richmenu_bus") {
       let transaction = sortBus;
       transaction.action = action;
       resolve(transaction);
+    }else if( action === 'richmenu_restaurant'){
+      let transaction = searchRestaurant;
+      transaction.action = action;
+      resolve(transaction);
+    }else if(action === 'richmenu_tourist'){
+      let transaction = searchTourist;
+      transaction.action = action;
+      resolve(transaction);
+    }else {
+      resolve({});
     }
     
   });
 };
 
-let nearBySeach = {
+let searchHotel = {
   location: "",
-  action: ""
+  action: "",
+  timeStamp:new Date(),
+  isComplete:false,
 };
 
 let sortBus = {
@@ -26,3 +38,17 @@ let sortBus = {
   isComplete:false,
   timeStamp:new Date()
 };
+
+let searchRestaurant ={
+  location: "",
+  action: "",
+  isComplete:false,
+  timeStamp:new Date()
+}
+
+let searchTourist = {
+  location: "",
+  action: "",
+  isComplete:false,
+  timeStamp:new Date()
+}
