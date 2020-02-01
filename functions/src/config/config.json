@@ -15,5 +15,6 @@
     "storageBucket": "linebot-01-auoaao.appspot.com",
     "messagingSenderId": "391523060557"
   },
-  "richMenuId": "richmenu-363abb09c9e053c94fe3bd373d7e3ee8"
+  "richMenuId": "richmenu-363abb09c9e053c94fe3bd373d7e3ee8",
+  "SECRET": "LINEBOT_KMUTNB"
 }

@@ -1,6 +1,7 @@
 /*********************************** Start import Server  ***********************************/
 const express = require("express");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 /*********************************** End import Server   ***********************************/
 
 /*********************************** Start import Line config  ***********************************/
@@ -14,17 +15,18 @@ const configLine = require("./config/config.json")["line"];
 /*********************************** Start import route  ***********************************/
 const webHook = require("../src/webhook/webhook");
 const test = require("./test/test");
+const webserver = require("./webserver/server");
 /*********************************** End import route  ***********************************/
 
 const app = express();
 
 app.use(cors({ origin: true }));
-
+app.use(bodyParser.json());
 /**
  * ?test for android and other don't forget to discommit
  */
 app.use("/test", test);
-
+app.use("/server", webserver);
 /*********************************** Start middle,catch err for line webhook ***********************************/
 app.use(middleware(configLine));
 app.post("/webhook", webHook);
