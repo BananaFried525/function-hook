@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 const express = require("express");
 const app = express();
 const db = require("../services/firestore");
@@ -7,15 +8,16 @@ const SECRET = require("../config/config.json")["SECRET"];
 var adminmiddleware = require("../webserver/midleware/authen_admin");
 var _ = require("underscore");
 app.post("/login", (req, res) => {
-  var ret = {};
+  const ret = {};
   if (!req.body.username && !req.body.password) {
     ret.status = "true";
-    ret.message = "understands the content type";
+    ret.message = "Error not understands the content type";
     res.status(422).json(ret);
   } else {
     try {
       const body = _.clone(req.body);
       var uname = body.username;
+
       var pwd = body.password.toString();
       var encodepwd = crypto
         .createHash("sha256")
@@ -24,33 +26,38 @@ app.post("/login", (req, res) => {
       var payload = {
         username: body.username
       };
-      var query = db
-        .collection("user_web")
-        .where("username", "==", uname)
-        .where("password", "==", encodepwd)
-        .get()
-        // eslint-disable-next-line promise/always-return
+      console.log(JSON.stringify(req.body))
+      // eslint-disable-next-line promise/catch-or-return
+      let namedb = db.collection('user_web');
+      let userwhere = namedb.where("username", "==", uname).where("password", "==", encodepwd).get()
         .then(snapshot => {
-          snapshot.forEach(ele => {
-            if (ele.data()) {
+          if (snapshot.size === 0) {
+            ret.status = false;
+            ret.message = "ไม่มีผู้ใช้งานในระบบ";
+            console.log(ret);
+            res.json(ret);
+          }
+          snapshot.forEach(doc => {
+            console.log(doc.id, '=>', doc.data());
+            if (doc.data()) {
               ret.status = true;
               ret.data = {
                 token: jwt.encode(payload, SECRET),
-                priority: ele.data().priority
+                priority: doc.data().priority
               };
-              console.log(payload, "this is payload");
-              res.send(ret);
-            } else {
-              ret.status = false;
-              ret.message = "ไม่มีผู้ใช้งานในระบบ";
-              return res.status(401).json(ret);
+              res.status(200).json(ret);
             }
           });
+        })
+        .catch(err => {
+          ret.status = false;
+          ret.message = err;
+          res.status(500).json(ret);
         });
     } catch (error) {
       console.log(error);
       ret.status = false;
-      ret.message = error;
+      ret.message = error.code;
       res.status(500).json(ret);
     }
   }
