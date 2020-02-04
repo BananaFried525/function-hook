@@ -54,7 +54,6 @@ module.exports.updateUser = function(element) {
       }).catch(err=>{
         reject(err);
       });
-    // ยังไม่เสร็จจร้าาาาาาา
   });
 };
 
@@ -65,10 +64,8 @@ module.exports.getUser = function(userId){
       .get()
       .then(docs => {
         if (!docs.exists) {
-          console.log("No such document!");
           resolve(docs.data());
         } else {
-          console.log("Document data:", docs.data());
           resolve(docs.data());
         }
       })

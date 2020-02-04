@@ -1,3 +1,4 @@
+/* eslint-disable no-implicit-coercion */
 module.exports.flexdetail = function(detail, url_photo) {
   return new Promise(async (res, rej) => {
     var ret = {};
@@ -664,12 +665,13 @@ module.exports.getSeletedPlace = function(temp, arr) {
         results[i].status === "เปิดอยู่"
           ? (flex.body.contents[4].contents[1].color = "#459950")
           : (flex.body.contents[4].contents[1].color = "#cccccc");
-        flex.body.contents[5].contents[2].text = results[i].rateing.toString();
+        flex.body.contents[5].contents[2].text = results[i].rating+"";
+        console.log(results[i].rating+"");
         flex.footer.contents[0].action.data = `placeId_hotel^${results[i].place_id}^${results[i].photo}`;
         temp1.contents.contents.push(flex);
       }
     } else if (results.length < 10) {
-      results.forEach(result => {
+      results.forEach((result,i) => {
         const flex = {
           type: "bubble",
           body: {
@@ -799,7 +801,8 @@ module.exports.getSeletedPlace = function(temp, arr) {
         result.status === "เปิดอยู่"
           ? (flex.body.contents[4].contents[1].color = "#459950")
           : (flex.body.contents[4].contents[1].color = "#cccccc");
-        flex.body.contents[5].contents[2].text = results.rateing.toString();
+        flex.body.contents[5].contents[2].text = results[i].rating+"";
+        console.log(results[i].rating+"");
         flex.footer.contents[0].action.data = `placeId_hotel^${results.place_id}^${result.photo}`;
         temp1.contents.contents.push(flex);
       });

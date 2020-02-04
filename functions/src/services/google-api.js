@@ -50,7 +50,7 @@ module.exports.nearBySearch = function(user_locate, type) {
       uri: "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
       qs: {
         key: configGoogle.key_place,
-        radius: 500,
+        radius: 1000,
         location: user_locate,
         language: "th",
         opennow: true,
@@ -62,7 +62,26 @@ module.exports.nearBySearch = function(user_locate, type) {
     restPromise(option)
       .then(res => {
         data = JSON.parse(res);
-        rt.data = data.results;
+        console.info(data);
+        for (let i = 0; i < data.results.length; i++) {
+          if (!data.results[i].opening_hours) {
+            data.results[i].opening_hours = "ไม่มีข้อมูล";
+          } else {
+            data.results[i].opening_hours = "เปิดอยู่";
+          }
+        }
+        var results = data.results.map(result => {
+          return {
+            status: result.opening_hours,
+            name: result.name,
+            place_id: result.place_id,
+            rating: result.rating? result.rating:'ยังไม่มีการให้คะแนน',
+            address: result.vicinity,
+            photo: result.photos? result.photos[0].photo_reference:[]
+          };
+        });
+        rt.status = true;
+        rt.data = results;
         resolve(rt);
       })
       .catch(err => {
@@ -88,6 +107,7 @@ module.exports.textSearch = keyword => {
     restPromise(option)
       .then(result => {
         var data = JSON.parse(result);
+        console.info(data);
         for (let i = 0; i < data.results.length; i++) {
           if (!data.results[i].opening_hours) {
             data.results[i].opening_hours = "ไม่มีข้อมูล";
@@ -100,9 +120,9 @@ module.exports.textSearch = keyword => {
             status: result.opening_hours,
             name: result.name,
             place_id: result.place_id,
-            rateing: result.rating,
+            rating: result.rating? result.rating:'ยังไม่มีการให้คะแนน',
             address: result.formatted_address,
-            photo: result.photos[0].photo_reference
+            photo: result.photos[0].photo_reference? result.photos[0].photo_reference:[]
           };
         });
         ret.status = true;
@@ -145,6 +165,7 @@ module.exports.PlaceDetail = place_id => {
       });
   });
 };
+
 module.exports.placePhotoreFerence = photo_code => {
   return new Promise((res, rej) => {
     var ret = {};
