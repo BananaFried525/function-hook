@@ -212,7 +212,6 @@ module.exports.flexdetail = function(detail, url_photo) {
     }
   });
 };
-
 module.exports.flextime = function(timedata) {
   return new Promise((res, rej) => {
     const ret = {};
@@ -377,6 +376,7 @@ module.exports.flexreview = function(arrreview) {
     var arr = arrreview;
     var temp = [];
     arr.forEach(element => {
+      console.log(`review`,element);
       let flex = {
         type: "bubble",
         header: {
@@ -666,7 +666,6 @@ module.exports.getSeletedPlace = function(temp, arr) {
           ? (flex.body.contents[4].contents[1].color = "#459950")
           : (flex.body.contents[4].contents[1].color = "#cccccc");
         flex.body.contents[5].contents[2].text = results[i].rating+"";
-        console.log(results[i].rating+"");
         flex.footer.contents[0].action.data = `placeId_hotel^${results[i].place_id}^${results[i].photo}`;
         temp1.contents.contents.push(flex);
       }
@@ -802,8 +801,7 @@ module.exports.getSeletedPlace = function(temp, arr) {
           ? (flex.body.contents[4].contents[1].color = "#459950")
           : (flex.body.contents[4].contents[1].color = "#cccccc");
         flex.body.contents[5].contents[2].text = results[i].rating+"";
-        console.log(results[i].rating+"");
-        flex.footer.contents[0].action.data = `placeId_hotel^${results.place_id}^${result.photo}`;
+        flex.footer.contents[0].action.data = `placeId_hotel^${results[i].place_id}^${result.photo}`;
         temp1.contents.contents.push(flex);
       });
     } else {

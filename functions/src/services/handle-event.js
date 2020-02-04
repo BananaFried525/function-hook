@@ -9,7 +9,7 @@ const transactionService = require("./transaction");
 const tempDirectionBus = require("../template/busdirection.json");
 const _ = require("underscore");
 
-module.exports.handleEvent = function(event,USER) {
+module.exports.handleEvent = function(event, USER) {
   return new Promise(async (resolve, reject) => {
     let message = event.message;
     let replyToken = event.replyToken;
@@ -197,6 +197,14 @@ module.exports.handleEvent = function(event,USER) {
           if (isComplete) completeAction(userId);
 
           resolve([replyToken, result]);
+        } else if (userDetail.action === "richmenu_restaurant") {
+          /**
+           * !Search Restaurant
+           */
+        } else if (userDetail.action === "richmenu_touristattraction") {
+          /**
+           * !Search Tourist_attraction
+           */
         } else {
           switch (message.type) {
             case "text":
@@ -238,7 +246,7 @@ function postbackHandle(event) {
     try {
       let userId = event.source.userId;
       let action = event.postback.data;
-      console.info(`PostbackHandle Action =>`,action);
+      console.info(`PostbackHandle Action =>`, action);
       let transaction = await transactionService.addTransaction(action);
       /************************************Start user data update action**********************************/
       let userData = {
@@ -292,26 +300,15 @@ function postbackHandle(event) {
         case "richmenu_restaurant":
           reply = {
             type: "text",
-            text: "เรายังไม่เปิดให้ใช้งาน",
-            // quickReply: {
-            //   items: [
-            //     {
-            //       type: "action",
-            //       action: {
-            //         type: "location",
-            //         label: "กรุณาเลือกสถานที่"
-            //       }
-            //     }
-            //   ]
-            // }
+            text: "เรายังไม่เปิดให้ใช้งาน"
           };
           completeAction(userId);
           resolve(reply);
-          break;  
+          break;
         default:
           reply = {
             type: "text",
-            text: "เรายังไม่เปิดให้ใช้งานหรืออยู่ในการปรับปรุง",
+            text: "เรายังไม่เปิดให้ใช้งานหรืออยู่ในการปรับปรุง"
           };
           resolve(reply);
           break;
