@@ -1,0 +1,962 @@
+{
+  "type": "flex",
+  "altText": "Flex Message",
+  "contents": {
+    "type": "carousel",
+    "contents": [
+      {
+        "type": "bubble",
+        "hero": {
+          "type": "image",
+          "url": "https://lh3.googleusercontent.com/p/AF1QipPVQOJvix__WzpNrFUbCMb7aNpXehlpxEyGSz41=s1600-w400",
+          "size": "full",
+          "aspectRatio": "20:13",
+          "aspectMode": "cover"
+        },
+        "body": {
+          "type": "box",
+          "layout": "vertical",
+          "spacing": "sm",
+          "contents": [
+            {
+              "type": "text",
+              "text": "ร้านก๋ยวเตี๋ยวเรือปุ้งกี้(รสเด็ด)",
+              "size": "lg",
+              "weight": "bold",
+              "wrap": true
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "สถานที่ตั้ง:",
+                  "flex": 4,
+                  "size": "md",
+                  "gravity": "bottom",
+                  "weight": "bold"
+                },
+                {
+                  "type": "text",
+                  "text": "1564/192 พิบูลสงคราม แขวง วงศ์สว่าง เขตบางซื่อ กรุงเทพมหานคร 10800 ประเทศไทย",
+                  "flex": 8,
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "regular",
+                  "wrap": true
+                }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "เรตติ้ง",
+                  "flex": 3,
+                  "size": "xs",
+                  "align": "start",
+                  "weight": "bold"
+                },
+                {
+                  "type": "icon",
+                  "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                  "size": "xs"
+                },
+                {
+                  "type": "text",
+                  "text": "4.1",
+                  "flex": 5,
+                  "margin": "sm",
+                  "size": "sm",
+                  "align": "start",
+                  "gravity": "center",
+                  "weight": "regular"
+                }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "จำนวนการรีวิว:",
+                  "flex": 3,
+                  "margin": "sm",
+                  "size": "xs",
+                  "align": "start",
+                  "weight": "bold"
+                },
+                {
+                  "type": "text",
+                  "text": "8",
+                  "flex": 4,
+                  "margin": "sm",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "regular"
+                }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "เบอร์โทร:",
+                  "flex": 3,
+                  "margin": "sm",
+                  "size": "xs",
+                  "align": "start",
+                  "weight": "bold"
+                },
+                {
+                  "type": "text",
+                  "text": "ไม่มีข้อมูล",
+                  "flex": 8,
+                  "margin": "sm",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "regular"
+                }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "เว็บไซต์:",
+                  "flex": 3,
+                  "size": "xs",
+                  "gravity": "bottom",
+                  "weight": "bold"
+                },
+                {
+                  "type": "text",
+                  "text": "ไม่มีข้อมูล",
+                  "flex": 8,
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "regular",
+                  "wrap": true
+                }
+              ]
+            }
+          ]
+        },
+        "footer": {
+          "type": "box",
+          "layout": "horizontal",
+          "spacing": "sm",
+          "contents": [
+            {
+              "type": "button",
+              "action": {
+                "type": "postback",
+                "label": "โทร",
+                "data": "error_tel"
+              },
+              "flex": 3,
+              "color": "#03B037",
+              "style": "primary"
+            },
+            {
+              "type": "button",
+              "action": {
+                "type": "postback",
+                "label": "เว็บไซต์",
+                "data": "error_web"
+              },
+              "flex": 3,
+              "color": "#028E7D",
+              "height": "md",
+              "style": "primary"
+            }
+          ]
+        }
+      },
+      {
+        "type": "bubble",
+        "body": {
+          "type": "box",
+          "layout": "vertical",
+          "spacing": "sm",
+          "contents": [
+            {
+              "type": "box",
+              "layout": "vertical",
+              "spacing": "xl",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "วันเวลาเปิดทำการ",
+                  "margin": "sm",
+                  "size": "lg",
+                  "align": "center",
+                  "weight": "bold"
+                },
+                { "type": "separator" },
+                {
+                  "type": "text",
+                  "text": "วันจันทร์: 9:00–4:00",
+                  "align": "center"
+                },
+                { "type": "separator" },
+                {
+                  "type": "text",
+                  "text": "วันอังคาร: 9:00–4:00",
+                  "align": "center",
+                  "weight": "bold",
+                  "color": "#21bf73"
+                },
+                { "type": "separator" },
+                {
+                  "type": "text",
+                  "text": "วันพุธ: 9:00–4:00",
+                  "align": "center"
+                },
+                { "type": "separator" },
+                {
+                  "type": "text",
+                  "text": "วันพฤหัสบดี: 9:00–4:00",
+                  "align": "center"
+                },
+                { "type": "separator" },
+                {
+                  "type": "text",
+                  "text": "วันศุกร์: 9:00–4:00",
+                  "align": "center"
+                },
+                { "type": "separator" },
+                {
+                  "type": "text",
+                  "text": "วันเสาร์: ปิดทำการ",
+                  "align": "center"
+                },
+                { "type": "separator" },
+                {
+                  "type": "text",
+                  "text": "วันอาทิตย์: ปิดทำการ",
+                  "align": "center"
+                },
+                { "type": "separator" }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "spacing": "xl",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "สถานะการให้บริการ:",
+                  "flex": 3,
+                  "margin": "sm",
+                  "size": "lg",
+                  "align": "start",
+                  "weight": "bold"
+                },
+                {
+                  "type": "text",
+                  "text": "เปิดอยู่",
+                  "flex": 1,
+                  "margin": "sm",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold",
+                  "color": "#21bf73"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "bubble",
+        "header": {
+          "type": "box",
+          "layout": "vertical",
+          "contents": [
+            {
+              "type": "text",
+              "text": "REVIEW",
+              "margin": "none",
+              "size": "sm",
+              "align": "start",
+              "gravity": "top",
+              "weight": "bold",
+              "color": "#AAAAAA"
+            },
+            {
+              "type": "image",
+              "url": "https://lh4.ggpht.com/-hOyz-TqOkUs/AAAAAAAAAAI/AAAAAAAAAAA/q5rJ0Upp05o/s128-c0x00000000-cc-rp-mo/photo.jpg",
+              "align": "center",
+              "aspectRatio": "4:3",
+              "aspectMode": "fit"
+            }
+          ]
+        },
+        "body": {
+          "type": "box",
+          "layout": "vertical",
+          "spacing": "md",
+          "contents": [
+            {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "Unun Manman",
+                  "flex": 8,
+                  "size": "md",
+                  "align": "center",
+                  "gravity": "center",
+                  "weight": "bold",
+                  "wrap": true
+                },
+                { "type": "separator", "margin": "lg" }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "ความคิดเห็น:",
+                  "flex": 8,
+                  "size": "md",
+                  "align": "start",
+                  "gravity": "center",
+                  "weight": "bold",
+                  "wrap": true
+                },
+                {
+                  "type": "text",
+                  "text": "อร่อยมากกกก รสชาติน้ำตกเข้มข้น",
+                  "flex": 0,
+                  "size": "xs",
+                  "align": "start",
+                  "wrap": true
+                }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "การให้คะแนน:",
+                  "flex": 0,
+                  "margin": "xs",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold"
+                },
+                {
+                  "type": "icon",
+                  "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                  "size": "xs"
+                },
+                { "type": "text", "text": " 5" }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "แสดงความคิดเห็นเมื่อ",
+                  "flex": 6,
+                  "margin": "xs",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold"
+                },
+                {
+                  "type": "text",
+                  "text": "7 เดือนที่แล้ว",
+                  "flex": 4,
+                  "margin": "sm",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold",
+                  "color": "#EA7F7F"
+                }
+              ]
+            }
+          ]
+        },
+        "footer": {
+          "type": "box",
+          "layout": "horizontal",
+          "contents": [
+            {
+              "type": "button",
+              "action": {
+                "type": "uri",
+                "label": "ดูรายละเอียดผู้รีวิว",
+                "uri": "https://www.google.com/maps/contrib/110548561282269893393/reviews"
+              },
+              "color": "#04A4B6",
+              "style": "primary"
+            }
+          ]
+        }
+      },
+      {
+        "type": "bubble",
+        "header": {
+          "type": "box",
+          "layout": "vertical",
+          "contents": [
+            {
+              "type": "text",
+              "text": "REVIEW",
+              "margin": "none",
+              "size": "sm",
+              "align": "start",
+              "gravity": "top",
+              "weight": "bold",
+              "color": "#AAAAAA"
+            },
+            {
+              "type": "image",
+              "url": "https://lh6.ggpht.com/-rDnyeq2Tq6Q/AAAAAAAAAAI/AAAAAAAAAAA/JVLMaacAAaM/s128-c0x00000000-cc-rp-mo-ba3/photo.jpg",
+              "align": "center",
+              "aspectRatio": "4:3",
+              "aspectMode": "fit"
+            }
+          ]
+        },
+        "body": {
+          "type": "box",
+          "layout": "vertical",
+          "spacing": "md",
+          "contents": [
+            {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "kawind o.",
+                  "flex": 8,
+                  "size": "md",
+                  "align": "center",
+                  "gravity": "center",
+                  "weight": "bold",
+                  "wrap": true
+                },
+                { "type": "separator", "margin": "lg" }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "ความคิดเห็น:",
+                  "flex": 8,
+                  "size": "md",
+                  "align": "start",
+                  "gravity": "center",
+                  "weight": "bold",
+                  "wrap": true
+                },
+                {
+                  "type": "text",
+                  "text": "อร่อยแต่พริกจะไหม้ๆ บางคนอาจไม่ชอบกลิ่น",
+                  "flex": 0,
+                  "size": "xs",
+                  "align": "start",
+                  "wrap": true
+                }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "การให้คะแนน:",
+                  "flex": 0,
+                  "margin": "xs",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold"
+                },
+                {
+                  "type": "icon",
+                  "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                  "size": "xs"
+                },
+                { "type": "text", "text": " 4" }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "แสดงความคิดเห็นเมื่อ",
+                  "flex": 6,
+                  "margin": "xs",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold"
+                },
+                {
+                  "type": "text",
+                  "text": "10 เดือนที่แล้ว",
+                  "flex": 4,
+                  "margin": "sm",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold",
+                  "color": "#EA7F7F"
+                }
+              ]
+            }
+          ]
+        },
+        "footer": {
+          "type": "box",
+          "layout": "horizontal",
+          "contents": [
+            {
+              "type": "button",
+              "action": {
+                "type": "uri",
+                "label": "ดูรายละเอียดผู้รีวิว",
+                "uri": "https://www.google.com/maps/contrib/112289298499539481456/reviews"
+              },
+              "color": "#04A4B6",
+              "style": "primary"
+            }
+          ]
+        }
+      },
+      {
+        "type": "bubble",
+        "header": {
+          "type": "box",
+          "layout": "vertical",
+          "contents": [
+            {
+              "type": "text",
+              "text": "REVIEW",
+              "margin": "none",
+              "size": "sm",
+              "align": "start",
+              "gravity": "top",
+              "weight": "bold",
+              "color": "#AAAAAA"
+            },
+            {
+              "type": "image",
+              "url": "https://lh3.ggpht.com/-rq0t1ybPlQc/AAAAAAAAAAI/AAAAAAAAAAA/m8_vzMoJUj0/s128-c0x00000000-cc-rp-mo-ba4/photo.jpg",
+              "align": "center",
+              "aspectRatio": "4:3",
+              "aspectMode": "fit"
+            }
+          ]
+        },
+        "body": {
+          "type": "box",
+          "layout": "vertical",
+          "spacing": "md",
+          "contents": [
+            {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "ประยุทธ์ ชัยกาญจนกิจ",
+                  "flex": 8,
+                  "size": "md",
+                  "align": "center",
+                  "gravity": "center",
+                  "weight": "bold",
+                  "wrap": true
+                },
+                { "type": "separator", "margin": "lg" }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "ความคิดเห็น:",
+                  "flex": 8,
+                  "size": "md",
+                  "align": "start",
+                  "gravity": "center",
+                  "weight": "bold",
+                  "wrap": true
+                },
+                {
+                  "type": "text",
+                  "text": "อร่อย....สะอาด....",
+                  "flex": 0,
+                  "size": "xs",
+                  "align": "start",
+                  "wrap": true
+                }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "การให้คะแนน:",
+                  "flex": 0,
+                  "margin": "xs",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold"
+                },
+                {
+                  "type": "icon",
+                  "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                  "size": "xs"
+                },
+                { "type": "text", "text": " 5" }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "แสดงความคิดเห็นเมื่อ",
+                  "flex": 6,
+                  "margin": "xs",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold"
+                },
+                {
+                  "type": "text",
+                  "text": "7 เดือนที่แล้ว",
+                  "flex": 4,
+                  "margin": "sm",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold",
+                  "color": "#EA7F7F"
+                }
+              ]
+            }
+          ]
+        },
+        "footer": {
+          "type": "box",
+          "layout": "horizontal",
+          "contents": [
+            {
+              "type": "button",
+              "action": {
+                "type": "uri",
+                "label": "ดูรายละเอียดผู้รีวิว",
+                "uri": "https://www.google.com/maps/contrib/102625314550242040930/reviews"
+              },
+              "color": "#04A4B6",
+              "style": "primary"
+            }
+          ]
+        }
+      },
+      {
+        "type": "bubble",
+        "header": {
+          "type": "box",
+          "layout": "vertical",
+          "contents": [
+            {
+              "type": "text",
+              "text": "REVIEW",
+              "margin": "none",
+              "size": "sm",
+              "align": "start",
+              "gravity": "top",
+              "weight": "bold",
+              "color": "#AAAAAA"
+            },
+            {
+              "type": "image",
+              "url": "https://lh5.ggpht.com/-diPEIG5XdY8/AAAAAAAAAAI/AAAAAAAAAAA/HWXzAa1XfVc/s128-c0x00000000-cc-rp-mo-ba6/photo.jpg",
+              "align": "center",
+              "aspectRatio": "4:3",
+              "aspectMode": "fit"
+            }
+          ]
+        },
+        "body": {
+          "type": "box",
+          "layout": "vertical",
+          "spacing": "md",
+          "contents": [
+            {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "Somkhit Wilailak",
+                  "flex": 8,
+                  "size": "md",
+                  "align": "center",
+                  "gravity": "center",
+                  "weight": "bold",
+                  "wrap": true
+                },
+                { "type": "separator", "margin": "lg" }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "ความคิดเห็น:",
+                  "flex": 8,
+                  "size": "md",
+                  "align": "start",
+                  "gravity": "center",
+                  "weight": "bold",
+                  "wrap": true
+                },
+                {
+                  "type": "text",
+                  "text": "เป็นร้านก๋วยเตี๋ยวเรือ เปิดอยู่ในหมู่บ้านพิบูลย์ (บางซื่อ) ปากซอย7",
+                  "flex": 0,
+                  "size": "xs",
+                  "align": "start",
+                  "wrap": true
+                }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "การให้คะแนน:",
+                  "flex": 0,
+                  "margin": "xs",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold"
+                },
+                {
+                  "type": "icon",
+                  "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                  "size": "xs"
+                },
+                { "type": "text", "text": " 3" }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "แสดงความคิดเห็นเมื่อ",
+                  "flex": 6,
+                  "margin": "xs",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold"
+                },
+                {
+                  "type": "text",
+                  "text": "ปีที่แล้ว",
+                  "flex": 4,
+                  "margin": "sm",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold",
+                  "color": "#EA7F7F"
+                }
+              ]
+            }
+          ]
+        },
+        "footer": {
+          "type": "box",
+          "layout": "horizontal",
+          "contents": [
+            {
+              "type": "button",
+              "action": {
+                "type": "uri",
+                "label": "ดูรายละเอียดผู้รีวิว",
+                "uri": "https://www.google.com/maps/contrib/117498789254986929501/reviews"
+              },
+              "color": "#04A4B6",
+              "style": "primary"
+            }
+          ]
+        }
+      },
+      {
+        "type": "bubble",
+        "header": {
+          "type": "box",
+          "layout": "vertical",
+          "contents": [
+            {
+              "type": "text",
+              "text": "REVIEW",
+              "margin": "none",
+              "size": "sm",
+              "align": "start",
+              "gravity": "top",
+              "weight": "bold",
+              "color": "#AAAAAA"
+            },
+            {
+              "type": "image",
+              "url": "https://lh4.ggpht.com/-XMkO96wEGGA/AAAAAAAAAAI/AAAAAAAAAAA/cMg-Y1-xcYU/s128-c0x00000000-cc-rp-mo/photo.jpg",
+              "align": "center",
+              "aspectRatio": "4:3",
+              "aspectMode": "fit"
+            }
+          ]
+        },
+        "body": {
+          "type": "box",
+          "layout": "vertical",
+          "spacing": "md",
+          "contents": [
+            {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "Pawaret Chaikanjanakit",
+                  "flex": 8,
+                  "size": "md",
+                  "align": "center",
+                  "gravity": "center",
+                  "weight": "bold",
+                  "wrap": true
+                },
+                { "type": "separator", "margin": "lg" }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "ความคิดเห็น:",
+                  "flex": 8,
+                  "size": "md",
+                  "align": "start",
+                  "gravity": "center",
+                  "weight": "bold",
+                  "wrap": true
+                },
+                {
+                  "type": "text",
+                  "text": "",
+                  "flex": 0,
+                  "size": "xs",
+                  "align": "start",
+                  "wrap": true
+                }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "การให้คะแนน:",
+                  "flex": 0,
+                  "margin": "xs",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold"
+                },
+                {
+                  "type": "icon",
+                  "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                  "size": "xs"
+                },
+                { "type": "text", "text": " 5" }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "baseline",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "แสดงความคิดเห็นเมื่อ",
+                  "flex": 6,
+                  "margin": "xs",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold"
+                },
+                {
+                  "type": "text",
+                  "text": "4 เดือนที่แล้ว",
+                  "flex": 4,
+                  "margin": "sm",
+                  "size": "sm",
+                  "align": "start",
+                  "weight": "bold",
+                  "color": "#EA7F7F"
+                }
+              ]
+            }
+          ]
+        },
+        "footer": {
+          "type": "box",
+          "layout": "horizontal",
+          "contents": [
+            {
+              "type": "button",
+              "action": {
+                "type": "uri",
+                "label": "ดูรายละเอียดผู้รีวิว",
+                "uri": "https://www.google.com/maps/contrib/117738522409368660271/reviews"
+              },
+              "color": "#04A4B6",
+              "style": "primary"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

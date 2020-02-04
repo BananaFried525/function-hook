@@ -27,14 +27,14 @@ module.exports = async (req, res) => {
     }
     let resHandle = await handle.handleEvent(event, user);
     await console.log("Result =>", resHandle[1]);
-    await client.replyMessage(resHandle[0], resHandle[1]);
+    await client.replyMessage(resHandle[0], resHandle[1])
     return res.status(200).send("Code:200");
   } catch (err) {
-    console.error("Error message =>", err);
-    await client.replyMessage(event.replyToken, {
-      type: "text",
-      text: "เกิดข้อผิดพลาดทางเทคนิคกรุณาลองใหม่"
-    });
+    console.error("Error message =>", err.message);
+    // await client.replyMessage(event.replyToken, {
+    //   type: "text",
+    //   text: "เกิดข้อผิดพลาดทางเทคนิคกรุณาลองใหม่"
+    // });
     return res.status(500).send("Code:500");
   }
 };
