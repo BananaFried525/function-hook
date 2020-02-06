@@ -212,7 +212,6 @@ module.exports.flexdetail = function(detail, url_photo) {
     }
   });
 };
-
 module.exports.flextime = function(timedata) {
   return new Promise((res, rej) => {
     const ret = {};
@@ -377,6 +376,7 @@ module.exports.flexreview = function(arrreview) {
     var arr = arrreview;
     var temp = [];
     arr.forEach(element => {
+      console.log(`review`, element);
       let flex = {
         type: "bubble",
         header: {
@@ -530,7 +530,7 @@ module.exports.flexreview = function(arrreview) {
     res(ret);
   });
 };
-module.exports.getSeletedPlace = function(temp, arr) {
+module.exports.getSeletedPlace = function(temp, arr, type) {
   var temp1 = temp;
   return new Promise((res, rej) => {
     var results = arr;
@@ -665,13 +665,12 @@ module.exports.getSeletedPlace = function(temp, arr) {
         results[i].status === "เปิดอยู่"
           ? (flex.body.contents[4].contents[1].color = "#459950")
           : (flex.body.contents[4].contents[1].color = "#cccccc");
-        flex.body.contents[5].contents[2].text = results[i].rating+"";
-        console.log(results[i].rating+"");
-        flex.footer.contents[0].action.data = `placeId_hotel^${results[i].place_id}^${results[i].photo}`;
+        flex.body.contents[5].contents[2].text = results[i].rating + "";
+        flex.footer.contents[0].action.data = `${type}^${results[i].place_id}^${results[i].photo}^detail`;
         temp1.contents.contents.push(flex);
       }
     } else if (results.length < 10) {
-      results.forEach((result,i) => {
+      results.forEach((result, i) => {
         const flex = {
           type: "bubble",
           body: {
@@ -801,9 +800,8 @@ module.exports.getSeletedPlace = function(temp, arr) {
         result.status === "เปิดอยู่"
           ? (flex.body.contents[4].contents[1].color = "#459950")
           : (flex.body.contents[4].contents[1].color = "#cccccc");
-        flex.body.contents[5].contents[2].text = results[i].rating+"";
-        console.log(results[i].rating+"");
-        flex.footer.contents[0].action.data = `placeId_hotel^${results.place_id}^${result.photo}`;
+        flex.body.contents[5].contents[2].text = results[i].rating + "";
+        flex.footer.contents[0].action.data = `${type}^${results[i].place_id}^${result.photo}^detail`;
         temp1.contents.contents.push(flex);
       });
     } else {

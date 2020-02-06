@@ -122,7 +122,8 @@ module.exports.textSearch = keyword => {
             place_id: result.place_id,
             rating: result.rating? result.rating:'ยังไม่มีการให้คะแนน',
             address: result.formatted_address,
-            photo: result.photos[0].photo_reference? result.photos[0].photo_reference:[]
+            //ดักกรณีที่ไม่ม่รูปด้วย
+            photo: result.photos? result.photos[0].photo_reference:[]
           };
         });
         ret.status = true;

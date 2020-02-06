@@ -9,7 +9,7 @@ const transactionService = require("./transaction");
 const tempDirectionBus = require("../template/busdirection.json");
 const _ = require("underscore");
 
-module.exports.handleEvent = function(event,USER) {
+module.exports.handleEvent = function(event, USER) {
   return new Promise(async (resolve, reject) => {
     let message = event.message;
     let replyToken = event.replyToken;
@@ -20,7 +20,7 @@ module.exports.handleEvent = function(event,USER) {
     try {
       if (event.type === "postback") {
         let isDetail =
-          event.postback.data.split(`^`)[0] === "placeId_hotel" ? true : false;
+          event.postback.data.split(`^`)[3] === "detail" ? true : false;
         if (isDetail) {
           let resDetail = await checkDetail(event);
           result = resDetail;
@@ -32,20 +32,18 @@ module.exports.handleEvent = function(event,USER) {
         }
       } else {
         let isComplete = false; // เอาไว้ใช้ในกรณีที่ทำ action เสร็จ
-        // let User = await userService.getUser(userId);
-
+        var temp = {
+          type: "flex",
+          altText: "Flex Message",
+          contents: {
+            type: "carousel",
+            contents: []
+          }
+        };
         /**
          * !Search Hotel
          */
         if (userDetail.action === "richmenu_hotel") {
-          var temp = {
-            type: "flex",
-            altText: "Flex Message",
-            contents: {
-              type: "carousel",
-              contents: []
-            }
-          };
           if (message.type === "text") {
             userDetail.transaction.location = message.text;
             userDetail.transaction.timeStamp = new Date();
@@ -57,7 +55,8 @@ module.exports.handleEvent = function(event,USER) {
               );
               const objectPlace = await flexService.getSeletedPlace(
                 temp,
-                dataApi.data
+                dataApi.data,
+                "placeId_hotel"
               );
               console.info(`Line response =>`, objectPlace);
               result = objectPlace;
@@ -86,7 +85,8 @@ module.exports.handleEvent = function(event,USER) {
               // แก้ตัวแมพ
               let objectPlace = await flexService.getSeletedPlace(
                 temp,
-                resNearby.data
+                resNearby.data,
+                'placeId_hotel'
               );
               console.info(`Line response =>`, objectPlace);
               result = objectPlace;
@@ -192,11 +192,68 @@ module.exports.handleEvent = function(event,USER) {
             userDetail.transaction.isComplete = true;
             await userService.updateUser(userDetail);
           }
-
           // Clear user action
           if (isComplete) completeAction(userId);
-
           resolve([replyToken, result]);
+        } else if (userDetail.action === "richmenu_restaurant") {
+          /**
+           * !Search Restaurant
+           */
+          if (message.type === "text") {
+            userDetail.transaction.location = message.text;
+            userDetail.transaction.timeStamp = new Date();
+            await userService.updateUser(userDetail);
+            let resProvice = await lovService.getLov(message.text);
+            if (resProvice) {
+              const dataApi = await googleApi.textSearch(
+                `${resProvice.lovName}+ร้านอาหาร`
+              );
+              const objectPlace = await flexService.getSeletedPlace(
+                temp,
+                dataApi.data,
+                "placeId_restaurant"
+              );
+              console.info(`Line response =>`, objectPlace);
+              result = objectPlace;
+              isComplete = true;
+            } else {
+              console.error("invalid provice");
+              result = {
+                type: "text",
+                text: "กรุณาพิมพ์ชื่อจังหวัดให้ถูกต้อง"
+              };
+            }
+          } else {
+            let user_locate = message.latitude + "," + message.longitude;
+            userDetail.transaction.location = user_locate;
+            userDetail.transaction.timeStamp = new Date();
+            await userService.updateUser(userDetail);
+            let resNearby = await googleApi.nearBySearch(
+              user_locate,
+              "restaurant"
+            );
+            if (resNearby.data.length === 0) {
+              console.error(`not found`);
+              result = { type: "text", text: "ไม่พบสิ่งที่ค้นหา" };
+            } else {
+              console.info(``, resNearby.data);
+              // แก้ตัวแมพ
+              let objectPlace = await flexService.getSeletedPlace(
+                temp,
+                resNearby.data,
+                "placeId_restaurant"
+              );
+              console.info(`Line response =>`, objectPlace);
+              result = objectPlace;
+              isComplete = true;
+            }
+          }
+          if (isComplete) completeAction(userId);
+          resolve([replyToken, result]);
+        } else if (userDetail.action === "richmenu_touristattraction") {
+          /**
+           * !Search Tourist_attraction
+           */
         } else {
           switch (message.type) {
             case "text":
@@ -205,7 +262,7 @@ module.exports.handleEvent = function(event,USER) {
               resolve([replyToken, result]);
               break;
             default:
-              result = { type: "text", text: "ไม่สามารถค้นหาคำสั่งนี้พบ" };
+              result = { type: "text", text: "ไม่สามารถค้นหาคำสั่งนี้พบ" };           
               resolve([replyToken, result]);
               break;
           }
@@ -238,7 +295,7 @@ function postbackHandle(event) {
     try {
       let userId = event.source.userId;
       let action = event.postback.data;
-      console.info(`PostbackHandle Action =>`,action);
+      console.info(`PostbackHandle Action =>`, action);
       let transaction = await transactionService.addTransaction(action);
       /************************************Start user data update action**********************************/
       let userData = {
@@ -248,7 +305,7 @@ function postbackHandle(event) {
         transaction
       };
       console.log(`New user data`, userData);
-      let doc = await userService.updateUser(userData);
+      await userService.updateUser(userData);
       switch (action) {
         case "richmenu_bus":
           reply = [
@@ -292,26 +349,25 @@ function postbackHandle(event) {
         case "richmenu_restaurant":
           reply = {
             type: "text",
-            text: "เรายังไม่เปิดให้ใช้งาน",
-            // quickReply: {
-            //   items: [
-            //     {
-            //       type: "action",
-            //       action: {
-            //         type: "location",
-            //         label: "กรุณาเลือกสถานที่"
-            //       }
-            //     }
-            //   ]
-            // }
+            text: "กรุณาเลือกสถานที่ปัจจุบันหรือพิมพ์ชื่อจังหวัด",
+            quickReply: {
+              items: [
+                {
+                  type: "action",
+                  action: {
+                    type: "location",
+                    label: "กรุณาเลือกสถานที่"
+                  }
+                }
+              ]
+            }
           };
-          completeAction(userId);
           resolve(reply);
-          break;  
+          break;
         default:
           reply = {
             type: "text",
-            text: "เรายังไม่เปิดให้ใช้งานหรืออยู่ในการปรับปรุง",
+            text: "เรายังไม่เปิดให้ใช้งานหรืออยู่ในการปรับปรุง"
           };
           resolve(reply);
           break;
@@ -364,53 +420,44 @@ async function checkDetail(element) {
     var place_id = element.postback.data.split("^")[1];
     var photo_ref = element.postback.data.split("^")[2];
 
+    var flexTime_result;
+    var flexReivew_result;
+
     /**
      * !จับ เคส detail
      */
-    switch (details) {
-      case "placeId_hotel":
-        const url_photo = await googleApi.placePhotoreFerence(photo_ref);
-        const getdetail = await googleApi.PlaceDetail(place_id);
-        const detail = getdetail.data.result;
+    const url_photo = await googleApi.placePhotoreFerence(photo_ref);
+    const getdetail = await googleApi.PlaceDetail(place_id);
+    const detail = getdetail.data.result;
 
-        const review = detail.reviews;
-        const time_open = detail.opening_hours;
-        const flexDetail_result = await flexService.flexdetail(
-          detail,
-          url_photo.data
-        );
-        var flexTime_result;
-        var flexReivew_result;
+    const review = detail.reviews;
+    const time_open = detail.opening_hours;
+    const flexDetail_result = await flexService.flexdetail(
+      detail,
+      url_photo.data
+    );
 
-        time_open
-          ? (flexTime_result = await flexService.flextime(time_open))
-          : "";
-        review
-          ? (flexReivew_result = await flexService.flexreview(review))
-          : "";
-        let prototype = {
-          type: "flex",
-          altText: "Flex Message",
-          contents: {
-            type: "carousel",
-            contents: []
-          }
-        };
+    time_open ? (flexTime_result = await flexService.flextime(time_open)) : "";
+    review ? (flexReivew_result = await flexService.flexreview(review)) : "";
+    let prototype = {
+      type: "flex",
+      altText: "Flex Message",
+      contents: {
+        type: "carousel",
+        contents: []
+      }
+    };
 
-        prototype.contents.contents.push(flexDetail_result.data);
-        flexTime_result
-          ? prototype.contents.contents.push(flexTime_result.data)
-          : "";
-        flexReivew_result.data.forEach(e => {
-          prototype.contents.contents.push(e);
-        });
-        resolve(prototype, {
-          type: "text",
-          text: "คุณต้องการจะสอบถามเรื่องอื่นอีกหรือไม่"
-        });
-        break;
-      default:
-        break;
-    }
+    prototype.contents.contents.push(flexDetail_result.data);
+    flexTime_result
+      ? prototype.contents.contents.push(flexTime_result.data)
+      : "";
+    flexReivew_result.data.forEach(e => {
+      prototype.contents.contents.push(e);
+    });
+    resolve(prototype, {
+      type: "text",
+      text: "คุณต้องการจะสอบถามเรื่องอื่นอีกหรือไม่"
+    });
   });
 }
