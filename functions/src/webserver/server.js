@@ -80,22 +80,79 @@ app.get("/alluserline", adminmiddleware, (req, res) => {
       return res.send(ret);
     });
 });
+app.get("/getListassist", adminmiddleware, (req, res) => {
 
-// app.get('/createadmin', (req, res) => {
-//     var uname = 'jojo1234'
-//     var password = '1212312121'
-//     db.collection('user_web').doc().set({
-//         username: uname,
-//         password: crypto.createHash("sha256")
-//             .update(password)
-//             .digest("hex"),
-//         priority: 'assistant',
-//         createBy: 'admin',
-//         updateBy: 'admin',
-//         createAt: new Date(),
-//         updateAt: new Date()
-//     })
-//     res.send("ok");
-// })
+  try {
+    var ret = {};
+    var database = db.collection('user_web').get().then(result => {
+
+      var arr = [];
+      result.forEach(doc => {
+        arr.push({
+          id: doc.id,
+          detail: doc.data()
+        });
+
+      })
+      console.log(arr);
+      res.send(arr);
+      ret.status = true;
+      ret.data = arr;
+
+    })
+  } catch (err) {
+    ret.status = false;
+    ret.message = err;
+    res.send(ret);
+  }
+
+
+
+})
+app.post('/Addassist', adminmiddleware, async (req, res) => {
+  var ret = {}
+  if (!req.body.createAt && !req.body.createBy && !req.body.email && !req.body.password &&
+    !req.body.updateAt && !req.body.updateBy && !req.body.username &&
+    !req.body.priority) {
+    ret.status = "true";
+    ret.message = "Error not understands the content type";
+    res.status(422).json(ret);
+  } else {
+    try {
+      var body = _.clone(req.body);
+
+      var pwd = body.password.toString();
+      var encodepwd = crypto
+        .createHash("sha256")
+        .update(pwd)
+        .digest("hex");
+      var schemas = {
+        createAt: body.createAt,
+        createBy: body.createBy,
+        email: body.email,
+        password: encodepwd,
+        priority: body.priority,
+        updateAt: body.updateAt,
+        updateBy: body.updateBy,
+        username: body.username
+      }
+      var database = await db.collection('user_web').doc().set(schemas);
+      ret.status = true;
+      ret.data = "OK";
+      res.send(ret);
+    } catch (err) {
+      ret.message = err;
+      ret.status = false;
+      res.send(ret);
+    }
+  }
+  // try{
+  //   db.collection('user_web').doc().set({
+
+  //   })
+  // }catch(error){
+
+  // }
+})
 
 module.exports = app;
