@@ -2,6 +2,8 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const session = require('express-session');
+var passport = require("passport");
 /*********************************** End import Server   ***********************************/
 
 /*********************************** Start import Line config  ***********************************/
@@ -19,8 +21,18 @@ const webserver = require("./webserver/server");
 /*********************************** End import route  ***********************************/
 
 const app = express();
-
-app.use(cors({ origin: true }));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(
+  session({
+    secret: "IL<3VEY0U",
+    resave: true,
+    saveUninitialized: true
+  })
+);
+app.use(cors({
+  origin: true
+}));
 app.use(bodyParser.json());
 /**
  * ?test for android and other don't forget to discommit
