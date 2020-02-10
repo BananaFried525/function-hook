@@ -86,7 +86,7 @@ module.exports.handleEvent = function(event, USER) {
               let objectPlace = await flexService.getSeletedPlace(
                 temp,
                 resNearby.data,
-                'placeId_hotel'
+                "placeId_hotel"
               );
               console.info(`Line response =>`, objectPlace);
               result = objectPlace;
@@ -254,6 +254,57 @@ module.exports.handleEvent = function(event, USER) {
           /**
            * !Search Tourist_attraction
            */
+          if (message.type === "text") {
+            userDetail.transaction.location = message.text;
+            userDetail.transaction.timeStamp = new Date();
+            await userService.updateUser(userDetail);
+            let resProvice = await lovService.getLov(message.text);
+            if (resProvice) {
+              const dataApi = await googleApi.textSearch(
+                `${resProvice.lovName}+ร้านอาหาร`
+              );
+              const objectPlace = await flexService.getSeletedPlace(
+                temp,
+                dataApi.data,
+                "placeId_touristattraction" // แก้
+              );
+              console.info(`Line response =>`, objectPlace);
+              result = objectPlace;
+              isComplete = true;
+            } else {
+              console.error("invalid provice");
+              result = {
+                type: "text",
+                text: "กรุณาพิมพ์ชื่อจังหวัดให้ถูกต้อง"
+              };
+            }
+          } else {
+            let user_locate = message.latitude + "," + message.longitude;
+            userDetail.transaction.location = user_locate;
+            userDetail.transaction.timeStamp = new Date();
+            await userService.updateUser(userDetail);
+            let resNearby = await googleApi.nearBySearch(
+              user_locate,
+              "tourist_attraction"
+            );
+            if (resNearby.data.length === 0) {
+              console.error(`not found`);
+              result = { type: "text", text: "ไม่พบสิ่งที่ค้นหา" };
+            } else {
+              console.info(``, resNearby.data);
+              // แก้ตัวแมพ
+              let objectPlace = await flexService.getSeletedPlace(
+                temp,
+                resNearby.data,
+                "placeId_touristattraction"
+              );
+              console.info(`Line response =>`, objectPlace);
+              result = objectPlace;
+              isComplete = true;
+            }
+          }
+          if (isComplete) completeAction(userId);
+          resolve([replyToken, result]);
         } else {
           switch (message.type) {
             case "text":
@@ -262,7 +313,7 @@ module.exports.handleEvent = function(event, USER) {
               resolve([replyToken, result]);
               break;
             default:
-              result = { type: "text", text: "ไม่สามารถค้นหาคำสั่งนี้พบ" };           
+              result = { type: "text", text: "ไม่สามารถค้นหาคำสั่งนี้พบ" };
               resolve([replyToken, result]);
               break;
           }
@@ -347,6 +398,24 @@ function postbackHandle(event) {
           resolve(reply);
           break;
         case "richmenu_restaurant":
+          reply = {
+            type: "text",
+            text: "กรุณาเลือกสถานที่ปัจจุบันหรือพิมพ์ชื่อจังหวัด",
+            quickReply: {
+              items: [
+                {
+                  type: "action",
+                  action: {
+                    type: "location",
+                    label: "กรุณาเลือกสถานที่"
+                  }
+                }
+              ]
+            }
+          };
+          resolve(reply);
+          break;
+        case "richmenu_touristattraction":
           reply = {
             type: "text",
             text: "กรุณาเลือกสถานที่ปัจจุบันหรือพิมพ์ชื่อจังหวัด",
