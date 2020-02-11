@@ -9,7 +9,7 @@ const transactionService = require("./transaction");
 const tempDirectionBus = require("../template/busdirection.json");
 const _ = require("underscore");
 
-module.exports.handleEvent = function(event, USER) {
+module.exports.handleEvent = function (event, USER) {
   return new Promise(async (resolve, reject) => {
     let message = event.message;
     let replyToken = event.replyToken;
@@ -79,7 +79,10 @@ module.exports.handleEvent = function(event, USER) {
             );
             if (resNearby.data.length === 0) {
               console.error(`not found`);
-              result = { type: "text", text: "ไม่พบสิ่งที่ค้นหา" };
+              result = {
+                type: "text",
+                text: "ไม่พบสิ่งที่ค้นหา"
+              };
             } else {
               console.info(``, resNearby.data);
               // แก้ตัวแมพ
@@ -101,15 +104,13 @@ module.exports.handleEvent = function(event, USER) {
               type: "text",
               text: "กรุณาเลือกสถานที่ปลายทางด้วยครับ",
               quickReply: {
-                items: [
-                  {
-                    type: "action",
-                    action: {
-                      type: "location",
-                      label: "Send location"
-                    }
+                items: [{
+                  type: "action",
+                  action: {
+                    type: "location",
+                    label: "Send location"
                   }
-                ]
+                }]
               }
             };
             resolve([replyToken, result]);
@@ -127,15 +128,13 @@ module.exports.handleEvent = function(event, USER) {
               type: "text",
               text: "กรุณาเลือกสถานที่ปลายทางด้วยครับ",
               quickReply: {
-                items: [
-                  {
-                    type: "action",
-                    action: {
-                      type: "location",
-                      label: "Send location"
-                    }
+                items: [{
+                  type: "action",
+                  action: {
+                    type: "location",
+                    label: "Send location"
                   }
-                ]
+                }]
               }
             };
           } else if (!userDetail.transaction.destination) {
@@ -234,7 +233,10 @@ module.exports.handleEvent = function(event, USER) {
             );
             if (resNearby.data.length === 0) {
               console.error(`not found`);
-              result = { type: "text", text: "ไม่พบสิ่งที่ค้นหา" };
+              result = {
+                type: "text",
+                text: "ไม่พบสิ่งที่ค้นหา"
+              };
             } else {
               console.info(``, resNearby.data);
               // แก้ตัวแมพ
@@ -289,7 +291,10 @@ module.exports.handleEvent = function(event, USER) {
             );
             if (resNearby.data.length === 0) {
               console.error(`not found`);
-              result = { type: "text", text: "ไม่พบสิ่งที่ค้นหา" };
+              result = {
+                type: "text",
+                text: "ไม่พบสิ่งที่ค้นหา"
+              };
             } else {
               console.info(``, resNearby.data);
               // แก้ตัวแมพ
@@ -313,7 +318,10 @@ module.exports.handleEvent = function(event, USER) {
               resolve([replyToken, result]);
               break;
             default:
-              result = { type: "text", text: "ไม่สามารถค้นหาคำสั่งนี้พบ" };
+              result = {
+                type: "text",
+                text: "ไม่สามารถค้นหาคำสั่งนี้พบ"
+              };
               resolve([replyToken, result]);
               break;
           }
@@ -321,7 +329,10 @@ module.exports.handleEvent = function(event, USER) {
       }
     } catch (err) {
       result = err;
-      result = { type: "text", text: err };
+      result = {
+        type: "text",
+        text: err
+      };
       reject([replyToken, result]);
     }
   });
@@ -359,21 +370,21 @@ function postbackHandle(event) {
       await userService.updateUser(userData);
       switch (action) {
         case "richmenu_bus":
-          reply = [
-            { type: "text", text: `คุณได้ทำการเลือกการค้นหาเส้นทางรถเมล์` },
+          reply = [{
+              type: "text",
+              text: `คุณได้ทำการเลือกการค้นหาเส้นทางรถเมล์`
+            },
             {
               type: "text",
               text: "กรุณาเลือกสถานที่ต้นทางด้วยครับ",
               quickReply: {
-                items: [
-                  {
-                    type: "action",
-                    action: {
-                      type: "location",
-                      label: "Send location"
-                    }
+                items: [{
+                  type: "action",
+                  action: {
+                    type: "location",
+                    label: "Send location"
                   }
-                ]
+                }]
               }
             }
           ];
@@ -384,15 +395,13 @@ function postbackHandle(event) {
             type: "text",
             text: "กรุณาเลือกสถานที่ปัจจุบันหรือพิมพ์ชื่อจังหวัด",
             quickReply: {
-              items: [
-                {
-                  type: "action",
-                  action: {
-                    type: "location",
-                    label: "กรุณาเลือกสถานที่"
-                  }
+              items: [{
+                type: "action",
+                action: {
+                  type: "location",
+                  label: "กรุณาเลือกสถานที่"
                 }
-              ]
+              }]
             }
           };
           resolve(reply);
@@ -402,15 +411,13 @@ function postbackHandle(event) {
             type: "text",
             text: "กรุณาเลือกสถานที่ปัจจุบันหรือพิมพ์ชื่อจังหวัด",
             quickReply: {
-              items: [
-                {
-                  type: "action",
-                  action: {
-                    type: "location",
-                    label: "กรุณาเลือกสถานที่"
-                  }
+              items: [{
+                type: "action",
+                action: {
+                  type: "location",
+                  label: "กรุณาเลือกสถานที่"
                 }
-              ]
+              }]
             }
           };
           resolve(reply);
@@ -420,15 +427,13 @@ function postbackHandle(event) {
             type: "text",
             text: "กรุณาเลือกสถานที่ปัจจุบันหรือพิมพ์ชื่อจังหวัด",
             quickReply: {
-              items: [
-                {
-                  type: "action",
-                  action: {
-                    type: "location",
-                    label: "กรุณาเลือกสถานที่"
-                  }
+              items: [{
+                type: "action",
+                action: {
+                  type: "location",
+                  label: "กรุณาเลือกสถานที่"
                 }
-              ]
+              }]
             }
           };
           resolve(reply);
@@ -480,7 +485,7 @@ async function checkDetail(element) {
           text: "ขออภัยด้วยครับเราไม่ข้อมูลเบอร์โทรดังกล่าว :("
         });
         break;
-      // eslint-disable-next-line no-fallthrough
+        // eslint-disable-next-line no-fallthrough
       default:
         break;
     }
@@ -495,19 +500,37 @@ async function checkDetail(element) {
     /**
      * !จับ เคส detail
      */
-    const url_photo = await googleApi.placePhotoreFerence(photo_ref);
-    const getdetail = await googleApi.PlaceDetail(place_id);
-    const detail = getdetail.data.result;
+    var url_photo;
+    var review;
+    var time_open;
+    var flexDetail_result;
+    var getdetail;
+    var detail;
+    console.log(photo_ref, '=>');
+    if (photo_ref === '') {
+      url_photo = 'https://i.ibb.co/t4BKmmv/no-image.png';
+      getdetail = await googleApi.PlaceDetail(place_id);
+      detail = getdetail.data.result;
+      console.log(url_photo);
+      review = detail.reviews;
+      time_open = detail.opening_hours;
+      flexDetail_result = await flexService.flexdetail(
+        detail,
+        url_photo
+      );
+    } else {
+      url_photo = await googleApi.placePhotoreFerence(photo_ref);
+      getdetail = await googleApi.PlaceDetail(place_id);
+      detail = getdetail.data.result;
+      console.log(url_photo);
+      review = detail.reviews;
+      time_open = detail.opening_hours;
+      flexDetail_result = await flexService.flexdetail(
+        detail,
+        url_photo.data
+      );
 
-    const review = detail.reviews;
-    const time_open = detail.opening_hours;
-    const flexDetail_result = await flexService.flexdetail(
-      detail,
-      url_photo.data
-    );
-
-    time_open ? (flexTime_result = await flexService.flextime(time_open)) : "";
-    review ? (flexReivew_result = await flexService.flexreview(review)) : "";
+    }
     let prototype = {
       type: "flex",
       altText: "Flex Message",
@@ -517,13 +540,21 @@ async function checkDetail(element) {
       }
     };
 
+    time_open ? (flexTime_result = await flexService.flextime(time_open)) : "";
+    review ? (flexReivew_result = await flexService.flexreview(review)) : "";
+
+
     prototype.contents.contents.push(flexDetail_result.data);
     flexTime_result
-      ? prototype.contents.contents.push(flexTime_result.data)
-      : "";
-    flexReivew_result.data.forEach(e => {
+      ?
+      prototype.contents.contents.push(flexTime_result.data) :
+      "";
+    review ? flexReivew_result.data.forEach(e => {
       prototype.contents.contents.push(e);
-    });
+    }) : '';
+    console.log(flexReivew_result);
+
+
     resolve(prototype, {
       type: "text",
       text: "คุณต้องการจะสอบถามเรื่องอื่นอีกหรือไม่"

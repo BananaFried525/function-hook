@@ -1,9 +1,21 @@
 /* eslint-disable no-implicit-coercion */
-module.exports.flexdetail = function(detail, url_photo) {
+module.exports.flexdetail = function (detail, url_photo) {
+  console.log(detail);
   return new Promise(async (res, rej) => {
     var ret = {};
+    var rattt = '0';
+    var rat_total = '0';
     var phone = "ไม่มีข้อมูล";
     var website = "ไม่มีข้อมูล";
+    console.log(detail.rating);
+    if (detail.rating) {
+      rattt = detail.rating;
+    }
+    if (detail.user_ratings_total) {
+      rat_total = detail.user_ratings_total
+    }
+
+    console.log(detail.rating, detail.user_ratings_totals);
     let action_phone = {
       type: "postback",
       label: "โทร",
@@ -18,7 +30,11 @@ module.exports.flexdetail = function(detail, url_photo) {
     if (detail.formatted_phone_number) {
       phone = detail.formatted_phone_number;
       url_phone = `tel:${detail.formatted_phone_number.split(" ").join("")}`;
-      action_phone = { type: "uri", label: "โทร", uri: url_phone };
+      action_phone = {
+        type: "uri",
+        label: "โทร",
+        uri: url_phone
+      };
     }
 
     if (detail.website) {
@@ -49,8 +65,7 @@ module.exports.flexdetail = function(detail, url_photo) {
           type: "box",
           layout: "vertical",
           spacing: "sm",
-          contents: [
-            {
+          contents: [{
               type: "text",
               text: `${detail.name}`,
               size: "lg",
@@ -60,8 +75,7 @@ module.exports.flexdetail = function(detail, url_photo) {
             {
               type: "box",
               layout: "baseline",
-              contents: [
-                {
+              contents: [{
                   type: "text",
                   text: "สถานที่ตั้ง:",
                   flex: 4,
@@ -83,8 +97,7 @@ module.exports.flexdetail = function(detail, url_photo) {
             {
               type: "box",
               layout: "baseline",
-              contents: [
-                {
+              contents: [{
                   type: "text",
                   text: "เรตติ้ง",
                   flex: 3,
@@ -94,13 +107,12 @@ module.exports.flexdetail = function(detail, url_photo) {
                 },
                 {
                   type: "icon",
-                  url:
-                    "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                  url: "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
                   size: "xs"
                 },
                 {
                   type: "text",
-                  text: `${detail.rating}`,
+                  text: `${rattt}`,
                   flex: 5,
                   margin: "sm",
                   size: "sm",
@@ -113,8 +125,7 @@ module.exports.flexdetail = function(detail, url_photo) {
             {
               type: "box",
               layout: "baseline",
-              contents: [
-                {
+              contents: [{
                   type: "text",
                   text: "จำนวนการรีวิว:",
                   flex: 3,
@@ -125,7 +136,7 @@ module.exports.flexdetail = function(detail, url_photo) {
                 },
                 {
                   type: "text",
-                  text: `${detail.user_ratings_total}`,
+                  text: `${rat_total}`,
                   flex: 4,
                   margin: "sm",
                   size: "sm",
@@ -137,8 +148,7 @@ module.exports.flexdetail = function(detail, url_photo) {
             {
               type: "box",
               layout: "baseline",
-              contents: [
-                {
+              contents: [{
                   type: "text",
                   text: "เบอร์โทร:",
                   flex: 3,
@@ -161,8 +171,7 @@ module.exports.flexdetail = function(detail, url_photo) {
             {
               type: "box",
               layout: "baseline",
-              contents: [
-                {
+              contents: [{
                   type: "text",
                   text: "เว็บไซต์:",
                   flex: 3,
@@ -187,8 +196,7 @@ module.exports.flexdetail = function(detail, url_photo) {
           type: "box",
           layout: "horizontal",
           spacing: "sm",
-          contents: [
-            {
+          contents: [{
               type: "button",
               action: action_phone,
               flex: 3,
@@ -212,7 +220,7 @@ module.exports.flexdetail = function(detail, url_photo) {
     }
   });
 };
-module.exports.flextime = function(timedata) {
+module.exports.flextime = function (timedata) {
   return new Promise((res, rej) => {
     const ret = {};
 
@@ -248,13 +256,11 @@ module.exports.flextime = function(timedata) {
           type: "box",
           layout: "vertical",
           spacing: "sm",
-          contents: [
-            {
+          contents: [{
               type: "box",
               layout: "vertical",
               spacing: "xl",
-              contents: [
-                {
+              contents: [{
                   type: "text",
                   text: "วันเวลาเปิดทำการ",
                   margin: "sm",
@@ -327,8 +333,7 @@ module.exports.flextime = function(timedata) {
               type: "box",
               layout: "baseline",
               spacing: "xl",
-              contents: [
-                {
+              contents: [{
                   type: "text",
                   text: "สถานะการให้บริการ:",
                   flex: 3,
@@ -365,7 +370,7 @@ module.exports.flextime = function(timedata) {
     }
   });
 };
-module.exports.flexreview = function(arrreview) {
+module.exports.flexreview = function (arrreview) {
   return new Promise((res, rej) => {
     var ret = {};
     if (!arrreview) {
@@ -376,14 +381,19 @@ module.exports.flexreview = function(arrreview) {
     var arr = arrreview;
     var temp = [];
     arr.forEach(element => {
+      var text;
       console.log(`review`, element);
+      if (element.text === '') {
+        text = 'ไม่ได้แสดงความคิดเห็น'
+      } else {
+        text = element.text;
+      }
       let flex = {
         type: "bubble",
         header: {
           type: "box",
           layout: "vertical",
-          contents: [
-            {
+          contents: [{
               type: "text",
               text: "REVIEW",
               margin: "none",
@@ -406,12 +416,10 @@ module.exports.flexreview = function(arrreview) {
           type: "box",
           layout: "vertical",
           spacing: "md",
-          contents: [
-            {
+          contents: [{
               type: "box",
               layout: "vertical",
-              contents: [
-                {
+              contents: [{
                   type: "text",
                   text: element.author_name,
                   flex: 8,
@@ -430,8 +438,7 @@ module.exports.flexreview = function(arrreview) {
             {
               type: "box",
               layout: "vertical",
-              contents: [
-                {
+              contents: [{
                   type: "text",
                   text: "ความคิดเห็น:",
                   flex: 8,
@@ -443,10 +450,8 @@ module.exports.flexreview = function(arrreview) {
                 },
                 {
                   type: "text",
-                  text:
-                    element.text.length > 250
-                      ? element.text.substring(0, 250) + "..."
-                      : element.text,
+                  text: text.length > 250 ?
+                    text.substring(0, 250) + "..." : text,
                   flex: 0,
                   size: "xs",
                   align: "start",
@@ -457,8 +462,7 @@ module.exports.flexreview = function(arrreview) {
             {
               type: "box",
               layout: "baseline",
-              contents: [
-                {
+              contents: [{
                   type: "text",
                   text: "การให้คะแนน:",
                   flex: 0,
@@ -469,8 +473,7 @@ module.exports.flexreview = function(arrreview) {
                 },
                 {
                   type: "icon",
-                  url:
-                    "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                  url: "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
                   size: "xs"
                 },
                 {
@@ -482,8 +485,7 @@ module.exports.flexreview = function(arrreview) {
             {
               type: "box",
               layout: "baseline",
-              contents: [
-                {
+              contents: [{
                   type: "text",
                   text: "แสดงความคิดเห็นเมื่อ",
                   flex: 6,
@@ -509,18 +511,16 @@ module.exports.flexreview = function(arrreview) {
         footer: {
           type: "box",
           layout: "horizontal",
-          contents: [
-            {
-              type: "button",
-              action: {
-                type: "uri",
-                label: "ดูรายละเอียดผู้รีวิว",
-                uri: element.author_url
-              },
-              color: "#04A4B6",
-              style: "primary"
-            }
-          ]
+          contents: [{
+            type: "button",
+            action: {
+              type: "uri",
+              label: "ดูรายละเอียดผู้รีวิว",
+              uri: element.author_url
+            },
+            color: "#04A4B6",
+            style: "primary"
+          }]
         }
       };
       temp.push(flex);
@@ -530,7 +530,7 @@ module.exports.flexreview = function(arrreview) {
     res(ret);
   });
 };
-module.exports.getSeletedPlace = function(temp, arr, type) {
+module.exports.getSeletedPlace = function (temp, arr, type) {
   var temp1 = temp;
   return new Promise((res, rej) => {
     var results = arr;
@@ -542,8 +542,7 @@ module.exports.getSeletedPlace = function(temp, arr, type) {
             type: "box",
             layout: "vertical",
             spacing: "sm",
-            contents: [
-              {
+            contents: [{
                 type: "text",
                 text: "ครัวเมืองลำปาง",
                 size: "lg",
@@ -557,8 +556,7 @@ module.exports.getSeletedPlace = function(temp, arr, type) {
               {
                 type: "box",
                 layout: "baseline",
-                contents: [
-                  {
+                contents: [{
                     type: "text",
                     text: "สถานที่ตั้ง:",
                     flex: 4,
@@ -568,8 +566,7 @@ module.exports.getSeletedPlace = function(temp, arr, type) {
                   },
                   {
                     type: "text",
-                    text:
-                      "100 ถนน ห้วยแก้ว ตำบลสุเทพ อำเภอเมืองเชียงใหม่ เชียงใหม่ 50200",
+                    text: "100 ถนน ห้วยแก้ว ตำบลสุเทพ อำเภอเมืองเชียงใหม่ เชียงใหม่ 50200",
                     flex: 8,
                     size: "sm",
                     align: "start",
@@ -587,8 +584,7 @@ module.exports.getSeletedPlace = function(temp, arr, type) {
               {
                 type: "box",
                 layout: "baseline",
-                contents: [
-                  {
+                contents: [{
                     type: "text",
                     text: "สถานะการให้บริการ:",
                     flex: 3,
@@ -612,8 +608,7 @@ module.exports.getSeletedPlace = function(temp, arr, type) {
               {
                 type: "box",
                 layout: "baseline",
-                contents: [
-                  {
+                contents: [{
                     type: "text",
                     text: "คะแนนเฉลี่ย",
                     flex: 3,
@@ -623,8 +618,7 @@ module.exports.getSeletedPlace = function(temp, arr, type) {
                   },
                   {
                     type: "icon",
-                    url:
-                      "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                    url: "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
                     size: "xs"
                   },
                   {
@@ -645,26 +639,24 @@ module.exports.getSeletedPlace = function(temp, arr, type) {
             type: "box",
             layout: "vertical",
             spacing: "sm",
-            contents: [
-              {
-                type: "button",
-                action: {
-                  type: "postback",
-                  label: "ดูรายละเอียด",
-                  data: ""
-                },
-                color: "#459950",
-                style: "primary"
-              }
-            ]
+            contents: [{
+              type: "button",
+              action: {
+                type: "postback",
+                label: "ดูรายละเอียด",
+                data: ""
+              },
+              color: "#459950",
+              style: "primary"
+            }]
           }
         };
         flex.body.contents[0].text = results[i].name;
         flex.body.contents[2].contents[1].text = results[i].address;
         flex.body.contents[4].contents[1].text = results[i].status;
-        results[i].status === "เปิดอยู่"
-          ? (flex.body.contents[4].contents[1].color = "#459950")
-          : (flex.body.contents[4].contents[1].color = "#cccccc");
+        results[i].status === "เปิดอยู่" ?
+          (flex.body.contents[4].contents[1].color = "#459950") :
+          (flex.body.contents[4].contents[1].color = "#cccccc");
         flex.body.contents[5].contents[2].text = results[i].rating + "";
         flex.footer.contents[0].action.data = `${type}^${results[i].place_id}^${results[i].photo}^detail`;
         temp1.contents.contents.push(flex);
@@ -677,8 +669,7 @@ module.exports.getSeletedPlace = function(temp, arr, type) {
             type: "box",
             layout: "vertical",
             spacing: "sm",
-            contents: [
-              {
+            contents: [{
                 type: "text",
                 text: "ครัวเมืองลำปาง",
                 size: "lg",
@@ -692,8 +683,7 @@ module.exports.getSeletedPlace = function(temp, arr, type) {
               {
                 type: "box",
                 layout: "baseline",
-                contents: [
-                  {
+                contents: [{
                     type: "text",
                     text: "สถานที่ตั้ง:",
                     flex: 4,
@@ -703,8 +693,7 @@ module.exports.getSeletedPlace = function(temp, arr, type) {
                   },
                   {
                     type: "text",
-                    text:
-                      "100 ถนน ห้วยแก้ว ตำบลสุเทพ อำเภอเมืองเชียงใหม่ เชียงใหม่ 50200",
+                    text: "100 ถนน ห้วยแก้ว ตำบลสุเทพ อำเภอเมืองเชียงใหม่ เชียงใหม่ 50200",
                     flex: 8,
                     size: "sm",
                     align: "start",
@@ -722,8 +711,7 @@ module.exports.getSeletedPlace = function(temp, arr, type) {
               {
                 type: "box",
                 layout: "baseline",
-                contents: [
-                  {
+                contents: [{
                     type: "text",
                     text: "สถานะการให้บริการ:",
                     flex: 3,
@@ -747,8 +735,7 @@ module.exports.getSeletedPlace = function(temp, arr, type) {
               {
                 type: "box",
                 layout: "baseline",
-                contents: [
-                  {
+                contents: [{
                     type: "text",
                     text: "คะแนนเฉลี่ย",
                     flex: 3,
@@ -758,8 +745,7 @@ module.exports.getSeletedPlace = function(temp, arr, type) {
                   },
                   {
                     type: "icon",
-                    url:
-                      "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
+                    url: "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
                     size: "xs"
                   },
                   {
@@ -780,26 +766,24 @@ module.exports.getSeletedPlace = function(temp, arr, type) {
             type: "box",
             layout: "vertical",
             spacing: "sm",
-            contents: [
-              {
-                type: "button",
-                action: {
-                  type: "postback",
-                  label: "ดูรายละเอียด",
-                  data: ""
-                },
-                color: "#459950",
-                style: "primary"
-              }
-            ]
+            contents: [{
+              type: "button",
+              action: {
+                type: "postback",
+                label: "ดูรายละเอียด",
+                data: ""
+              },
+              color: "#459950",
+              style: "primary"
+            }]
           }
         };
         flex.body.contents[0].text = result.name;
         flex.body.contents[2].contents[1].text = result.address;
         flex.body.contents[4].contents[1].text = result.status;
-        result.status === "เปิดอยู่"
-          ? (flex.body.contents[4].contents[1].color = "#459950")
-          : (flex.body.contents[4].contents[1].color = "#cccccc");
+        result.status === "เปิดอยู่" ?
+          (flex.body.contents[4].contents[1].color = "#459950") :
+          (flex.body.contents[4].contents[1].color = "#cccccc");
         flex.body.contents[5].contents[2].text = results[i].rating + "";
         flex.footer.contents[0].action.data = `${type}^${results[i].place_id}^${result.photo}^detail`;
         temp1.contents.contents.push(flex);
