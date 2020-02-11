@@ -261,7 +261,7 @@ module.exports.handleEvent = function(event, USER) {
             let resProvice = await lovService.getLov(message.text);
             if (resProvice) {
               const dataApi = await googleApi.textSearch(
-                `${resProvice.lovName}+ร้านอาหาร`
+                `${resProvice.lovName}+แหล่งท่องเที่ยว`
               );
               const objectPlace = await flexService.getSeletedPlace(
                 temp,
