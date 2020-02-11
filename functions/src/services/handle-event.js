@@ -250,7 +250,7 @@ module.exports.handleEvent = function(event, USER) {
           }
           if (isComplete) completeAction(userId);
           resolve([replyToken, result]);
-        } else if (userDetail.action === "richmenu_touristattraction") {
+        } else if (userDetail.action === "richmenu_tourist") {
           /**
            * !Search Tourist_attraction
            */
@@ -415,7 +415,7 @@ function postbackHandle(event) {
           };
           resolve(reply);
           break;
-        case "richmenu_touristattraction":
+        case "richmenu_tourist":
           reply = {
             type: "text",
             text: "กรุณาเลือกสถานที่ปัจจุบันหรือพิมพ์ชื่อจังหวัด",
