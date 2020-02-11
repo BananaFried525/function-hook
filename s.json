@@ -1,9 +1,0 @@
-{
-  "type": "postback",
-  "replyToken": "9bd6d08004fc4df4b08fe9f6358efade",
-  "source": { "userId": "Ub79aaa5d7153878e022099401214af3f", "type": "user" },
-  "timestamp": 1580841612129,
-  "mode": "active",
-  "postback": { "data": "error_web" }
-}
- 
