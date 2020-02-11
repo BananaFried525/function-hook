@@ -143,7 +143,9 @@ app.get("/getListassist", adminmiddleware, (req, res) => {
         });
 
       })
-
+      arr.sort((a, b) => {
+        return new Date(b.createAt) - new Date(a.createAt);
+      });
 
       ret.status = true;
       ret.data = arr;
@@ -158,12 +160,33 @@ app.get("/getListassist", adminmiddleware, (req, res) => {
 
 
 })
+app.post('/delete', adminmiddleware, async (req, res) => {
+  var ret = {};
+  var _id = _.clone(req.body.id);
+  if (!req.body.id) {
+    ret.status = false;
+    ret.message = "Error not understands the content type";
+    res.status(422).json(ret);
+  } else {
+    try {
+      var mydb = await db.collection('user_web').doc(_id).delete();
+
+      ret.status = true;
+      ret.data = "OK";
+      res.send(ret);
+    } catch (err) {
+      ret.status = false;
+      ret.message = err;
+      res.send(ret);
+    }
+  }
+})
 app.post('/addassist', adminmiddleware, async (req, res) => {
   var ret = {}
   if (!req.body.createAt && !req.body.createBy && !req.body.email && !req.body.password &&
     !req.body.updateAt && !req.body.updateBy && !req.body.username &&
     !req.body.priority && !req.body.fName && !req.body.lName) {
-    ret.status = "true";
+    ret.status = false;
     ret.message = "Error not understands the content type";
     res.status(422).json(ret);
   } else {
