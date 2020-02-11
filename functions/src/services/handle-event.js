@@ -252,7 +252,7 @@ module.exports.handleEvent = function (event, USER) {
           }
           if (isComplete) completeAction(userId);
           resolve([replyToken, result]);
-        } else if (userDetail.action === "richmenu_touristattraction") {
+        } else if (userDetail.action === "richmenu_tourist") {
           /**
            * !Search Tourist_attraction
            */
@@ -263,7 +263,7 @@ module.exports.handleEvent = function (event, USER) {
             let resProvice = await lovService.getLov(message.text);
             if (resProvice) {
               const dataApi = await googleApi.textSearch(
-                `${resProvice.lovName}+ร้านอาหาร`
+                `${resProvice.lovName}+แหล่งท่องเที่ยว`
               );
               const objectPlace = await flexService.getSeletedPlace(
                 temp,
@@ -422,7 +422,7 @@ function postbackHandle(event) {
           };
           resolve(reply);
           break;
-        case "richmenu_touristattraction":
+        case "richmenu_tourist":
           reply = {
             type: "text",
             text: "กรุณาเลือกสถานที่ปัจจุบันหรือพิมพ์ชื่อจังหวัด",
