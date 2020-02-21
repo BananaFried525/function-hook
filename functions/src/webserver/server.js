@@ -8,7 +8,6 @@ const crypto = require("crypto");
 const SECRET = require("../config/config.json")["SECRET"];
 var adminmiddleware = require("../webserver/midleware/authen_admin");
 
-
 var _ = require("underscore");
 app.post("/login", (req, res) => {
   const ret = {};
@@ -28,10 +27,13 @@ app.post("/login", (req, res) => {
       var payload = {
         username: body.username
       };
-      console.log(JSON.stringify(req.body))
+      console.log(JSON.stringify(req.body));
       // eslint-disable-next-line promise/catch-or-return
-      let namedb = db.collection('user_web');
-      let userwhere = namedb.where("username", "==", uname).where("password", "==", encodepwd).get()
+      let namedb = db.collection("user_web");
+      let userwhere = namedb
+        .where("username", "==", uname)
+        .where("password", "==", encodepwd)
+        .get()
         .then(snapshot => {
           if (snapshot.size === 0) {
             ret.status = false;
@@ -41,7 +43,7 @@ app.post("/login", (req, res) => {
           }
 
           snapshot.forEach(doc => {
-            console.log(doc.id, '=>', doc.data());
+            console.log(doc.id, "=>", doc.data());
 
             if (doc.data()) {
               ret.status = true;
@@ -66,44 +68,48 @@ app.post("/login", (req, res) => {
     }
   }
 });
-app.get('/getsession', adminmiddleware, (req, res) => {
+app.get("/getsession", adminmiddleware, (req, res) => {
   var ret = {};
   let id = req.user;
   console.log(req.session);
   try {
-    var mydb = db.collection('user_web').doc(id).get().then(doc => {
-      if (!doc.exists) {
-        ret.status = false;
-        ret.message = 'data not found';
-        res.status(404).json(ret);
-      } else {
-        ret.status = true;
-        ret.data = {
-          fname: doc.data().fName,
-          lname: doc.data().lName,
-          priority: doc.data().priority,
+    var mydb = db
+      .collection("user_web")
+      .doc(id)
+      .get()
+      .then(doc => {
+        if (!doc.exists) {
+          ret.status = false;
+          ret.message = "data not found";
+          res.status(404).json(ret);
+        } else {
+          ret.status = true;
+          ret.data = {
+            fname: doc.data().fName,
+            lname: doc.data().lName,
+            priority: doc.data().priority
+          };
+          console.log("Session_data", JSON.stringify(ret.data));
+          res.send(ret);
         }
-        console.log('Session_data', JSON.stringify(ret.data));
-        res.send(ret);
-      }
-    }).catch(err => {
-      ret.status = false;
-      ret.message = err;
-      res.status(500).json(ret);
-    });
+      })
+      .catch(err => {
+        ret.status = false;
+        ret.message = err;
+        res.status(500).json(ret);
+      });
   } catch (err) {
     ret.status = false;
     ret.message = err;
     res.status(500).json(ret);
   }
-})
-
-app.get('/logout', (req, res) => {
+});
+app.get("/logout", (req, res) => {
   req.logout();
   res.json({
     status: true
   });
-})
+});
 app.get("/alluserline", adminmiddleware, (req, res) => {
   var ret = {};
   // eslint-disable-next-line promise/catch-or-return
@@ -123,44 +129,42 @@ app.get("/alluserline", adminmiddleware, (req, res) => {
     });
 });
 app.get("/getListassist", adminmiddleware, (req, res) => {
-
   try {
     var ret = {};
-    var database = db.collection('user_web').where('priority', '==', 'assistant').get().then(result => {
-
-      var arr = [];
-      result.forEach(doc => {
-        arr.push({
-          id: doc.id,
-          createAt: doc.data().createAt,
-          createBy: doc.data().createBy,
-          email: doc.data().email,
-          priority: doc.data().priority,
-          updateAt: doc.data().updateAt,
-          updateBy: doc.data().updateBy,
-          fName: doc.data().fName,
-          lName: doc.data().lName
+    var database = db
+      .collection("user_web")
+      .where("priority", "==", "assistant")
+      .get()
+      .then(result => {
+        var arr = [];
+        result.forEach(doc => {
+          arr.push({
+            id: doc.id,
+            createAt: doc.data().createAt,
+            createBy: doc.data().createBy,
+            email: doc.data().email,
+            priority: doc.data().priority,
+            updateAt: doc.data().updateAt,
+            updateBy: doc.data().updateBy,
+            fName: doc.data().fName,
+            lName: doc.data().lName
+          });
+        });
+        arr.sort((a, b) => {
+          return new Date(b.createAt) - new Date(a.createAt);
         });
 
-      })
-      arr.sort((a, b) => {
-        return new Date(b.createAt) - new Date(a.createAt);
+        ret.status = true;
+        ret.data = arr;
+        res.send(ret);
       });
-
-      ret.status = true;
-      ret.data = arr;
-      res.send(ret);
-    })
   } catch (err) {
     ret.status = false;
     ret.message = err;
     res.send(ret);
   }
-
-
-
-})
-app.post('/delete', adminmiddleware, async (req, res) => {
+});
+app.post("/delete", adminmiddleware, async (req, res) => {
   var ret = {};
   var _id = _.clone(req.body.id);
   if (!req.body.id) {
@@ -169,7 +173,10 @@ app.post('/delete', adminmiddleware, async (req, res) => {
     res.status(422).json(ret);
   } else {
     try {
-      var mydb = await db.collection('user_web').doc(_id).delete();
+      var mydb = await db
+        .collection("user_web")
+        .doc(_id)
+        .delete();
 
       ret.status = true;
       ret.data = "OK";
@@ -180,12 +187,21 @@ app.post('/delete', adminmiddleware, async (req, res) => {
       res.send(ret);
     }
   }
-})
-app.post('/addassist', adminmiddleware, async (req, res) => {
-  var ret = {}
-  if (!req.body.createAt && !req.body.createBy && !req.body.email && !req.body.password &&
-    !req.body.updateAt && !req.body.updateBy && !req.body.username &&
-    !req.body.priority && !req.body.fName && !req.body.lName) {
+});
+app.post("/addassist", adminmiddleware, async (req, res) => {
+  var ret = {};
+  if (
+    !req.body.createAt &&
+    !req.body.createBy &&
+    !req.body.email &&
+    !req.body.password &&
+    !req.body.updateAt &&
+    !req.body.updateBy &&
+    !req.body.username &&
+    !req.body.priority &&
+    !req.body.fName &&
+    !req.body.lName
+  ) {
     ret.status = false;
     ret.message = "Error not understands the content type";
     res.status(422).json(ret);
@@ -209,8 +225,11 @@ app.post('/addassist', adminmiddleware, async (req, res) => {
         username: body.username,
         lName: body.lName,
         fName: body.fName
-      }
-      var database = await db.collection('user_web').doc().set(schemas);
+      };
+      var database = await db
+        .collection("user_web")
+        .doc()
+        .set(schemas);
       ret.status = true;
       ret.data = "OK";
       res.send(ret);
@@ -227,6 +246,30 @@ app.post('/addassist', adminmiddleware, async (req, res) => {
   // }catch(error){
 
   // }
-})
-
+});
+app.get("/report", adminmiddleware, async (req, res) => {
+  let ret = {};
+    db.collection("issue").get().then((snapshot) => {
+      let arr=[];
+      snapshot.forEach(async(doc) => {
+        console.log(doc.id, '=>', doc.data());
+        arr.push(doc.data());
+      });
+      res.status(200).json(arr);
+    })
+    .catch((err) => {
+      console.log('Error getting documents', err);
+      ret.message = err.message;
+      ret.status = false;
+      res.status(500).json(ret);
+    });
+});
+app.post("/report", /**adminmiddleware,*/ async (req, res) => {
+  let newIssue = req.body;
+  let ret = {};
+  let docRef = db.collection('issue').doc();
+  let setIssue = docRef.set(newIssue);
+  console.log(JSON.stringify(setIssue));
+  res.send(setIssue);
+});
 module.exports = app;
