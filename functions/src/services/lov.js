@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 /* eslint-disable prefer-promise-reject-errors */
-const db = require("./firestore");
+const db = require("../config/firestore");
 
 /**
  * @Param element ProviceName
