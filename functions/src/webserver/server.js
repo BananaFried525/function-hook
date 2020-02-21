@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 const express = require("express");
 const app = express();
-const db = require("../services/firestore");
+const db = require("../config/firestore");
 var jwt = require("jwt-simple");
 const crypto = require("crypto");
 
