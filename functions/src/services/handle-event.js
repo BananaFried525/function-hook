@@ -306,7 +306,8 @@ module.exports.handleEvent = function(event, USER) {
           if (isComplete) completeAction(userId);
           resolve([replyToken, result]);
         } else if (userDetail.action === "report_issue") {
-          await reportIssueService.sendIssue(message.text);
+          let resReport = await reportIssueService.sendIssue(message.text);
+          console.info("sendIssue:",resReport);
           result.type = "text";
           result.text = "Send issue";
           isComplete = true;
@@ -321,16 +322,17 @@ module.exports.handleEvent = function(event, USER) {
                 userData.userId = userId;
                 userData.action = "report_issue";
                 userData.lastedUse = new Date();
-                userData.Transaction = issueTransaction;
-                console.log(`New user data`, userData);
-                await userService.updateUser(userData);
-                result.type = text;
+                userData.transaction = issueTransaction;
+                console.log(`New user data`, JSON.stringify(userData));
+                let user = await userService.updateUser(userData);
+                result.type = "text";
                 result.text = "กรุณาพิมพ์รายยงานปัญหาได้เลยครับ";
+                resolve([replyToken, result]);
               } else {
                 result.type = "text";
                 result.text = "กรุณาเลือกทำรายการด้วยน้า";
+                resolve([replyToken, result]);
               }
-              resolve([replyToken, result]);
               break;
             default:
               result.type = "text";
@@ -458,7 +460,7 @@ function postbackHandle(event) {
           break;
       }
     } catch (error) {
-      console.error("Error getting document", error.message);
+      console.error("Error getting document", JSON.stringify(error));
       reply.text("Error");
       reject(reply);
     }
