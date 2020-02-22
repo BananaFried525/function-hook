@@ -97,7 +97,15 @@ app.get('/getsession', adminmiddleware, (req, res) => {
     res.status(500).json(ret);
   }
 })
-
+app.post('/boardcast', adminmiddleware, (req, res) => {
+  
+  var ret = {};
+  var body = _.clone(req.body);
+  console.log(body);
+  ret.status = true;
+  ret.data = "OK";
+  res.send(ret);
+});
 app.get('/logout', (req, res) => {
   req.logout();
   res.json({
