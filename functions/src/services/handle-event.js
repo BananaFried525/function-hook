@@ -315,7 +315,7 @@ module.exports.handleEvent = function(event, USER) {
         } else {
           switch (message.type) {
             case "text":
-              if (message.message === "รายงานปัญหา") {
+              if (message.text === "รายงานปัญหา") {
                 let issueTransaction = transactionService.addIssueTransaction();
                 let userData = {};
                 userData.userId = userId;
