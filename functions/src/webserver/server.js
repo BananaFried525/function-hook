@@ -4,10 +4,10 @@ const app = express();
 const db = require("../config/firestore");
 var jwt = require("jwt-simple");
 const crypto = require("crypto");
-
+const restPromise = require("request-promise");
 const SECRET = require("../config/config.json")["SECRET"];
 var adminmiddleware = require("../webserver/midleware/authen_admin");
-
+const configLine = require("../config/config.json")["line"]["channelAccessToken"];
 var _ = require("underscore");
 app.post("/login", (req, res) => {
   const ret = {};
@@ -105,19 +105,48 @@ app.get("/getsession", adminmiddleware, (req, res) => {
   }
 })
 app.post('/boardcast', adminmiddleware, (req, res) => {
-
+  console.log(configLine);
   var ret = {};
-  var body = _.clone(req.body);
-  console.log(body);
-  ret.status = true;
-  ret.data = "OK";
-  res.send(ret);
+  var data = req.body;
+  if (data) {
+    // eslint-disable-next-line promise/catch-or-return
+    fetch("https://api.line.me/v2/bot/message/broadcast", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${configLine}`
+      },
+      body: JSON.stringify(data)
+    }).then(result => {
+      if (result.body.status === "200") {
+        ret.status = true;
+        ret.message = "OK";
+        res.send(ret);
+      } else {
+        ret.status = false;
+        ret.message = "error";
+        res.send(ret);
+      }
+
+    }).catch(res => {
+      console.log(res);
+      ret.status = false;
+      ret.message = "error";
+      res.send(ret);
+    })
+
+  } else {
+    ret.status = false;
+    ret.message = "error";
+    res.send(ret);
+  }
 });
 app.get('/logout', (req, res) => {
   req.logout();
   res.json({
     status: true
   });
+  ng
 });
 app.get("/alluserline", adminmiddleware, (req, res) => {
   var ret = {};
