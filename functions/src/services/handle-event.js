@@ -6,14 +6,15 @@ const flexService = require("./service-flex");
 const userService = require("./user");
 const lovService = require("./lov");
 const transactionService = require("./transaction");
+const reportIssueService = require("./report-issue");
 const tempDirectionBus = require("../template/busdirection.json");
 const _ = require("underscore");
 
-module.exports.handleEvent = function (event, USER) {
+module.exports.handleEvent = function(event, USER) {
   return new Promise(async (resolve, reject) => {
     let message = event.message;
     let replyToken = event.replyToken;
-    let result;
+    let result = {};
     let userId = event.source.userId;
     let userDetail = USER;
 
@@ -40,10 +41,11 @@ module.exports.handleEvent = function (event, USER) {
             contents: []
           }
         };
-        /**
-         * !Search Hotel
-         */
+
         if (userDetail.action === "richmenu_hotel") {
+          /**
+           * !Search Hotel
+           */
           if (message.type === "text") {
             userDetail.transaction.location = message.text;
             userDetail.transaction.timeStamp = new Date();
@@ -58,7 +60,7 @@ module.exports.handleEvent = function (event, USER) {
                 dataApi.data,
                 "placeId_hotel"
               );
-              console.info(`Line response =>`, objectPlace);
+              console.info(`Line response =>`, JSON.stringify(objectPlace));
               result = objectPlace;
               isComplete = true;
             } else {
@@ -91,7 +93,7 @@ module.exports.handleEvent = function (event, USER) {
                 resNearby.data,
                 "placeId_hotel"
               );
-              console.info(`Line response =>`, objectPlace);
+              console.info(`Line response =>`, JSON.stringify(objectPlace));
               result = objectPlace;
               isComplete = true;
             }
@@ -104,13 +106,15 @@ module.exports.handleEvent = function (event, USER) {
               type: "text",
               text: "กรุณาเลือกสถานที่ปลายทางด้วยครับ",
               quickReply: {
-                items: [{
-                  type: "action",
-                  action: {
-                    type: "location",
-                    label: "Send location"
+                items: [
+                  {
+                    type: "action",
+                    action: {
+                      type: "location",
+                      label: "Send location"
+                    }
                   }
-                }]
+                ]
               }
             };
             resolve([replyToken, result]);
@@ -128,13 +132,15 @@ module.exports.handleEvent = function (event, USER) {
               type: "text",
               text: "กรุณาเลือกสถานที่ปลายทางด้วยครับ",
               quickReply: {
-                items: [{
-                  type: "action",
-                  action: {
-                    type: "location",
-                    label: "Send location"
+                items: [
+                  {
+                    type: "action",
+                    action: {
+                      type: "location",
+                      label: "Send location"
+                    }
                   }
-                }]
+                ]
               }
             };
           } else if (!userDetail.transaction.destination) {
@@ -150,7 +156,6 @@ module.exports.handleEvent = function (event, USER) {
             let temp = tempDirectionBus;
             await steps.forEach((step, i) => {
               if (step.travel_mode === "WALKING") {
-                console.log(step.html_instructions);
                 let walking = {
                   type: "text",
                   text: `${step.html_instructions}`,
@@ -158,13 +163,6 @@ module.exports.handleEvent = function (event, USER) {
                 };
                 content.push(walking);
               } else if (step.travel_mode === "TRANSIT") {
-                console.log(`เป้าหมาย => `, step.transit_details.headsign);
-                console.log(
-                  `หมายเลขรถ =>`,
-                  step.transit_details.line.short_name
-                );
-                console.log(`รถเมล์สาย =>`, step.transit_details.line.name);
-                console.log(`นั่ง => `, step.html_instructions);
                 let bus1 = {
                   type: "text",
                   text: `ปลายทาง: ${step.transit_details.headsign}`,
@@ -185,7 +183,7 @@ module.exports.handleEvent = function (event, USER) {
               content.push(separator);
             });
             temp.contents.body.contents = content;
-            console.info(temp);
+            console.info(JSON.stringify(temp));
             result = temp;
             isComplete = true;
             userDetail.transaction.isComplete = true;
@@ -212,7 +210,7 @@ module.exports.handleEvent = function (event, USER) {
                 dataApi.data,
                 "placeId_restaurant"
               );
-              console.info(`Line response =>`, objectPlace);
+              console.info(`Line response =>`, JSON.stringify(objectPlace));
               result = objectPlace;
               isComplete = true;
             } else {
@@ -238,14 +236,14 @@ module.exports.handleEvent = function (event, USER) {
                 text: "ไม่พบสิ่งที่ค้นหา"
               };
             } else {
-              console.info(``, resNearby.data);
+              console.info(``, JSON.stringify(resNearby.data));
               // แก้ตัวแมพ
               let objectPlace = await flexService.getSeletedPlace(
                 temp,
                 resNearby.data,
                 "placeId_restaurant"
               );
-              console.info(`Line response =>`, objectPlace);
+              console.info(`Line response =>`, JSON.stringify(objectPlace));
               result = objectPlace;
               isComplete = true;
             }
@@ -270,7 +268,7 @@ module.exports.handleEvent = function (event, USER) {
                 dataApi.data,
                 "placeId_touristattraction" // แก้
               );
-              console.info(`Line response =>`, objectPlace);
+              console.info(`Line response =>`, JSON.stringify(objectPlace));
               result = objectPlace;
               isComplete = true;
             } else {
@@ -291,61 +289,65 @@ module.exports.handleEvent = function (event, USER) {
             );
             if (resNearby.data.length === 0) {
               console.error(`not found`);
-              result = {
-                type: "text",
-                text: "ไม่พบสิ่งที่ค้นหา"
-              };
+              result.type = "text";
+              result.text ="ไม่พบสิ่งที่ค้นหา"
             } else {
-              console.info(``, resNearby.data);
-              // แก้ตัวแมพ
+              console.info(``, JSON.stringify(resNearby.data));
               let objectPlace = await flexService.getSeletedPlace(
                 temp,
                 resNearby.data,
                 "placeId_touristattraction"
               );
-              console.info(`Line response =>`, objectPlace);
+              console.info(`Line response =>`, JSON.stringify(objectPlace));
               result = objectPlace;
               isComplete = true;
             }
           }
           if (isComplete) completeAction(userId);
           resolve([replyToken, result]);
+        } else if (userDetail.action === "report_issue") {
+          await reportIssueService.sendIssue(message.text);
+          result.type = "text";
+          result.text = "Send issue";
+          isComplete = true;
+          if (isComplete) completeAction(userId);
+          resolve([replyToken, result]);
         } else {
           switch (message.type) {
             case "text":
-              result = replyText(message);
-              console.info("text message detected");
+              if (message.message === "รายงานปัญหา") {
+                let issueTransaction = transactionService.addIssueTransaction();
+                let userData = {};
+                userData.userId = userId;
+                userData.action = "report_issue";
+                userData.lastedUse = new Date();
+                userData.Transaction = issueTransaction;
+                console.log(`New user data`, userData);
+                await userService.updateUser(userData);
+                result.type = text;
+                result.text = "กรุณาพิมพ์รายยงานปัญหาได้เลยครับ";
+              } else {
+                result.type = "text";
+                result.text = "กรุณาเลือกทำรายการด้วยน้า";
+              }
               resolve([replyToken, result]);
               break;
             default:
-              result = {
-                type: "text",
-                text: "ไม่สามารถค้นหาคำสั่งนี้พบ"
-              };
+              result.type = "text";
+              result.text = "ไม่มีคำสั่งนี้ในระบบครับ";
               resolve([replyToken, result]);
               break;
           }
         }
       }
     } catch (err) {
-      result = err;
-      result = {
-        type: "text",
-        text: err
-      };
+      console.error(JSON.stringify(err));
+      result.type = "text";
+      result.text = err;
       reject([replyToken, result]);
     }
   });
 };
-
-function replyText(message) {
-  let reply = "";
-  reply = {
-    type: "text",
-    text: "กรุณาเลือกทำรายการ"
-  };
-  return reply;
-}
 
 function postbackHandle(event) {
   return new Promise(async (resolve, reject) => {
@@ -366,11 +368,12 @@ function postbackHandle(event) {
         lastedUse: new Date(),
         transaction
       };
-      console.log(`New user data`, userData);
+      console.log(`New user data`, JSON.stringify(userData));
       await userService.updateUser(userData);
       switch (action) {
         case "richmenu_bus":
-          reply = [{
+          reply = [
+            {
               type: "text",
               text: `คุณได้ทำการเลือกการค้นหาเส้นทางรถเมล์`
             },
@@ -378,13 +381,15 @@ function postbackHandle(event) {
               type: "text",
               text: "กรุณาเลือกสถานที่ต้นทางด้วยครับ",
               quickReply: {
-                items: [{
-                  type: "action",
-                  action: {
-                    type: "location",
-                    label: "Send location"
+                items: [
+                  {
+                    type: "action",
+                    action: {
+                      type: "location",
+                      label: "Send location"
+                    }
                   }
-                }]
+                ]
               }
             }
           ];
@@ -395,13 +400,15 @@ function postbackHandle(event) {
             type: "text",
             text: "กรุณาเลือกสถานที่ปัจจุบันหรือพิมพ์ชื่อจังหวัด",
             quickReply: {
-              items: [{
-                type: "action",
-                action: {
-                  type: "location",
-                  label: "กรุณาเลือกสถานที่"
+              items: [
+                {
+                  type: "action",
+                  action: {
+                    type: "location",
+                    label: "กรุณาเลือกสถานที่"
+                  }
                 }
-              }]
+              ]
             }
           };
           resolve(reply);
@@ -411,13 +418,15 @@ function postbackHandle(event) {
             type: "text",
             text: "กรุณาเลือกสถานที่ปัจจุบันหรือพิมพ์ชื่อจังหวัด",
             quickReply: {
-              items: [{
-                type: "action",
-                action: {
-                  type: "location",
-                  label: "กรุณาเลือกสถานที่"
+              items: [
+                {
+                  type: "action",
+                  action: {
+                    type: "location",
+                    label: "กรุณาเลือกสถานที่"
+                  }
                 }
-              }]
+              ]
             }
           };
           resolve(reply);
@@ -427,13 +436,15 @@ function postbackHandle(event) {
             type: "text",
             text: "กรุณาเลือกสถานที่ปัจจุบันหรือพิมพ์ชื่อจังหวัด",
             quickReply: {
-              items: [{
-                type: "action",
-                action: {
-                  type: "location",
-                  label: "กรุณาเลือกสถานที่"
+              items: [
+                {
+                  type: "action",
+                  action: {
+                    type: "location",
+                    label: "กรุณาเลือกสถานที่"
+                  }
                 }
-              }]
+              ]
             }
           };
           resolve(reply);
@@ -447,7 +458,7 @@ function postbackHandle(event) {
           break;
       }
     } catch (error) {
-      console.error("Error getting document", error);
+      console.error("Error getting document", error.message);
       reply.text("Error");
       reject(reply);
     }
@@ -463,9 +474,6 @@ async function completeAction(userId) {
   await userService.updateUser(actionChange);
 }
 
-/**
- *
- */
 async function checkDetail(element) {
   return new Promise(async (resolve, reject) => {
     /**
@@ -485,7 +493,7 @@ async function checkDetail(element) {
           text: "ขออภัยด้วยครับเราไม่ข้อมูลเบอร์โทรดังกล่าว :("
         });
         break;
-        // eslint-disable-next-line no-fallthrough
+      // eslint-disable-next-line no-fallthrough
       default:
         break;
     }
@@ -506,18 +514,15 @@ async function checkDetail(element) {
     var flexDetail_result;
     var getdetail;
     var detail;
-    console.log(photo_ref, '=>');
-    if (photo_ref === '') {
-      url_photo = 'https://i.ibb.co/t4BKmmv/no-image.png';
+    console.log(photo_ref, "=>");
+    if (photo_ref === "") {
+      url_photo = "https://i.ibb.co/t4BKmmv/no-image.png";
       getdetail = await googleApi.PlaceDetail(place_id);
       detail = getdetail.data.result;
       console.log(url_photo);
       review = detail.reviews;
       time_open = detail.opening_hours;
-      flexDetail_result = await flexService.flexdetail(
-        detail,
-        url_photo
-      );
+      flexDetail_result = await flexService.flexdetail(detail, url_photo);
     } else {
       url_photo = await googleApi.placePhotoreFerence(photo_ref);
       getdetail = await googleApi.PlaceDetail(place_id);
@@ -525,11 +530,7 @@ async function checkDetail(element) {
       console.log(url_photo);
       review = detail.reviews;
       time_open = detail.opening_hours;
-      flexDetail_result = await flexService.flexdetail(
-        detail,
-        url_photo.data
-      );
-
+      flexDetail_result = await flexService.flexdetail(detail, url_photo.data);
     }
     let prototype = {
       type: "flex",
@@ -543,17 +544,16 @@ async function checkDetail(element) {
     time_open ? (flexTime_result = await flexService.flextime(time_open)) : "";
     review ? (flexReivew_result = await flexService.flexreview(review)) : "";
 
-
     prototype.contents.contents.push(flexDetail_result.data);
     flexTime_result
-      ?
-      prototype.contents.contents.push(flexTime_result.data) :
-      "";
-    review ? flexReivew_result.data.forEach(e => {
-      prototype.contents.contents.push(e);
-    }) : '';
-    console.log(flexReivew_result);
-
+      ? prototype.contents.contents.push(flexTime_result.data)
+      : "";
+    review
+      ? flexReivew_result.data.forEach(e => {
+          prototype.contents.contents.push(e);
+        })
+      : "";
+    console.log(JSON.stringify(flexReivew_result));
 
     resolve(prototype, {
       type: "text",

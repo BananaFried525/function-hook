@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 const passport = require("passport");
 //ใช้ในการ decode jwt ออกมา
-const db = require("../../services/firestore");
+const db = require("../../config/firestore");
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 //ใช้ในการประกาศ Strategy
 const JwtStrategy = require("passport-jwt").Strategy;

@@ -172,7 +172,7 @@ module.exports.placePhotoreFerence = photo_code => {
     var ret = {};
     // eslint-disable-next-line promise/catch-or-return
     fetch(
-      `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo_code}
+      `https://maps.googleapis.com/maps/api/place/photo?maxwidth=300&photoreference=${photo_code}
       &key=${configGoogle.key_place}`
     )
       .then(result => {

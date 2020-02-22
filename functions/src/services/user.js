@@ -1,7 +1,7 @@
 /* eslint-disable handle-callback-err */
 /* eslint-disable prefer-promise-reject-errors */
 /* eslint-disable promise/always-return */
-const db = require("./firestore");
+const db = require("../config/firestore");
 
 module.exports.createUser = function(user) {
   return new Promise((resolve, reject) => {

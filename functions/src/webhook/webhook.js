@@ -12,7 +12,6 @@ module.exports = async (req, res) => {
   console.log(JSON.stringify(req.body.events[0]));
   if (req.body.events[0].replyToken === "00000000000000000000000000000000") {
     console.debug("Test pass");
-
     return res.status(200).send("Code:200,Message:Test");
   }
 
@@ -26,7 +25,7 @@ module.exports = async (req, res) => {
       userService.createUser(event.source);
     }
     let resHandle = await handle.handleEvent(event, user);
-    await console.log("Result =>", resHandle[1]);
+    await console.log("Result =>", JSON.stringify(resHandle[1]));
     await client.replyMessage(resHandle[0], resHandle[1])
     return res.status(200).send("Code:200");
   } catch (err) {
