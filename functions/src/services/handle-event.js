@@ -157,14 +157,22 @@ module.exports.handleEvent = function(event, USER) {
               let distance = resSort.routes[0].legs[0].distance.text;
               let content = [];
               let temp = tempDirectionBus;
-              let head1 = {},head2 = {};
+              // set header 
+              let head1 = {},head2 = {},head3 = {},header=[];
               head1.type = "text";
-              head1.text = `ระยะทาง ${distance}`;
+              head1.text = `เส้นทาง`;
               head1.align="center";
+              head1.weight="bold"
               head2.type = "text";
-              head2.text = `เวลาการเดินทาง ${duration}`;
+              head2.text = `ระยะทาง ${distance}`;
               head2.align="center";
-              temp.contents.header.contents.push(head1,head2)
+              head3.type = "text";
+              head3.text = `เวลาการเดินทาง ${duration}`;
+              head3.align="center";
+              header.push(head1,head2,head3)
+              temp.contents.header.contents = header;
+
+              // set body
               await steps.forEach((step, i) => {
                 if (step.travel_mode === "WALKING") {
                   let walking = {
@@ -194,6 +202,8 @@ module.exports.handleEvent = function(event, USER) {
                 content.push(separator);
               });
               temp.contents.body.contents = content;
+
+              // set footer
               let uri = `https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=${userDetail.transaction.origin}&destination=${destination}`;
               temp.contents.footer.contents[0].action.uri = uri;
               console.info(JSON.stringify(temp));
