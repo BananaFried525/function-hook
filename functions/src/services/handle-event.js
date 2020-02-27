@@ -151,43 +151,65 @@ module.exports.handleEvent = function(event, USER) {
             console.log(`Sort by location`);
             //พอกำหนดเสร็จให้ทำการ search ทันที
             let resSort = await googleApi.sortedBus(userDetail.transaction);
-            let steps = resSort.routes[0].legs[0].steps;
-            let content = [];
-            let temp = tempDirectionBus;
-            await steps.forEach((step, i) => {
-              if (step.travel_mode === "WALKING") {
-                let walking = {
-                  type: "text",
-                  text: `${step.html_instructions}`,
-                  wrap: true
+            if(resSort.status !== "ZERO_RESULTS"){
+              let steps = resSort.routes[0].legs[0].steps;
+              let duration = resSort.routes[0].legs[0].duration.text;
+              let distance = resSort.routes[0].legs[0].distance.text;
+              let content = [];
+              let temp = tempDirectionBus;
+              let head1 = {},head2 = {};
+              head1.type = "text";
+              head1.text = `ระยะทาง ${distance}`;
+              head1.align="center";
+              head2.type = "text";
+              head2.text = `เวลาการเดินทาง ${duration}`;
+              head2.align="center";
+              temp.contents.header.contents.push(head1,head2)
+              await steps.forEach((step, i) => {
+                if (step.travel_mode === "WALKING") {
+                  let walking = {
+                    type: "text",
+                    text: `${step.html_instructions}`,
+                    wrap: true
+                  };
+                  content.push(walking);
+                } else if (step.travel_mode === "TRANSIT") {
+                  let bus1 = {
+                    type: "text",
+                    text: `ปลายทาง: ${step.transit_details.headsign}`,
+                    wrap: true
+                  };
+                  let bus2 = {
+                    type: "text",
+                    text: `รถเมล์สาย: ${step.transit_details.line.short_name} (${step.transit_details.line.name})`,
+                    wrap: true
+                  };
+                  content.push(bus2, bus1);
+                }
+                let separator = {
+                  type: "separator",
+                  margin: "xs",
+                  color: "#3F3F3F"
                 };
-                content.push(walking);
-              } else if (step.travel_mode === "TRANSIT") {
-                let bus1 = {
-                  type: "text",
-                  text: `ปลายทาง: ${step.transit_details.headsign}`,
-                  wrap: true
-                };
-                let bus2 = {
-                  type: "text",
-                  text: `รถเมล์สาย: ${step.transit_details.line.short_name} (${step.transit_details.line.name})`,
-                  wrap: true
-                };
-                content.push(bus1, bus2);
+                content.push(separator);
+              });
+              temp.contents.body.contents = content;
+              let uri = `https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=${userDetail.transaction.origin}&destination=${destination}`;
+              temp.contents.footer.contents[0].action.uri = uri;
+              console.info(JSON.stringify(temp));
+              result = temp;
+              isComplete = true;
+              userDetail.transaction.isComplete = true;
+              await userService.updateUser(userDetail);
+            }else{
+              result = {
+                type:"text",
+                text:"ไม่พบเส้นทางการเดินทางด้วยรถเมล์"
               }
-              let separator = {
-                type: "separator",
-                margin: "xs",
-                color: "#3F3F3F"
-              };
-              content.push(separator);
-            });
-            temp.contents.body.contents = content;
-            console.info(JSON.stringify(temp));
-            result = temp;
-            isComplete = true;
-            userDetail.transaction.isComplete = true;
-            await userService.updateUser(userDetail);
+              isComplete = true;
+              userDetail.transaction.isComplete = true;
+              await userService.updateUser(userDetail);
+            }
           }
           // Clear user action
           if (isComplete) completeAction(userId);
