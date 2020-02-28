@@ -119,7 +119,8 @@ app.post('/boardcast', adminmiddleware, (req, res) => {
       },
       body: JSON.stringify(data)
     }).then(result => {
-      if (result.body.status === "200") {
+      console.log(result.body);
+      if (result.body) {
         ret.status = true;
         ret.message = "OK";
         res.send(ret);
