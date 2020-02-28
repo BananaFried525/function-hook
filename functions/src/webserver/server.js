@@ -24,6 +24,7 @@ app.post("/login", (req, res) => {
         .createHash("sha256")
         .update(pwd)
         .digest("hex");
+
       var payload = {
         username: body.username
       };
@@ -226,6 +227,36 @@ app.post("/delete", adminmiddleware, async (req, res) => {
     }
   }
 });
+app.post("/resetpassword", adminmiddleware, async (req, res) => {
+  var ret = {};
+  var _id = _.clone(req.body.id);
+  console.log(_id)
+  if (!req.body.id) {
+    ret.status = false;
+    ret.message = "Error not understands the content type";
+    res.status(422).json(ret);
+  } else {
+    try {
+      var password = Math.random().toString(36).substring(2);
+      var encodepwd = crypto
+        .createHash("sha256")
+        .update(password)
+        .digest("hex");
+      var mydb = await db
+        .collection("user_web")
+        .doc(_id).update({
+          password: encodepwd
+        });
+      ret.status = true;
+      ret.data = password;
+      res.send(ret);
+    } catch (err) {
+      ret.status = false;
+      ret.message = err;
+      res.send(ret);
+    }
+  }
+})
 app.post("/addassist", adminmiddleware, async (req, res) => {
   var ret = {};
   if (
