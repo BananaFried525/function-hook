@@ -7,14 +7,15 @@ module.exports.sendIssue = (issue_message) => {
   return new Promise((resolve, reject) => {
     let newIssue = {
       issue_message: issue_message,
-      issue_status: "incomplete",
+      issue_status: "incoming",
       createBy: "line_user",
       createAt: new Date()
     };
-
-    let User = db.collection("issue").doc();
-    User.set(newUser)
+    console.log(JSON.stringify(newIssue))
+    let Issue = db.collection("issue").doc();
+    Issue.set(newIssue)
       .then(res => {
+        console.log(res);
         resolve("Report bug complete");
       })
       .catch(err => {

@@ -151,43 +151,75 @@ module.exports.handleEvent = function(event, USER) {
             console.log(`Sort by location`);
             //พอกำหนดเสร็จให้ทำการ search ทันที
             let resSort = await googleApi.sortedBus(userDetail.transaction);
-            let steps = resSort.routes[0].legs[0].steps;
-            let content = [];
-            let temp = tempDirectionBus;
-            await steps.forEach((step, i) => {
-              if (step.travel_mode === "WALKING") {
-                let walking = {
-                  type: "text",
-                  text: `${step.html_instructions}`,
-                  wrap: true
+            if(resSort.status !== "ZERO_RESULTS"){
+              let steps = resSort.routes[0].legs[0].steps;
+              let duration = resSort.routes[0].legs[0].duration.text;
+              let distance = resSort.routes[0].legs[0].distance.text;
+              let content = [];
+              let temp = tempDirectionBus;
+              // set header 
+              let head1 = {},head2 = {},head3 = {},header=[];
+              head1.type = "text";
+              head1.text = `เส้นทาง`;
+              head1.align="center";
+              head1.weight="bold"
+              head2.type = "text";
+              head2.text = `ระยะทาง ${distance}`;
+              head2.align="center";
+              head3.type = "text";
+              head3.text = `เวลาการเดินทาง ${duration}`;
+              head3.align="center";
+              header.push(head1,head2,head3)
+              temp.contents.header.contents = header;
+
+              // set body
+              await steps.forEach((step, i) => {
+                if (step.travel_mode === "WALKING") {
+                  let walking = {
+                    type: "text",
+                    text: `${step.html_instructions}`,
+                    wrap: true
+                  };
+                  content.push(walking);
+                } else if (step.travel_mode === "TRANSIT") {
+                  let bus1 = {
+                    type: "text",
+                    text: `ปลายทาง: ${step.transit_details.headsign}`,
+                    wrap: true
+                  };
+                  let bus2 = {
+                    type: "text",
+                    text: `รถเมล์สาย: ${step.transit_details.line.short_name} (${step.transit_details.line.name})`,
+                    wrap: true
+                  };
+                  content.push(bus2, bus1);
+                }
+                let separator = {
+                  type: "separator",
+                  margin: "xs",
+                  color: "#3F3F3F"
                 };
-                content.push(walking);
-              } else if (step.travel_mode === "TRANSIT") {
-                let bus1 = {
-                  type: "text",
-                  text: `ปลายทาง: ${step.transit_details.headsign}`,
-                  wrap: true
-                };
-                let bus2 = {
-                  type: "text",
-                  text: `รถเมล์สาย: ${step.transit_details.line.short_name} (${step.transit_details.line.name})`,
-                  wrap: true
-                };
-                content.push(bus1, bus2);
+                content.push(separator);
+              });
+              temp.contents.body.contents = content;
+
+              // set footer
+              let uri = `https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=${userDetail.transaction.origin}&destination=${destination}`;
+              temp.contents.footer.contents[0].action.uri = uri;
+              console.info(JSON.stringify(temp));
+              result = temp;
+              isComplete = true;
+              userDetail.transaction.isComplete = true;
+              await userService.updateUser(userDetail);
+            }else{
+              result = {
+                type:"text",
+                text:"ไม่พบเส้นทางการเดินทางด้วยรถเมล์"
               }
-              let separator = {
-                type: "separator",
-                margin: "xs",
-                color: "#3F3F3F"
-              };
-              content.push(separator);
-            });
-            temp.contents.body.contents = content;
-            console.info(JSON.stringify(temp));
-            result = temp;
-            isComplete = true;
-            userDetail.transaction.isComplete = true;
-            await userService.updateUser(userDetail);
+              isComplete = true;
+              userDetail.transaction.isComplete = true;
+              await userService.updateUser(userDetail);
+            }
           }
           // Clear user action
           if (isComplete) completeAction(userId);
@@ -306,7 +338,8 @@ module.exports.handleEvent = function(event, USER) {
           if (isComplete) completeAction(userId);
           resolve([replyToken, result]);
         } else if (userDetail.action === "report_issue") {
-          await reportIssueService.sendIssue(message.text);
+          let resReport = await reportIssueService.sendIssue(message.text);
+          console.info("sendIssue:",resReport);
           result.type = "text";
           result.text = "Send issue";
           isComplete = true;
@@ -315,22 +348,23 @@ module.exports.handleEvent = function(event, USER) {
         } else {
           switch (message.type) {
             case "text":
-              if (message.message === "รายงานปัญหา") {
+              if (message.text === "รายงานปัญหา") {
                 let issueTransaction = transactionService.addIssueTransaction();
                 let userData = {};
                 userData.userId = userId;
                 userData.action = "report_issue";
                 userData.lastedUse = new Date();
-                userData.Transaction = issueTransaction;
-                console.log(`New user data`, userData);
-                await userService.updateUser(userData);
-                result.type = text;
+                userData.transaction = issueTransaction;
+                console.log(`New user data`, JSON.stringify(userData));
+                let user = await userService.updateUser(userData);
+                result.type = "text";
                 result.text = "กรุณาพิมพ์รายยงานปัญหาได้เลยครับ";
+                resolve([replyToken, result]);
               } else {
                 result.type = "text";
                 result.text = "กรุณาเลือกทำรายการด้วยน้า";
+                resolve([replyToken, result]);
               }
-              resolve([replyToken, result]);
               break;
             default:
               result.type = "text";
@@ -458,7 +492,7 @@ function postbackHandle(event) {
           break;
       }
     } catch (error) {
-      console.error("Error getting document", error.message);
+      console.error("Error getting document", JSON.stringify(error));
       reply.text("Error");
       reject(reply);
     }

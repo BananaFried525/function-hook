@@ -11,7 +11,8 @@
         {
           "type": "text",
           "text": "เส้นทาง",
-          "align": "center"
+          "align": "center",
+          "weight": "bold"
         }
       ]
     },
@@ -73,10 +74,9 @@
         {
           "type": "button",
           "action": {
-            "type": "postback",
-            "label": "รายงานความผิดผลาด",
-            "text": "รายงานความผิดผลาด",
-            "data": "REPORT"
+            "type": "uri",
+            "label": "รายละเอียดเพิ่มเติม",
+            "uri":""
           }
         }
       ]
