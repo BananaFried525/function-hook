@@ -148,9 +148,8 @@ app.get('/logout', (req, res) => {
   res.json({
     status: true
   });
-  ng
 });
-app.get("/alluserline", adminmiddleware, (req, res) => {
+app.get("/alluserline", adminmiddleware, (_req, res) => {
   var ret = {};
   // eslint-disable-next-line promise/catch-or-return
   db.collection("user")
@@ -168,7 +167,7 @@ app.get("/alluserline", adminmiddleware, (req, res) => {
       return res.send(ret);
     });
 });
-app.get("/getListassist", adminmiddleware, (req, res) => {
+app.get("/getListassist", adminmiddleware, (_req, res) => {
   try {
     var ret = {};
     var database = db
@@ -317,7 +316,7 @@ app.post("/addassist", adminmiddleware, async (req, res) => {
 
   // }
 });
-app.get("/report", adminmiddleware, async (req, res) => {
+app.get("/report", adminmiddleware, async (_req, res) => {
   let ret = {};
   db.collection("issue").get().then((snapshot) => {
       let arr = [];
@@ -338,12 +337,18 @@ app.get("/report", adminmiddleware, async (req, res) => {
     });
 
 });
-app.post("/report", /**adminmiddleware,*/ async (req, res) => {
-  let newIssue = req.body;
+app.put("/report", adminmiddleware, async (req, res) => {
+  let newIssue = req.body.complete_message;
+  // console.log(newIssue)
   let ret = {};
-  let docRef = db.collection('issue').doc();
-  let setIssue = docRef.set(newIssue);
-  console.log(JSON.stringify(setIssue));
-  res.send(setIssue);
+  let docRef = db.collection('issue').where('issue_message','==',newIssue.issue_message).get().then(docs=>{
+    docs.forEach(doc=>{
+      console.log(doc.id);
+      doc.ref.update(newIssue);
+    })
+    res.send(true);
+  }).catch(_err=>{
+    res.status(500).send(false);
+  });
 });
 module.exports = app;
