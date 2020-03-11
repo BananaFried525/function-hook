@@ -325,6 +325,9 @@ app.get("/report", adminmiddleware, async (req, res) => {
         console.log(doc.id, '=>', doc.data());
         arr.push(doc.data());
       });
+      arr.sort((a, b) => {
+        return new Date(b.createAt) - new Date(a.createAt);
+      });
       res.status(200).json(arr);
     })
     .catch((err) => {
@@ -333,6 +336,7 @@ app.get("/report", adminmiddleware, async (req, res) => {
       ret.status = false;
       res.status(500).json(ret);
     });
+
 });
 app.post("/report", /**adminmiddleware,*/ async (req, res) => {
   let newIssue = req.body;
