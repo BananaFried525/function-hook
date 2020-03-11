@@ -151,33 +151,43 @@ module.exports.handleEvent = function(event, USER) {
             console.log(`Sort by location`);
             //พอกำหนดเสร็จให้ทำการ search ทันที
             let resSort = await googleApi.sortedBus(userDetail.transaction);
-            if(resSort.status !== "ZERO_RESULTS"){
+            if (resSort.status !== "ZERO_RESULTS") {
               let steps = resSort.routes[0].legs[0].steps;
               let duration = resSort.routes[0].legs[0].duration.text;
               let distance = resSort.routes[0].legs[0].distance.text;
               let content = [];
               let temp = tempDirectionBus;
-              // set header 
-              let head1 = {},head2 = {},head3 = {},header=[];
+              let separator = {
+                type: "separator",
+                margin: "lg"
+              };
+              // set header
+              let head1 = {},
+                head2 = {},
+                head3 = {},
+                header = [];
               head1.type = "text";
               head1.text = `เส้นทาง`;
-              head1.align="center";
-              head1.weight="bold"
+              head1.align = "center";
+              head1.size = "lg";
+              head1.weight = "bold";
               head2.type = "text";
               head2.text = `ระยะทาง ${distance}`;
-              head2.align="center";
+              head2.align = "center";
               head3.type = "text";
               head3.text = `เวลาการเดินทาง ${duration}`;
-              head3.align="center";
-              header.push(head1,head2,head3)
+              head3.align = "center";
+              header.push(head1, head2, head3);
               temp.contents.header.contents = header;
 
               // set body
+              content.push(separator);
               await steps.forEach((step, i) => {
                 if (step.travel_mode === "WALKING") {
                   let walking = {
                     type: "text",
                     text: `${step.html_instructions}`,
+                    margin: "lg",
                     wrap: true
                   };
                   content.push(walking);
@@ -185,20 +195,18 @@ module.exports.handleEvent = function(event, USER) {
                   let bus1 = {
                     type: "text",
                     text: `ปลายทาง: ${step.transit_details.headsign}`,
+                    margin: "lg",
                     wrap: true
                   };
                   let bus2 = {
                     type: "text",
                     text: `รถเมล์สาย: ${step.transit_details.line.short_name} (${step.transit_details.line.name})`,
+                    margin: "lg",
                     wrap: true
                   };
                   content.push(bus2, bus1);
                 }
-                let separator = {
-                  type: "separator",
-                  margin: "xs",
-                  color: "#3F3F3F"
-                };
+
                 content.push(separator);
               });
               temp.contents.body.contents = content;
@@ -211,11 +219,11 @@ module.exports.handleEvent = function(event, USER) {
               isComplete = true;
               userDetail.transaction.isComplete = true;
               await userService.updateUser(userDetail);
-            }else{
+            } else {
               result = {
-                type:"text",
-                text:"ไม่พบเส้นทางการเดินทางด้วยรถเมล์"
-              }
+                type: "text",
+                text: "ไม่พบเส้นทางการเดินทางด้วยรถเมล์"
+              };
               isComplete = true;
               userDetail.transaction.isComplete = true;
               await userService.updateUser(userDetail);
@@ -322,7 +330,7 @@ module.exports.handleEvent = function(event, USER) {
             if (resNearby.data.length === 0) {
               console.error(`not found`);
               result.type = "text";
-              result.text ="ไม่พบสิ่งที่ค้นหา"
+              result.text = "ไม่พบสิ่งที่ค้นหา";
             } else {
               console.info(``, JSON.stringify(resNearby.data));
               let objectPlace = await flexService.getSeletedPlace(
@@ -339,7 +347,7 @@ module.exports.handleEvent = function(event, USER) {
           resolve([replyToken, result]);
         } else if (userDetail.action === "report_issue") {
           let resReport = await reportIssueService.sendIssue(message.text);
-          console.info("sendIssue:",resReport);
+          console.info("sendIssue:", resReport);
           result.type = "text";
           result.text = "Send issue";
           isComplete = true;
@@ -407,10 +415,6 @@ function postbackHandle(event) {
       switch (action) {
         case "richmenu_bus":
           reply = [
-            {
-              type: "text",
-              text: `คุณได้ทำการเลือกการค้นหาเส้นทางรถเมล์`
-            },
             {
               type: "text",
               text: "กรุณาเลือกสถานที่ต้นทางด้วยครับ",
