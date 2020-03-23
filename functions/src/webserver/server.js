@@ -18,8 +18,8 @@ app.post("/login", (req, res) => {
   } else {
     try {
       const body = _.clone(req.body);
-      var uname = body.username;
-      var pwd = body.password.toString();
+      var uname = body.username.toLowerCase();
+      var pwd = body.password.toString().toLowerCase();
       var encodepwd = crypto
         .createHash("sha256")
         .update(pwd)
@@ -278,22 +278,22 @@ app.post("/addassist", adminmiddleware, async (req, res) => {
     try {
       var body = _.clone(req.body);
 
-      var pwd = body.password.toString();
+      var pwd = body.password.toString().toLowerCase();
       var encodepwd = crypto
         .createHash("sha256")
         .update(pwd)
         .digest("hex");
       var schemas = {
-        createAt: body.createAt,
-        createBy: body.createBy,
-        email: body.email,
+        createAt: body.createAt.toLowerCase(),
+        createBy: body.createBy.toLowerCase(),
+        email: body.email.toLowerCase(),
         password: encodepwd,
         priority: body.priority,
         updateAt: body.updateAt,
         updateBy: body.updateBy,
-        username: body.username,
-        lName: body.lName,
-        fName: body.fName
+        username: body.username.toLowerCase(),
+        lName: body.lName.toLowerCase(),
+        fName: body.fName.toLowerCase()
       };
       var database = await db
         .collection("user_web")
@@ -341,13 +341,13 @@ app.put("/report", adminmiddleware, async (req, res) => {
   let newIssue = req.body.complete_message;
   // console.log(newIssue)
   let ret = {};
-  let docRef = db.collection('issue').where('issue_message','==',newIssue.issue_message).get().then(docs=>{
-    docs.forEach(doc=>{
+  let docRef = db.collection('issue').where('issue_message', '==', newIssue.issue_message).get().then(docs => {
+    docs.forEach(doc => {
       console.log(doc.id);
       doc.ref.update(newIssue);
     })
     res.send(true);
-  }).catch(_err=>{
+  }).catch(_err => {
     res.status(500).send(false);
   });
 });
