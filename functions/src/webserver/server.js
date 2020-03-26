@@ -7,7 +7,9 @@ const crypto = require("crypto");
 const restPromise = require("request-promise");
 const SECRET = require("../config/config.json")["SECRET"];
 var adminmiddleware = require("../webserver/midleware/authen_admin");
-const configLine = require("../config/config.json")["line"]["channelAccessToken"];
+const configLine = require("../config/config.json")["line"][
+  "channelAccessToken"
+];
 var _ = require("underscore");
 app.post("/login", (req, res) => {
   const ret = {};
@@ -104,46 +106,46 @@ app.get("/getsession", adminmiddleware, (req, res) => {
     ret.message = err;
     res.status(500).json(ret);
   }
-})
-app.post('/boardcast', adminmiddleware, (req, res) => {
+});
+app.post("/boardcast", adminmiddleware, (req, res) => {
   console.log(configLine);
   var ret = {};
   var data = req.body;
   if (data) {
     // eslint-disable-next-line promise/catch-or-return
     fetch("https://api.line.me/v2/bot/message/broadcast", {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${configLine}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${configLine}`
       },
       body: JSON.stringify(data)
-    }).then(result => {
-      console.log(result.body);
-      if (result.body) {
-        ret.status = true;
-        ret.message = "OK";
-        res.send(ret);
-      } else {
+    })
+      .then(result => {
+        console.log(result.body);
+        if (result.body) {
+          ret.status = true;
+          ret.message = "OK";
+          res.send(ret);
+        } else {
+          ret.status = false;
+          ret.message = "error";
+          res.send(ret);
+        }
+      })
+      .catch(res => {
+        console.log(res);
         ret.status = false;
         ret.message = "error";
         res.send(ret);
-      }
-
-    }).catch(res => {
-      console.log(res);
-      ret.status = false;
-      ret.message = "error";
-      res.send(ret);
-    })
-
+      });
   } else {
     ret.status = false;
     ret.message = "error";
     res.send(ret);
   }
 });
-app.get('/logout', (req, res) => {
+app.get("/logout", (req, res) => {
   req.logout();
   res.json({
     status: true
@@ -230,21 +232,24 @@ app.post("/delete", adminmiddleware, async (req, res) => {
 app.post("/resetpassword", adminmiddleware, async (req, res) => {
   var ret = {};
   var _id = _.clone(req.body.id);
-  console.log(_id)
+  console.log(_id);
   if (!req.body.id) {
     ret.status = false;
     ret.message = "Error not understands the content type";
     res.status(422).json(ret);
   } else {
     try {
-      var password = Math.random().toString(36).substring(2);
+      var password = Math.random()
+        .toString(36)
+        .substring(2);
       var encodepwd = crypto
         .createHash("sha256")
         .update(password)
         .digest("hex");
       var mydb = await db
         .collection("user_web")
-        .doc(_id).update({
+        .doc(_id)
+        .update({
           password: encodepwd
         });
       ret.status = true;
@@ -256,7 +261,7 @@ app.post("/resetpassword", adminmiddleware, async (req, res) => {
       res.send(ret);
     }
   }
-})
+});
 app.post("/addassist", adminmiddleware, async (req, res) => {
   var ret = {};
   if (
@@ -284,8 +289,8 @@ app.post("/addassist", adminmiddleware, async (req, res) => {
         .update(pwd)
         .digest("hex");
       var schemas = {
-        createAt: body.createAt.toLowerCase(),
-        createBy: body.createBy.toLowerCase(),
+        createAt: body.createAt,
+        createBy: body.createBy,
         email: body.email.toLowerCase(),
         password: encodepwd,
         priority: body.priority,
@@ -318,10 +323,12 @@ app.post("/addassist", adminmiddleware, async (req, res) => {
 });
 app.get("/report", adminmiddleware, async (_req, res) => {
   let ret = {};
-  db.collection("issue").get().then((snapshot) => {
+  db.collection("issue")
+    .get()
+    .then(snapshot => {
       let arr = [];
-      snapshot.forEach(async (doc) => {
-        console.log(doc.id, '=>', doc.data());
+      snapshot.forEach(async doc => {
+        console.log(doc.id, "=>", doc.data());
         arr.push(doc.data());
       });
       arr.sort((a, b) => {
@@ -329,26 +336,30 @@ app.get("/report", adminmiddleware, async (_req, res) => {
       });
       res.status(200).json(arr);
     })
-    .catch((err) => {
-      console.log('Error getting documents', err);
+    .catch(err => {
+      console.log("Error getting documents", err);
       ret.message = err.message;
       ret.status = false;
       res.status(500).json(ret);
     });
-
 });
 app.put("/report", adminmiddleware, async (req, res) => {
   let newIssue = req.body.complete_message;
   // console.log(newIssue)
   let ret = {};
-  let docRef = db.collection('issue').where('issue_message', '==', newIssue.issue_message).get().then(docs => {
-    docs.forEach(doc => {
-      console.log(doc.id);
-      doc.ref.update(newIssue);
+  let docRef = db
+    .collection("issue")
+    .where("issue_message", "==", newIssue.issue_message)
+    .get()
+    .then(docs => {
+      docs.forEach(doc => {
+        console.log(doc.id);
+        doc.ref.update(newIssue);
+      });
+      res.send(true);
     })
-    res.send(true);
-  }).catch(_err => {
-    res.status(500).send(false);
-  });
+    .catch(_err => {
+      res.status(500).send(false);
+    });
 });
 module.exports = app;

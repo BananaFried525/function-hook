@@ -2,7 +2,7 @@
 const restPromise = require("request-promise");
 const configGoogle = require("../config/config.json")["google"];
 const _ = require("underscore");
-module.exports.findLocation = function() {
+module.exports.findLocation = function () {
   // https://maps.googleapis.com/maps/api/directions/json?departure_time=now&mode=transit&origin=มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ แขวง วงศ์สว่าง เขตบางซื่อ กรุงเทพมหานคร 10800&destination=อนุสาวรีย์ชัยสมรภูมิ ถนน พหลโยธิน แขวง ถนนพญาไท เขตราชเทวี กรุงเทพมหานคร 10400&key=AIzaSyAAm6Jci_ckEgvGkb98Q15R1h8RtIsjt_8
 };
 
@@ -10,7 +10,7 @@ module.exports.findLocation = function() {
  * @param element User transaction
  * @resolve direction data
  */
-module.exports.sortedBus = function(element) {
+module.exports.sortedBus = function (element) {
   return new Promise(async (resolve, reject) => {
     let rt = {};
     let option = {
@@ -42,7 +42,7 @@ module.exports.sortedBus = function(element) {
  * @param user_locate latitude,longtitude
  * @param type type for searching
  */
-module.exports.nearBySearch = function(user_locate, type) {
+module.exports.nearBySearch = function (user_locate, type) {
   return new Promise((resolve, reject) => {
     var rt = {};
     /** URL และ query ที่ต้องการ */
@@ -75,9 +75,9 @@ module.exports.nearBySearch = function(user_locate, type) {
             status: result.opening_hours,
             name: result.name,
             place_id: result.place_id,
-            rating: result.rating? result.rating:'ยังไม่มีการให้คะแนน',
+            rating: result.rating ? result.rating : 'ยังไม่มีการให้คะแนน',
             address: result.vicinity,
-            photo: result.photos? result.photos[0].photo_reference:[]
+            photo: result.photos ? result.photos[0].photo_reference : []
           };
         });
         rt.status = true;
@@ -120,10 +120,10 @@ module.exports.textSearch = keyword => {
             status: result.opening_hours,
             name: result.name,
             place_id: result.place_id,
-            rating: result.rating? result.rating:'ยังไม่มีการให้คะแนน',
+            rating: result.rating ? result.rating : 'ยังไม่มีการให้คะแนน',
             address: result.formatted_address,
             //ดักกรณีที่ไม่ม่รูปด้วย
-            photo: result.photos? result.photos[0].photo_reference:[]
+            photo: result.photos ? result.photos[0].photo_reference : []
           };
         });
         ret.status = true;
@@ -146,8 +146,7 @@ module.exports.PlaceDetail = place_id => {
       uri: "https://maps.googleapis.com/maps/api/place/details/json",
       qs: {
         place_id: place_id,
-        fields:
-          "name,formatted_address,user_ratings_total,formatted_phone_number,website,opening_hours,website,review,rating",
+        fields: "name,formatted_address,user_ratings_total,formatted_phone_number,website,opening_hours,website,review,rating,place_id,geometry",
         language: "th",
         key: configGoogle.key_place
       }
@@ -172,9 +171,9 @@ module.exports.placePhotoreFerence = photo_code => {
     var ret = {};
     // eslint-disable-next-line promise/catch-or-return
     fetch(
-      `https://maps.googleapis.com/maps/api/place/photo?maxwidth=300&photoreference=${photo_code}
+        `https://maps.googleapis.com/maps/api/place/photo?maxwidth=300&photoreference=${photo_code}
       &key=${configGoogle.key_place}`
-    )
+      )
       .then(result => {
         const data = _.clone(result);
         ret.status = true;

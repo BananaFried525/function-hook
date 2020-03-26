@@ -7,6 +7,9 @@ module.exports.flexdetail = function (detail, url_photo) {
     var rat_total = '0';
     var phone = "ไม่มีข้อมูล";
     var website = "ไม่มีข้อมูล";
+    var lat = detail.geometry.location.lat;
+    var long = detail.geometry.location.long;
+    var place_id = detail.place_id;
     console.log(detail.rating);
     if (detail.rating) {
       rattt = detail.rating;
@@ -59,7 +62,11 @@ module.exports.flexdetail = function (detail, url_photo) {
           url: `${url_photo}`,
           size: "full",
           aspectRatio: "20:13",
-          aspectMode: "cover"
+          aspectMode: "cover",
+          "action": {
+            "type": "uri",
+            "uri": `https://www.google.com/maps/search/?api=1&query=${lat,long}&query_place_id=${place_id}`
+          }
         },
         body: {
           type: "box",
