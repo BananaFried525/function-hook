@@ -101,24 +101,6 @@ module.exports.handleEvent = function(event, USER) {
           if (isComplete) completeAction(userId);
           resolve([replyToken, result]);
         } else if (userDetail.action === "richmenu_bus") {
-          if (message.type !== `location`) {
-            result = {
-              type: "text",
-              text: "กรุณาเลือกสถานที่ปลายทางด้วยครับ",
-              quickReply: {
-                items: [
-                  {
-                    type: "action",
-                    action: {
-                      type: "location",
-                      label: "Send location"
-                    }
-                  }
-                ]
-              }
-            };
-            resolve([replyToken, result]);
-          }
           /**
            * !Direction Bus
            */
