@@ -194,7 +194,7 @@ module.exports.handleEvent = function(event, USER) {
                 } else if (step.travel_mode === "TRANSIT") {
                   let bus1 = {
                     type: "text",
-                    text: `ปลายทาง: ${step.transit_details.headsign}`,
+                    text: `ปลายทาง: ${step.transit_details.arrival_stop.name}`,
                     margin: "lg",
                     wrap: true
                   };
