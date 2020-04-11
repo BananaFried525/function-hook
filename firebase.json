@@ -8,10 +8,6 @@
     ],
     "rewrites": [
       {
-        "source": "/helloworld",
-        "function": "helloWorld"
-      },
-      {
         "source": "**",
         "function": "linebot"
       }

@@ -10,7 +10,7 @@ const reportIssueService = require("./report-issue");
 const tempDirectionBus = require("../template/busdirection.json");
 const _ = require("underscore");
 
-module.exports.handleEvent = function(event, USER) {
+module.exports.handleEvent = function (event, USER) {
   return new Promise(async (resolve, reject) => {
     let message = event.message;
     let replyToken = event.replyToken;
@@ -104,7 +104,24 @@ module.exports.handleEvent = function(event, USER) {
           /**
            * !Direction Bus
            */
-          if (!userDetail.transaction.origin) {
+          if (message.type !== `location`) {
+            result = {
+              type: "text",
+              text: "กรุณาเลือกสถานที่ต้นทางด้วยครับ",
+              quickReply: {
+                items: [
+                  {
+                    type: "action",
+                    action: {
+                      type: "location",
+                      label: "Send location"
+                    }
+                  }
+                ]
+              }
+            };
+            resolve([replyToken, result]);
+          } else if (!userDetail.transaction.origin) {
             let origin = message.latitude + "," + message.longitude;
             console.log(`User origin => ${origin}`);
             userDetail.transaction.origin = origin;
@@ -259,7 +276,6 @@ module.exports.handleEvent = function(event, USER) {
               };
             } else {
               console.info(``, JSON.stringify(resNearby.data));
-              // แก้ตัวแมพ
               let objectPlace = await flexService.getSeletedPlace(
                 temp,
                 resNearby.data,
@@ -322,8 +338,9 @@ module.exports.handleEvent = function(event, USER) {
               );
               console.info(`Line response =>`, JSON.stringify(objectPlace));
               result = objectPlace;
-              isComplete = true;
+
             }
+            isComplete = true;
           }
           if (isComplete) completeAction(userId);
           resolve([replyToken, result]);
@@ -570,8 +587,8 @@ async function checkDetail(element) {
       : "";
     review
       ? flexReivew_result.data.forEach(e => {
-          prototype.contents.contents.push(e);
-        })
+        prototype.contents.contents.push(e);
+      })
       : "";
     console.log(JSON.stringify(flexReivew_result));
 

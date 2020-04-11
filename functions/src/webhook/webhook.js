@@ -9,31 +9,26 @@ const userService = require("../services/user");
 const client = new line.Client(configLine);
 
 module.exports = async (req, res) => {
-  console.log(JSON.stringify(req.body.events[0]));
+  //test line
   if (req.body.events[0].replyToken === "00000000000000000000000000000000") {
     console.debug("Test pass");
     return res.status(200).send("Code:200,Message:Test");
   }
 
   var event = req.body.events[0];
-  console.log(event.source.userId);
+  console.log("event"+JSON.stringify(event));
   try {
-    // let user = await userService.findUser(event.source.userId);
     let user = await userService.getUser(event.source.userId);
     if (!user) {
-      console.log("New user come");
-      userService.createUser(event.source);
+      user = userService.createUser(event.source);
     }
+    console.log("user detail"+JSON.stringify(user));
     let resHandle = await handle.handleEvent(event, user);
     await console.log("Result =>", JSON.stringify(resHandle[1]));
     await client.replyMessage(resHandle[0], resHandle[1])
     return res.status(200).send("Code:200");
   } catch (err) {
     console.error("Error message =>", err.message);
-    // await client.replyMessage(event.replyToken, {
-    //   type: "text",
-    //   text: "เกิดข้อผิดพลาดทางเทคนิคกรุณาลองใหม่"
-    // });
     return res.status(500).send("Code:500");
   }
 };

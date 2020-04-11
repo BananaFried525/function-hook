@@ -24,11 +24,11 @@ module.exports.sortedBus = function (element) {
         language: "th"
       }
     };
-    console.log(option);
+    console.info("Request:", JSON.stringify(option));
     try {
       let resRest = await restPromise(option);
       rt = JSON.parse(resRest);
-      console.info(rt);
+      console.info(JSON.stringify(rt));
       resolve(rt);
     } catch (err) {
       rt.massage = err;
@@ -53,16 +53,15 @@ module.exports.nearBySearch = function (user_locate, type) {
         radius: 1000,
         location: user_locate,
         language: "th",
-        opennow: true,
         type: type
       }
     };
 
-    console.info("Request:", option);
+    console.info("Request:", JSON.stringify(option));
     restPromise(option)
       .then(res => {
         data = JSON.parse(res);
-        console.info(data);
+        console.info(JSON.stringify(data));
         for (let i = 0; i < data.results.length; i++) {
           if (!data.results[i].opening_hours) {
             data.results[i].opening_hours = "ไม่มีข้อมูล";
@@ -104,10 +103,11 @@ module.exports.textSearch = keyword => {
         rankby: "prominence"
       }
     };
+    console.info("Request:", JSON.stringify(option));
     restPromise(option)
       .then(result => {
         var data = JSON.parse(result);
-        console.info(data);
+        console.info(JSON.stringify(data));
         for (let i = 0; i < data.results.length; i++) {
           if (!data.results[i].opening_hours) {
             data.results[i].opening_hours = "ไม่มีข้อมูล";
@@ -151,10 +151,12 @@ module.exports.PlaceDetail = place_id => {
         key: configGoogle.key_place
       }
     };
+    console.info("Request:", JSON.stringify(option));
     restPromise(option)
       .then(result => {
         ret.status = true;
         ret.data = JSON.parse(result);
+        JSON.stringify(result)
         res(ret);
       })
       .catch(error => {
@@ -178,6 +180,7 @@ module.exports.placePhotoreFerence = photo_code => {
         const data = _.clone(result);
         ret.status = true;
         ret.data = data.url;
+        JSON.stringify(result)
         res(ret);
       })
       .catch(error => {

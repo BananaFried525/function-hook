@@ -15,7 +15,7 @@ module.exports.createUser = function(user) {
     let User = db.collection("user").doc(newUser.userId);
     User.set(newUser)
       .then(res => {
-        resolve("Complate");
+        resolve(res);
       })
       .catch(err => {
         reject(err);
