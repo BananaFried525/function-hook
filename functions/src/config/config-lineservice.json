@@ -1,0 +1,15 @@
+{
+  "line-message": {},
+  "service1": {
+    "name": "richmenu_bus"
+  },
+  "service2": {
+    "name": "richmenu_hotel"
+  },
+  "service3": {
+    "name": "richmenu_tourist"
+  },
+  "service4": {
+    "name": "richmenu_restaurant"
+  }
+}
