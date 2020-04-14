@@ -53,6 +53,7 @@ module.exports.nearBySearch = function (user_locate, type) {
         radius: 1000,
         location: user_locate,
         language: "th",
+        opennow:true,
         type: type
       }
     };
@@ -65,7 +66,10 @@ module.exports.nearBySearch = function (user_locate, type) {
         for (let i = 0; i < data.results.length; i++) {
           if (!data.results[i].opening_hours) {
             data.results[i].opening_hours = "ไม่มีข้อมูล";
-          } else {
+          } 
+          else if(data.results[i].opening_hours===false){
+            data.results[i].opening_hours = "ปิด";
+          }else {
             data.results[i].opening_hours = "เปิดอยู่";
           }
         }
@@ -100,6 +104,7 @@ module.exports.textSearch = keyword => {
         key: configGoogle.key_place,
         query: keyword,
         language: "th",
+        opennow:true,
         rankby: "prominence"
       }
     };
@@ -111,6 +116,8 @@ module.exports.textSearch = keyword => {
         for (let i = 0; i < data.results.length; i++) {
           if (!data.results[i].opening_hours) {
             data.results[i].opening_hours = "ไม่มีข้อมูล";
+          } else if(data.results[i].opening_hours===false){
+            data.results[i].opening_hours = "ปิด";
           } else {
             data.results[i].opening_hours = "เปิดอยู่";
           }

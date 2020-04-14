@@ -114,7 +114,7 @@ module.exports.handleEvent = function (event, USER) {
                     type: "action",
                     action: {
                       type: "location",
-                      label: "Send location"
+                      label: "กรุณาเลือกสถานที่"
                     }
                   }
                 ]
@@ -136,7 +136,7 @@ module.exports.handleEvent = function (event, USER) {
                     type: "action",
                     action: {
                       type: "location",
-                      label: "Send location"
+                      label: "กรุณาเลือกสถานที่"
                     }
                   }
                 ]
@@ -348,7 +348,7 @@ module.exports.handleEvent = function (event, USER) {
           let resReport = await reportIssueService.sendIssue(message.text);
           console.info("sendIssue:", resReport);
           result.type = "text";
-          result.text = "Send issue";
+          result.text = "รายงานปัญหาเรียบร้อย";
           isComplete = true;
           if (isComplete) completeAction(userId);
           resolve([replyToken, result]);
@@ -365,7 +365,7 @@ module.exports.handleEvent = function (event, USER) {
                 console.log(`New user data`, JSON.stringify(userData));
                 let user = await userService.updateUser(userData);
                 result.type = "text";
-                result.text = "กรุณาพิมพ์รายยงานปัญหาได้เลยครับ";
+                result.text = "กรุณาพิมพ์รายงานปัญหาได้เลยครับ";
                 resolve([replyToken, result]);
               } else {
                 result.type = "text";
@@ -423,7 +423,7 @@ function postbackHandle(event) {
                     type: "action",
                     action: {
                       type: "location",
-                      label: "Send location"
+                      label: "กรุณาเลือกสถานที่"
                     }
                   }
                 ]
