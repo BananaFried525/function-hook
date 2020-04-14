@@ -6,3 +6,5 @@
 **ต้องอัพเดทด้วยนะ 
 npm install firebase-functions@latest firebase-admin@latest --save
 npm install -g firebase-tools
+
+เริ่มพัฒนาต่อในส่วน version 2 พํฒนาในส่วนโค้ดและทำการ refactor

@@ -15,7 +15,9 @@ module.exports = async (req, res) => {
     return res.status(200).send("Code:200,Message:Test");
   }
 
-  var event = req.body.events[0];
+  let event = req.body.events[0];
+  let replyToken = event.replyToken;
+  
   console.log("event"+JSON.stringify(event));
   try {
     let user = await userService.getUser(event.source.userId);
@@ -23,10 +25,13 @@ module.exports = async (req, res) => {
       user = userService.createUser(event.source);
     }
     console.log("user detail"+JSON.stringify(user));
+
     let resHandle = await handle.handleEvent(event, user);
+    
     await console.log("Result =>", JSON.stringify(resHandle[1]));
     await client.replyMessage(resHandle[0], resHandle[1])
     return res.status(200).send("Code:200");
+
   } catch (err) {
     console.error("Error message =>", err.message);
     return res.status(500).send("Code:500");
