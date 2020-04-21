@@ -34,7 +34,6 @@ checkCurrentAction = (timeStamp) => {
 };
 
 isNoAction = (action) => {
-    var action = action;
     if (action !== "non") {
         return true;
     } else {
