@@ -19,6 +19,7 @@ module.exports = async (req, res) => {
   let replyToken = event.replyToken;
   
   console.log("event"+JSON.stringify(event));
+  //check user in database
   try {
     let user = await userService.getUser(event.source.userId);
     if (!user) {

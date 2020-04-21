@@ -8,13 +8,14 @@ module.exports.createUser = function(user) {
     let newUser = {
       userId: user.userId,
       action: "non",
-      userPriority: 1,
+      isAction:true,
       lastedUse: new Date()
     };
 
     let User = db.collection("user").doc(newUser.userId);
     User.set(newUser)
       .then(res => {
+        console.log("Created new user");
         resolve(res);
       })
       .catch(err => {
