@@ -18,7 +18,9 @@ module.exports.addTransaction = function(action) {
       transaction.action = action;
       resolve(transaction);
     } else {
-      resolve({});
+      let transacetion = addIssueTransaction();
+      transacetion.action = action
+      resolve(transacetion);
     }
   });
 };
