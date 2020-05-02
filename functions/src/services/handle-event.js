@@ -416,14 +416,14 @@ function postbackHandle(event) {
           reply = [
             {
               type: "text",
-              text: "กรุณาเลือกสถานที่ต้นทางด้วยครับ",
+              text: "กรุณาระบุพิกัดต้นทางด้วยครับ",
               quickReply: {
                 items: [
                   {
                     type: "action",
                     action: {
                       type: "location",
-                      label: "กรุณาเลือกสถานที่"
+                      label: "ระบุพิกัดต้นทาง"
                     }
                   }
                 ]
@@ -435,14 +435,14 @@ function postbackHandle(event) {
         case "richmenu_hotel":
           reply = {
             type: "text",
-            text: "กรุณาเลือกสถานที่ปัจจุบันหรือพิมพ์ชื่อจังหวัด",
+            text: "กรุณาระบุพิกัดที่ต้องการหรือป้อนชื่อจังหวัด",
             quickReply: {
               items: [
                 {
                   type: "action",
                   action: {
                     type: "location",
-                    label: "กรุณาเลือกสถานที่"
+                    label: "ระบุพิกัด"
                   }
                 }
               ]
@@ -453,14 +453,14 @@ function postbackHandle(event) {
         case "richmenu_restaurant":
           reply = {
             type: "text",
-            text: "กรุณาเลือกสถานที่ปัจจุบันหรือพิมพ์ชื่อจังหวัด",
+            text: "กรุณาระบุพิกัดที่ต้องการหรือป้อนชื่อจังหวัด",
             quickReply: {
               items: [
                 {
                   type: "action",
                   action: {
                     type: "location",
-                    label: "กรุณาเลือกสถานที่"
+                    label: "ระบุพิกัด"
                   }
                 }
               ]
@@ -471,14 +471,14 @@ function postbackHandle(event) {
         case "richmenu_tourist":
           reply = {
             type: "text",
-            text: "กรุณาเลือกสถานที่ปัจจุบันหรือพิมพ์ชื่อจังหวัด",
+            text: "กรุณาระบุพิกัดที่ต้องการหรือป้อนชื่อจังหวัด",
             quickReply: {
               items: [
                 {
                   type: "action",
                   action: {
                     type: "location",
-                    label: "กรุณาเลือกสถานที่"
+                    label: "ระบุพิกัด"
                   }
                 }
               ]
